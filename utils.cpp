@@ -1,4 +1,6 @@
 #include "utils.hpp"
+#include <vector>
+#include <string>
 #include <sys/stat.h>
 
 bool isDir(std::string path)
@@ -23,4 +25,14 @@ bool endsWith(const std::string& fullString, const std::string& ending)
                                   - ending.size(),
                               ending.size(), ending)
            == 0;
+}
+
+bool hasExtension(std::string file, std::vector<std::string> exts)
+{
+    for(std::string ext : exts)
+    {
+        if (endsWith(file, ext))
+            return true;
+    }
+    return false;
 }

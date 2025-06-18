@@ -10,6 +10,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <regex>
+#include <map>
 #include "utils.hpp"
 #define PORT 9000
 
@@ -45,16 +46,39 @@ int createServerSocket(int port)
 }
 
 // This is to generate the correct data header based on the extension of the file requested by the browser
+// MIME types from: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types
 std::string getContentType(std::string path)
 {
     if (endsWith(path, ".css"))
-        return ("text/css");
+        return "text/css";
     else if (endsWith(path, ".html"))
-        return ("text/html");
+        return "text/html";
     else if (endsWith(path, ".js"))
-        return ("text/javascript");
+        return "text/javascript";
+    else if (endsWith(path, ".json"))
+        return "application/json";
+    else if (hasExtension(path, {".jpg", ".jpeg"}))
+        return "image/jpeg";
+    else if (endsWith(path, ".md"))
+        return "text/markdown";
+    else if (endsWith(path, ".mp3"))
+        return "audio/mpeg";
+    else if (endsWith(path, ".png"))
+        return "image/png";
+    else if (endsWith(path, ".pdf"))
+        return "application/pdf";
+    else if (endsWith(path, ".php"))
+        return "application/php";
+    else if (endsWith(path, ".svg"))
+        return "image/svg+xml";
+    else if (hasExtension(path, {".tif", ".tiff"}))
+        return "image/tiff";
+    else if (endsWith(path, ".ttf"))
+        return "font/ttf";
+    else if (endsWith(path, ".txt"))
+        return "text/plain";
     else
-        return ("text/plain");
+        return "application/octet-stream";
 }
 
 // This response is to be called when the content requested exists.
@@ -69,10 +93,9 @@ Content-Length: " + std::to_string(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
     // Debug
-    std::cout << "Returning response\n" << response << std::endl;
+    //std::cout << "Returning response\n" << response << std::endl;
     return response;
 }
-
 
 // Here we return the classic 404 not found
 std::string buildNotFoundResponse(void)
@@ -111,9 +134,23 @@ std::string pathFromGet(std::string petition)
     path = std::regex_replace(path, pattern, " ");
     // If the file exists, return the path
     if (access(path.c_str(), F_OK) != -1)
-        return (path);
+        return path;
     // We cannot return nullptr with the std::string datatype, so empty it is
-    return ("");
+    return "";
+}
+// WIP Post implementation:
+// info here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/POST
+std::map<std::string, std::string> getMapFromPost(std::string petition)
+{
+    size_t pos1 = petition.find("/");
+    size_t pos2 = petition.find("HTTP");
+    std::string endpoint = petition.substr(pos1, pos2 - 5);
+
+    // Create a map with key,value structure. First value is the endpoint
+    std::map<std::string, std::string> values;
+    values.insert(std::pair("endpoint",endpoint));
+    return values;
+    //size_t pos_values = petition.find("\r\n\r\n");
 }
 
 int main(int argc, char **argv)
