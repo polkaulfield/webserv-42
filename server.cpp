@@ -8,9 +8,8 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
+#include <cstdlib>
 #include <sys/stat.h>
-#include <regex>
-#include <map>
 #include "utils.hpp"
 #define PORT 9000
 
@@ -31,7 +30,7 @@ int createServerSocket(int port)
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(PORT);
+    serverAddress.sin_port = htons(port);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     int optval = 1;
@@ -40,7 +39,8 @@ int createServerSocket(int port)
     // we have to wait 2~ min until the system frees the port.
     setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
     // Attach the socket to the port and listen
-    int ret = bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
+    if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
+        std::exit(1);
     listen(serverSocket, 5);
     return serverSocket;
 }
@@ -57,7 +57,7 @@ std::string getContentType(std::string path)
         return "text/javascript";
     else if (endsWith(path, ".json"))
         return "application/json";
-    else if (hasExtension(path, {".jpg", ".jpeg"}))
+    else if (endsWith(path, ".jpg") || endsWith(path, ".jpeg"))
         return "image/jpeg";
     else if (endsWith(path, ".md"))
         return "text/markdown";
@@ -71,7 +71,7 @@ std::string getContentType(std::string path)
         return "application/php";
     else if (endsWith(path, ".svg"))
         return "image/svg+xml";
-    else if (hasExtension(path, {".tif", ".tiff"}))
+    else if (endsWith(path, ".tif") || endsWith(path, ".tiff"))
         return "image/tiff";
     else if (endsWith(path, ".ttf"))
         return "font/ttf";
@@ -89,7 +89,7 @@ std::string buildOkResponse(std::string &buffer, std::string &path)
 {
     std::string response = "HTTP/1.1 200 OK\n\
 Content-Type: " + getContentType(path) + "\n\
-Content-Length: " + std::to_string(buffer.length()) +
+Content-Length: " + intToString(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
     // Debug
@@ -110,9 +110,10 @@ Connection: Closed";
 // This is to close the server socket on ctrl+c
 void    sigintHandle(int signum)
 {
+    (void)signum;
     std::cout << "Closing socket!" << std::endl;
     close(serverSocket);
-    exit(0);
+    std::exit(0);
 }
 
 // This is to get the path requested by the browser in the header. We check if its dir or the file exists
@@ -130,8 +131,8 @@ std::string pathFromGet(std::string petition)
     if (path == "")
         path = "index.html";
     // URLS have spaced encoded with %20. We replace them with normal spaces
-    std::regex pattern("%20");
-    path = std::regex_replace(path, pattern, " ");
+    //std::regex pattern("%20");
+    //path = std::regex_replace(path, pattern, " ");
     // If the file exists, return the path
     if (access(path.c_str(), F_OK) != -1)
         return path;
@@ -140,6 +141,7 @@ std::string pathFromGet(std::string petition)
 }
 // WIP Post implementation:
 // info here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/POST
+/*
 std::map<std::string, std::string> getMapFromPost(std::string petition)
 {
     size_t pos1 = petition.find("/");
@@ -152,16 +154,18 @@ std::map<std::string, std::string> getMapFromPost(std::string petition)
     return values;
     //size_t pos_values = petition.find("\r\n\r\n");
 }
-
+*/
 int main(int argc, char **argv)
 {
+    (void)argv;
+    (void)argc;
     // We have to initialize the server socket first
     serverSocket = createServerSocket(PORT);
     signal(SIGINT, sigintHandle);
     if (!serverSocket)
     {
         std::cout << "Socket creation failed!" << std::endl;
-        exit(0);
+        std::exit(0);
     }
 
     // Declare all the stuff we need in the main loop
@@ -177,7 +181,7 @@ int main(int argc, char **argv)
     {
         // We need to create a client socket for each connection
         // using the bound socket to PORT we created before (serverSocket)
-        clientSocket = accept(serverSocket, nullptr, nullptr);
+        clientSocket = accept(serverSocket, NULL, NULL);
         // This gets the data clientSocket listened to petition_buf
         recv(clientSocket, petition_buf, sizeof(petition_buf), 0);
         // We convert the petition_buf char array to a cpp string

@@ -7,5 +7,5 @@
 bool endsWith(const std::string& fullString,
               const std::string& ending);
 bool isDir(std::string path);
-bool hasExtension(std::string file, std::vector<std::string> exts);
+std::string intToString(int n);
 #endif

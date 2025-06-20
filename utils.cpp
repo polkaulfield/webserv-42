@@ -1,5 +1,5 @@
 #include "utils.hpp"
-#include <vector>
+#include <sstream>
 #include <string>
 #include <sys/stat.h>
 
@@ -27,12 +27,9 @@ bool endsWith(const std::string& fullString, const std::string& ending)
            == 0;
 }
 
-bool hasExtension(std::string file, std::vector<std::string> exts)
-{
-    for(std::string ext : exts)
-    {
-        if (endsWith(file, ext))
-            return true;
-    }
-    return false;
+std::string intToString(int n){
+    std::ostringstream ostream;
+
+    ostream << n;
+    return ostream.str();
 }
