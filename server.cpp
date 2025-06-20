@@ -70,6 +70,8 @@ std::string getContentType(std::string path)
         return "application/pdf";
     else if (endsWith(path, ".php"))
         return "application/php";
+    else if (endsWith(path, ".py"))
+        return "text/html";
     else if (endsWith(path, ".svg"))
         return "image/svg+xml";
     else if (endsWith(path, ".tif") || endsWith(path, ".tiff"))
@@ -135,6 +137,12 @@ std::string pathFromGet(std::string petition)
     //std::regex pattern("%20");
     //path = std::regex_replace(path, pattern, " ");
     // If the file exists, return the path
+    //
+    // Remove after ? TODO Better fix
+    int qPos = path.find("?");
+    if (qPos != std::string::npos)
+        path = path.substr(0, qPos);
+    std::cout << "Got path " + path << std::endl;
     if (access(path.c_str(), F_OK) != -1)
         return path;
     // We cannot return nullptr with the std::string datatype, so empty it is
@@ -159,14 +167,18 @@ std::map<std::string, std::string> getMapFromPost(std::string petition)
 
 
 std::string getExtension(std::string htmlPath) {
-	size_t	pos = htmlPath.rfind(".");
+	size_t	pos = htmlPath.find(".");
+	size_t  arg = htmlPath.find("?");
 	if (pos == std::string::npos) // si no encuentra punto devuelve string vacio
 		return "";
+	if (arg != std::string::npos)
+	    return htmlPath.substr(pos, arg - pos);
 	return htmlPath.substr(pos);
 }
 
 bool	isCGI(std::string htmlPath) {
 	std::string	extension = getExtension(htmlPath);
+	std::cout << "GOT CGI FILE!" << std::endl;
 	return	(extension == ".py" || extension == ".php" ||
 			 extension == ".pl" || extension == ".cgi");
 }
@@ -245,10 +257,13 @@ std::string	getCGIOutput(char **args) {
 }
 
 std::string	execScript(std::string htmlPath, std::string petition) {
+
+    std::cout << "Executing script!!" << std::endl;
 	std::string	interpreter = determineInterpreter(htmlPath);
 
 	std::string	method = extractMethod(petition);
 	std::string	query = extractQuery(petition);
+	std::cout << "QUERY: " <<  query << std::endl;
 	std::string	host = extractHost(petition);
 
 	setenv("REQUEST_METHOD", method.c_str(), 1); // pasar std::string a const char* de c
@@ -260,6 +275,7 @@ std::string	execScript(std::string htmlPath, std::string petition) {
 		char	*args[] = {
 			(char *)interpreter.c_str(), // el (char *) entiendo que es para castearlo a char * sin const
 			(char *)htmlPath.c_str(),
+			(char *)query.c_str(),
 			NULL
 		};
 		return getCGIOutput(args);
