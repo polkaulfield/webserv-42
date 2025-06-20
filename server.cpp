@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <wait.h>
 #include <signal.h>
 #include <string.h>
 #include <cstdlib>
@@ -122,7 +123,7 @@ std::string pathFromGet(std::string petition)
 {
     size_t pos1 = petition.find("/");
     size_t pos2 = petition.find("HTTP");
-    std::string path = petition.substr(pos1, pos2 - 5);
+    std::string path = petition.substr(pos1, pos2 - pos1 - 1); //millor (pos2 - pos1 - 1)
     // Here we remove the first character / from the extracted path
     path = path.substr(1);
     // Append index.html if its a subdir or root dir
@@ -155,6 +156,123 @@ std::map<std::string, std::string> getMapFromPost(std::string petition)
     //size_t pos_values = petition.find("\r\n\r\n");
 }
 */
+
+
+std::string getExtension(std::string htmlPath) {
+	size_t	pos = htmlPath.rfind(".");
+	if (pos == std::string::npos) // si no encuentra punto devuelve string vacio
+		return "";
+	return htmlPath.substr(pos);
+}
+
+bool	isCGI(std::string htmlPath) {
+	std::string	extension = getExtension(htmlPath);
+	return	(extension == ".py" || extension == ".php" ||
+			 extension == ".pl" || extension == ".cgi");
+}
+
+std::string	determineInterpreter(std::string htmlPath) {
+	std::string	extension = getExtension(htmlPath);
+	if (extension == ".py") return "/usr/bin/python3";
+	else if (extension == ".php") return "/usr/bin/php";
+	else if (extension == ".pl") return "/usr/bin/perl";
+	else return ""; // para los .cgi
+}
+
+std::string extractMethod(std::string petition) {
+	size_t	pos = petition.find(" ");
+	return petition.substr(0, pos);
+}
+
+std::string	extractQuery(std::string petition) {
+	size_t	posQuestion = petition.find("?");
+	if (posQuestion == std::string::npos)
+		return ""; // si no hay query no se devuelve parametro
+	size_t	posHTTP = petition.find(" HTTP");
+	if (posHTTP == std::string::npos)
+		return petition.substr(posQuestion + 1); // por si no acaba en " HTTP"
+	else
+		return petition.substr(posQuestion + 1, posHTTP - posQuestion - 1);
+}
+
+std::string	extractHost(std::string petition) {
+	size_t	posHost = petition.find("Host: ");
+	if (posHost == std::string::npos)
+		return "";
+	size_t	start = posHost + 6;
+	size_t	posNextLine = petition.find("\r\n", start);
+	if (posNextLine == std::string::npos)
+		return "";
+	return petition.substr(start, posNextLine - start);
+
+}
+
+std::string	getCGIOutput(char **args) {
+	int	pipeFd[2];
+	pipe(pipeFd);
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == 0) {
+		close(pipeFd[0]);
+		dup2(pipeFd[1], STDOUT_FILENO);
+		close(pipeFd[1]);
+		execve(args[0], args, environ);
+		perror("execve failed");
+		exit(1);
+	}
+	else if (pid > 0) {
+		close(pipeFd[1]);
+		std::string	output;
+		char	buffer[1024];
+		ssize_t	bytesRead;
+
+		while((bytesRead = read(pipeFd[0], buffer, sizeof(buffer) - 1)) > 0) {
+			buffer[bytesRead] = '\0';
+			output += buffer;
+		}
+
+		close(pipeFd[0]);
+		waitpid(pid, NULL, 0);
+
+		return output;
+	}
+	else {
+		close(pipeFd[0]);
+		close(pipeFd[1]);
+		return "";
+	}
+}
+
+std::string	execScript(std::string htmlPath, std::string petition) {
+	std::string	interpreter = determineInterpreter(htmlPath);
+
+	std::string	method = extractMethod(petition);
+	std::string	query = extractQuery(petition);
+	std::string	host = extractHost(petition);
+
+	setenv("REQUEST_METHOD", method.c_str(), 1); // pasar std::string a const char* de c
+	setenv("QUERY_STRING", query.c_str(), 1);
+	setenv("HTTP_HOST", host.c_str(), 1);
+	setenv("SCRIPT_NAME", htmlPath.c_str(), 1);
+
+	if (!interpreter.empty()) {
+		char	*args[] = {
+			(char *)interpreter.c_str(), // el (char *) entiendo que es para castearlo a char * sin const
+			(char *)htmlPath.c_str(),
+			NULL
+		};
+		return getCGIOutput(args);
+	}
+	else {
+		char	*args[] = {
+			(char *)htmlPath.c_str(),
+			NULL
+		};
+		return getCGIOutput(args);
+	}
+}
+
 int main(int argc, char **argv)
 {
     (void)argv;
@@ -193,9 +311,12 @@ int main(int argc, char **argv)
             path = pathFromGet(petition);
             if (!path.empty())
             {
+                if (isCGI(path))
+                    buffer = execScript(path, petition);
                 // If the file exists we create the string buffer and create an OK response
                 // with the file content
-                buffer = makeFileBuffer(path);
+                else
+                    buffer = makeFileBuffer(path);
                 response = buildOkResponse(buffer, path);
             }
             else {
