@@ -134,12 +134,9 @@ std::string pathFromGet(std::string petition)
     if (path == "")
         path = "index.html";
     // URLS have spaced encoded with %20. We replace them with normal spaces
-    //std::regex pattern("%20");
-    //path = std::regex_replace(path, pattern, " ");
-    // If the file exists, return the path
-    //
+    path = searchAndReplace(path, "%20"," ");
     // Remove after ? TODO Better fix
-    int qPos = path.find("?");
+    size_t qPos = path.find("?");
     if (qPos != std::string::npos)
         path = path.substr(0, qPos);
     std::cout << "Got path " + path << std::endl;
@@ -164,7 +161,6 @@ std::map<std::string, std::string> getMapFromPost(std::string petition)
     //size_t pos_values = petition.find("\r\n\r\n");
 }
 */
-
 
 std::string getExtension(std::string htmlPath) {
 	size_t	pos = htmlPath.find(".");

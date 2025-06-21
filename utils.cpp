@@ -33,3 +33,19 @@ std::string intToString(int n){
     ostream << n;
     return ostream.str();
 }
+
+std::string searchAndReplace(std::string str, std::string searchWord, std::string replaceWord)
+{
+    size_t pos1 = 0;
+    size_t pos2 = str.find(searchWord);
+    std::string newStr = "";
+    while (pos2 != std::string::npos)
+    {
+        newStr += str.substr(pos1, pos2 - pos1);
+        newStr += replaceWord;
+        pos1 = pos2 + searchWord.length();
+        pos2 = str.find(searchWord, pos1);
+    }
+    newStr += str.substr(pos1);
+    return newStr;
+}
