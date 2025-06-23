@@ -12,19 +12,11 @@ bool isDir(std::string path)
     return false;
 }
 
-bool endsWith(const std::string& fullString, const std::string& ending)
+bool endsWith(const std::string& str, const std::string& end)
 {
-    // Check if the ending string is longer than the full
-    // string
-    if (ending.size() > fullString.size())
+    if (end.size() > str.size())
         return false;
-
-    // Compare the ending of the full string with the target
-    // ending
-    return fullString.compare(fullString.size()
-                                  - ending.size(),
-                              ending.size(), ending)
-           == 0;
+    return str.compare(str.size() - end.size(), end.size(), end) == 0;
 }
 
 std::string intToString(int n){

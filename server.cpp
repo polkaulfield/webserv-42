@@ -12,12 +12,13 @@
 #include <cstdlib>
 #include <sys/stat.h>
 #include "utils.hpp"
-#define PORT 9000
+#include "clientRequest.hpp"
+#define PORT 8080
 
 int serverSocket = 0;
 
 // Some cpp magic to load a file to an array of chars
-std::string makeFileBuffer(std::string &path)
+std::string makeFileBuffer(std::string path)
 {
     std::ostringstream buffer;
     std::ifstream input(path.c_str());
@@ -88,7 +89,7 @@ std::string getContentType(std::string path)
 // It needs the size of the char array that contains the requested content
 // After the header is important to have an empty line and then the
 // char array content (basically a string its easier to work with in cpp)
-std::string buildOkResponse(std::string &buffer, std::string &path)
+std::string buildOkResponse(std::string &buffer, std::string path)
 {
     std::string response = "HTTP/1.1 200 OK\n\
 Content-Type: " + getContentType(path) + "\n\
@@ -119,32 +120,6 @@ void    sigintHandle(int signum)
     std::exit(0);
 }
 
-// This is to get the path requested by the browser in the header. We check if its dir or the file exists
-// If the dir exists we append index.html before checking is the file exists
-std::string pathFromGet(std::string petition)
-{
-    size_t pos1 = petition.find("/");
-    size_t pos2 = petition.find("HTTP");
-    std::string path = petition.substr(pos1, pos2 - pos1 - 1); //millor (pos2 - pos1 - 1)
-    // Here we remove the first character / from the extracted path
-    path = path.substr(1);
-    // Append index.html if its a subdir or root dir
-    if (isDir(path))
-        path += "/index.html";
-    if (path == "")
-        path = "index.html";
-    // URLS have spaced encoded with %20. We replace them with normal spaces
-    path = searchAndReplace(path, "%20"," ");
-    // Remove after ? TODO Better fix
-    size_t qPos = path.find("?");
-    if (qPos != std::string::npos)
-        path = path.substr(0, qPos);
-    std::cout << "Got path " + path << std::endl;
-    if (access(path.c_str(), F_OK) != -1)
-        return path;
-    // We cannot return nullptr with the std::string datatype, so empty it is
-    return "";
-}
 // WIP Post implementation:
 // info here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/POST
 /*
@@ -165,7 +140,7 @@ std::map<std::string, std::string> getMapFromPost(std::string petition)
 std::string getExtension(std::string htmlPath) {
 	size_t	pos = htmlPath.find(".");
 	size_t  arg = htmlPath.find("?");
-	if (pos == std::string::npos) // si no encuentra punto devuelve string vacio
+	if (pos == std::string::npos) // si no encuentra punto devuelve string vaciobuildOk
 		return "";
 	if (arg != std::string::npos)
 	    return htmlPath.substr(pos, arg - pos);
@@ -315,26 +290,30 @@ int main(int argc, char **argv)
         // This gets the data clientSocket listened to petition_buf
         recv(clientSocket, petition_buf, sizeof(petition_buf), 0);
         // We convert the petition_buf char array to a cpp string
-        petition = petition_buf;
+
+        //petition = petition_buf;
+        ClientRequest clientRequest = ClientRequest(petition_buf);
+        std::cout << "Method: " << clientRequest.getMethod() << std::endl;
+            std::cout << "Path: " << clientRequest.getPath() << std::endl;
+            std::cout << "HTTP Version: " << clientRequest.getHttpVer() << std::endl;
+            std::cout << "Content Type: " << clientRequest.getContentType() << std::endl;
         // For now we only handle GET request
-        if (petition.find("GET", 0) != std::string::npos)
+        if (clientRequest.getMethod() == "GET")
         {
             // Get the requested path from the request headers
-            path = pathFromGet(petition);
-            if (!path.empty())
+            if (!clientRequest.getPath().empty())
             {
-                if (isCGI(path))
-                    buffer = execScript(path, petition);
+                if (isCGI(clientRequest.getPath()))
+                    buffer = execScript(clientRequest.getPath(), petition);
                 // If the file exists we create the string buffer and create an OK response
                 // with the file content
                 else
-                    buffer = makeFileBuffer(path);
-                response = buildOkResponse(buffer, path);
+                    buffer = makeFileBuffer(clientRequest.getPath());
+                response = buildOkResponse(buffer, clientRequest.getPath());
             }
             else {
                 // If file doesnt exist make a 404 not found
                 response = buildNotFoundResponse();
-                path = "404";
             }
             // Here the response string gets converted to a char arr with .data() and sent to the clientSocket
             send(clientSocket, response.data(), response.length(), 0);
