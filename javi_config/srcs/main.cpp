@@ -34,7 +34,9 @@ int	takeConfig(char *configFile) {
 			config[++j] = new Config;
 		else if (j == -1) { // Error not found server {} ; //&& !config[j]
 			std::cout << GREEN << "Error: not found server {}" << RESET << std::endl;
-			quick_exit(1);
+			deleteConfig(config);
+			configFd.close();
+			std::exit(1);
 		}
 		else if ((tmp[0] == '{' || tmp[0] == '}') && tmp.length() == 1) {
 			if (tmp[0] == '{')
@@ -43,17 +45,22 @@ int	takeConfig(char *configFile) {
 				brackets--;
 		}
 		else {
-			if (brackets == 0 || brackets == 3) {
+			if (brackets == 0 || brackets >= 3) {
 				std::cout << GREEN << "Error: brackets" << RESET << std::endl;
-				quick_exit(1);
+				deleteConfig(config);
+				configFd.close();
+				std::exit(1);
 			}
 			else if (brackets == 1 && config[j]->searchConfig(tmp)) {
 				deleteConfig(config);
 				configFd.close();
-				quick_exit(1);
+				std::exit(1);
 			}
-			else if (brackets == 2 && config[j]->searchLocationConfig(tmp))
-				;
+			else if (brackets == 2 && config[j]->getLastLocation()->location.searchLocationConfig(tmp)) {
+				deleteConfig(config);
+				configFd.close();
+				std::exit(1);
+			}
 		}
 	}
 	configFd.close();
@@ -63,12 +70,10 @@ int	takeConfig(char *configFile) {
 	config[0]->printConfig();
 	std::cout << std::endl;
 	config[1]->printConfig();
-	if (config[j]->checkRoot())
-		;//std::cout << GREEN << "Error: Root \"" << config[j]->getRoot() << "\" not found" << RESET << std::endl;
+	config[0]->checkConfig();
+	std::cout << std::endl;
+	config[1]->checkConfig();
 	deleteConfig(config);
-	line.~basic_string();
-	tmp.~basic_string();
-	std::exit(10);
 	return 0;
 }
 
