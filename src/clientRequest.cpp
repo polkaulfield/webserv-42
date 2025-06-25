@@ -3,6 +3,18 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <sstream>
+#include <iostream>
+
+std::string ClientRequest::_getBody(std::string request)
+{
+    std::string body;
+    size_t pos1;
+
+    pos1 = request.find("\r\n\r\n");
+    if (pos1 == std::string::npos)
+        return "";
+    return request.substr(pos1 + 2);
+}
 
 ClientRequest::ClientRequest(void)
 {
@@ -13,8 +25,9 @@ ClientRequest::ClientRequest(void)
     _contentType = "text/html";
 }
 
-ClientRequest::ClientRequest(char *request)
+ClientRequest::ClientRequest(char *req)
 {
+    std::string request = req;
     std::stringstream ss(request);
     std::string field;
     ss >> field;
@@ -23,9 +36,13 @@ ClientRequest::ClientRequest(char *request)
     _path = field;
     ss >> field;
     _httpVer = field;
+    _data = _getBody(request);
 
+    std::cout << "REQUEST!" << request << std::endl;
+    std::cout << "DATA CONTENTS!: " << _data << "END DATA" << std::endl;
     // Process path req
     _path = _path.substr(1);
+
     // Append index.html if its a subdir or root dir
     if (isDir(_path))
         _path += "/index.html";
@@ -65,3 +82,5 @@ std::string ClientRequest::getReturnCode() { return _returnCode; }
 // Content Type Getter
 void ClientRequest::setContentType(std::string contentType) { _contentType = contentType; }
 std::string ClientRequest::getContentType() { return _contentType; }
+
+std::string ClientRequest::getData() { return _data; }

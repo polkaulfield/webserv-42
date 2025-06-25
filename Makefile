@@ -8,7 +8,7 @@ INCLUDES := $(INCLUDES_DIR)/utils.hpp \
 $(INCLUDES_DIR)/webserv.hpp \
 $(INCLUDES_DIR)/clientRequest.hpp \
 $(INCLUDES_DIR)/serverResponse.hpp
-SRCS := $(SRC_DIR)/server.cpp \
+SRCS := $(SRC_DIR)/webserv.cpp \
 $(SRC_DIR)/utils.cpp \
 $(SRC_DIR)/clientRequest.cpp \
 $(SRC_DIR)/serverResponse.cpp

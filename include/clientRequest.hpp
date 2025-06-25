@@ -10,6 +10,9 @@ class ClientRequest
     std::string _httpVer;
     std::string _returnCode;
     std::string _contentType;
+    std::string _data;
+
+    std::string _getBody(std::string request);
   public:
     ClientRequest();
     ClientRequest(char *request);
@@ -27,5 +30,6 @@ class ClientRequest
     std::string getHttpVer();
     std::string getReturnCode();
     std::string getContentType();
+    std::string getData();
 
 };

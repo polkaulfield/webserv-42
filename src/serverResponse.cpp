@@ -105,6 +105,10 @@ ServerResponse::ServerResponse(std::string method, std::string path)
             _response = _buildNotFoundResponse();
         }
     }
+    //else if (method == "POST")
+    //{
+    //
+    //}
 }
 
 ServerResponse::~ServerResponse(void)

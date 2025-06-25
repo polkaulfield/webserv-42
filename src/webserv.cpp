@@ -57,7 +57,7 @@ int main(int argc, char **argv)
         std::cout << "Socket creation failed!" << std::endl;
         std::exit(0);
     }
-    char petition_buf[1024] = {0};
+    char petition_buf[2048] = {0};
     int clientSocket;
     do
     {
