@@ -1,9 +1,12 @@
 #include "../include/clientRequest.hpp"
 #include "../include/utils.hpp"
+#include <cstddef>
+#include <string>
 #include <unistd.h>
 #include <stdio.h>
 #include <sstream>
 #include <iostream>
+#include <bits/stdc++.h>
 
 std::string ClientRequest::_getBody(std::string request)
 {
@@ -13,7 +16,25 @@ std::string ClientRequest::_getBody(std::string request)
     pos1 = request.find("\r\n\r\n");
     if (pos1 == std::string::npos)
         return "";
-    return request.substr(pos1 + 2);
+    return request.substr(pos1 + 4);
+}
+
+std::map<std::string, std::string> ClientRequest::_getParams(std::string request)
+{
+    std::string body = _getBody(request);
+    std::map<std::string, std::string> params;
+    if (body == "")
+        return params;
+    std::stringstream ss(body);
+    std::string tmp;
+    size_t pos;
+    while (std::getline(ss, tmp, '&'))
+    {
+        pos = tmp.find('=');
+        if (pos != std::string::npos)
+            params[tmp.substr(0, pos)] = tmp.substr(pos + 1);
+    }
+    return params;
 }
 
 ClientRequest::ClientRequest(void)
@@ -37,9 +58,12 @@ ClientRequest::ClientRequest(char *req)
     ss >> field;
     _httpVer = field;
     _data = _getBody(request);
+    _params = _getParams(request);
 
-    std::cout << "REQUEST!" << request << std::endl;
-    std::cout << "DATA CONTENTS!: " << _data << "END DATA" << std::endl;
+    // Debug view params
+    std::cout << "Got these parameters:" << std::endl;
+    printDict(_params);
+
     // Process path req
     _path = _path.substr(1);
 

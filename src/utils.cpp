@@ -2,6 +2,8 @@
 #include <sstream>
 #include <string>
 #include <sys/stat.h>
+#include <map>
+#include <iostream>
 
 bool isDir(std::string path)
 {
@@ -40,4 +42,17 @@ std::string searchAndReplace(std::string str, std::string searchWord, std::strin
     }
     newStr += str.substr(pos1);
     return newStr;
+}
+
+void    printDict(std::map<std::string, std::string> dict)
+{
+    std::map<std::string, std::string>::iterator it;
+
+    for (it = dict.begin(); it != dict.end(); it++)
+    {
+        std::cout << it->first    // string (key)
+              << ':'
+              << it->second   // string's value
+              << std::endl;
+    }
 }
