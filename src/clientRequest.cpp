@@ -1,5 +1,7 @@
-#include "clientRequest.hpp"
+#include "../include/clientRequest.hpp"
+#include "../include/utils.hpp"
 #include <unistd.h>
+#include <stdio.h>
 #include <sstream>
 
 ClientRequest::ClientRequest(void)

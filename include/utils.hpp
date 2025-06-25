@@ -1,7 +1,6 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
-# include <sstream>
-# include <vector>
+# include <string>
 # include <sys/stat.h>
 
 bool endsWith(const std::string& fullString,

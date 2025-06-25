@@ -2,14 +2,16 @@ CXX := c++
 CXXFLAGS = -Wall -Werror -Wextra -std=c++98
 
 NAME  = webserv
-SRC_DIR := .
-INCLUDES_DIR := .
+SRC_DIR := src
+INCLUDES_DIR := include
 INCLUDES := $(INCLUDES_DIR)/utils.hpp \
 $(INCLUDES_DIR)/webserv.hpp \
-$(INCLUDES_DIR)/clientRequest.hpp
+$(INCLUDES_DIR)/clientRequest.hpp \
+$(INCLUDES_DIR)/serverResponse.hpp
 SRCS := $(SRC_DIR)/server.cpp \
 $(SRC_DIR)/utils.cpp \
-$(SRC_DIR)/clientRequest.cpp
+$(SRC_DIR)/clientRequest.cpp \
+$(SRC_DIR)/serverResponse.cpp
 OBJS := $(SRCS:.cpp=.o)
 DEPS := $(OBJS:.o=.d)
 LDFLAGS :=
