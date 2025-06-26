@@ -13,6 +13,8 @@ private:
 	bool POST;
 	bool DELETE;
 	std::string	redirect;
+//  METHODS  //
+	std::string	takeParams(std::string option, int *error);
 public:
 //  CONSTRUCTORS & DESTRUCTORS  //
 	Location(void);
@@ -32,8 +34,6 @@ public:
 
 //  METHODS  //
 	int	searchLocationConfig(std::string option);
-
-	std::string	takeParams(std::string option, int *error);
 };
 
 struct location_t {

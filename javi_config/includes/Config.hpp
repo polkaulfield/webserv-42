@@ -17,64 +17,66 @@ class Location;
 
 class Config {
 private:
-	std::string	server_name;
+	std::string	_server_name;
 	//std::string ip_listen;
-	int			port;
-	std::string	host;
-	std::string	root;
-	std::string	index;
-	std::string	error_page;
-	int			client_max_body_size;
-	bool		cgi;
-	std::string	cgi_path;
-	std::string	cgi_ext;
-	location_t	*firstLocation;
-	location_t	*iterLocation;
-	location_t	*lastLocation;
+	int			_port;
+	std::string	_host;
+	std::string	_root;
+	std::string	_index;
+	std::string	_error_page;
+	int			_client_max_body_size;
+	bool		_cgi;
+	std::string	_cgi_path;
+	std::string	_cgi_ext;
+	location_t	*_firstLocation;
+	location_t	*_iterLocation;
+	location_t	*_lastLocation;
 //  METHODS  //
-	std::string	takeParams(std::string option, int *error);
+	std::string	_takeParams(std::string option, int *error);
+//  CHECKERS  //
+	int		checkRoot(void);
+	int		checkPort(void);
+	int		checkIndex(void);
+	int		checkClientMaxBodySize(void);
+	int		checkCgiPath(void);
+	int		checkCgiExt(void);
 public:
 //  CONSTRUCTOR  //
 	Config(void);
-	~Config();
+	~Config(void);
 //  GETTERS  //
 	std::string getServerName(void);
-	int getPort(void);
+	int			getPort(void);
 	std::string getHost(void);
 	std::string getRoot(void);
 	std::string getIndex(void);
 	std::string getErrorPage(void);
-	int getClientMaxBodySize(void);
+	int			getClientMaxBodySize(void);
 	location_t	*getFirstLocation(void);
 	location_t	*getIterLocation(void);
 	location_t	*getLastLocation(void);
 	//  SETTERS  //
 	void	setServerName(std::string _server_Name);
-	void	setPort(std::string _port);
-	void	setHost(std::string _host);
-	void	setRoot(std::string _root);
-	void	setIndex(std::string _index);
+	void	setPort(std::string port);
+	void	setHost(std::string host);
+	void	setRoot(std::string root);
+	void	setIndex(std::string index);
 	void	setErrorPage(std::string error_page);
-	void	setClientMaxBodySize(std::string _client_max_body_size);
-	void	setLocation(location_t *_location);
-	void	setCgiPath(std::string _cgi_path);
-	void	setCgiExt(std::string _cgi_ext);
+	void	setClientMaxBodySize(std::string client_max_body_size);
+	void	setLocation(location_t *location);
+	void	setCgiPath(std::string cgi_path);
+	void	setCgiExt(std::string cgi_ext);
 //  METHODS  //
 	int		searchConfig(std::string option);
 	int		searchLocationConfig(std::string option);
 	void	printConfig(void);
 //  CHECKERS  //
 	int		checkConfig(void);
-	int		checkRoot(void);
-	int		checkPort(void);
-	int		checkIndex(void);
-	int		checkCgiPath(void);
-	int		checkCgiExt(void);
 	int		checkLocations(void);
 
 //  LINEKED LIST LOCATIONS //
-location_t	*addLocation(std::string _directory);
-Location *searchLocation(std::string option);
+	location_t	*addLocation(std::string _directory);
+	Location	*searchLocation(std::string option);
 };
 
 #endif
