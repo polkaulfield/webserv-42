@@ -61,8 +61,10 @@ ClientRequest::ClientRequest(char *req)
     _params = _getParams(request);
 
     // Debug view params
-    std::cout << "Got these parameters:" << std::endl;
+    std::cout << "Got these parameters: " << std::endl;
     printDict(_params);
+    std::cout << "Got this data: " << std::endl << _data << std::endl << "End Data" << std::endl;
+    std::cout << "Got this req: " << std::endl << request << std::endl << "End req" << std::endl;
 
     // Process path req
     _path = _path.substr(1);

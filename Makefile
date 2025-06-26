@@ -7,11 +7,13 @@ INCLUDES_DIR := include
 INCLUDES := $(INCLUDES_DIR)/utils.hpp \
 $(INCLUDES_DIR)/webserv.hpp \
 $(INCLUDES_DIR)/clientRequest.hpp \
-$(INCLUDES_DIR)/serverResponse.hpp
+$(INCLUDES_DIR)/serverResponse.hpp \
+$(INCLUDES_DIR)/server.hpp
 SRCS := $(SRC_DIR)/webserv.cpp \
 $(SRC_DIR)/utils.cpp \
 $(SRC_DIR)/clientRequest.cpp \
-$(SRC_DIR)/serverResponse.cpp
+$(SRC_DIR)/serverResponse.cpp \
+$(SRC_DIR)/server.cpp
 OBJS := $(SRCS:.cpp=.o)
 DEPS := $(OBJS:.o=.d)
 LDFLAGS :=
