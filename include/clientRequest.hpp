@@ -1,4 +1,3 @@
-#include <map>
 #include <string>
 #include <unistd.h>
 
@@ -8,13 +7,12 @@ class ClientRequest
     std::string _method;
     std::string _path;
     std::string _httpVer;
-    std::map<std::string, std::string> _params;
+    std::string _queryString;
     std::string _returnCode;
     std::string _contentType;
     std::string _data;
 
     std::string _getBody(std::string request);
-    std::map<std::string, std::string> _getParams(std::string data);
   public:
     ClientRequest();
     ClientRequest(char *request);

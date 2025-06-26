@@ -19,24 +19,6 @@ std::string ClientRequest::_getBody(std::string request)
     return request.substr(pos1 + 4);
 }
 
-std::map<std::string, std::string> ClientRequest::_getParams(std::string request)
-{
-    std::string body = _getBody(request);
-    std::map<std::string, std::string> params;
-    if (body == "")
-        return params;
-    std::stringstream ss(body);
-    std::string tmp;
-    size_t pos;
-    while (std::getline(ss, tmp, '&'))
-    {
-        pos = tmp.find('=');
-        if (pos != std::string::npos)
-            params[tmp.substr(0, pos)] = tmp.substr(pos + 1);
-    }
-    return params;
-}
-
 ClientRequest::ClientRequest(void)
 {
     _method = "GET";
@@ -58,11 +40,8 @@ ClientRequest::ClientRequest(char *req)
     ss >> field;
     _httpVer = field;
     _data = _getBody(request);
-    _params = _getParams(request);
 
     // Debug view params
-    std::cout << "Got these parameters: " << std::endl;
-    printDict(_params);
     std::cout << "Got this data: " << std::endl << _data << std::endl << "End Data" << std::endl;
     std::cout << "Got this req: " << std::endl << request << std::endl << "End req" << std::endl;
 
@@ -74,12 +53,17 @@ ClientRequest::ClientRequest(char *req)
         _path += "/index.html";
     if (_path == "")
         _path = "index.html";
-    // URLS have spaced encoded with %20. We replace them with normal spaces
-    _path = searchAndReplace(_path, "%20"," ");
-    // Remove after ? TODO Better fix
+    // If there is a query string split into _path and _queryString
+    _queryString = "";
     size_t qPos = _path.find("?");
     if (qPos != std::string::npos)
+    {
+        _queryString = _path.substr(qPos + 1);
         _path = _path.substr(0, qPos);
+    }
+    std::cout << "_queryString: " << _queryString << std::endl;
+    // URLS have spaced encoded with %20. We replace them with normal spaces
+    _path = searchAndReplace(_path, "%20"," ");
     if (access(_path.c_str(), F_OK) == -1)
         _path = "";
 }

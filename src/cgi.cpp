@@ -1,5 +1,17 @@
+#include "../include/cgi.hpp"
 //INFO for cgi: https://forhjy.medium.com/42-webserv-cgi-programming-66d63c3b22db
 
+// This function is to be called before executing the cgi behind fork. We set all the parameters inside
+// the params map as a new environment for the child cgi process
+void Cgi::_populateEnv(char** env, ClientRequest clientRequest)
+{
+    //TODO: We need to pass all the needed env variables from info to cgi after forking
+}
+
+
+
+
+/*
 std::string getExtension(std::string htmlPath) {
 	size_t	pos = htmlPath.find(".");
 	size_t  arg = htmlPath.find("?");
@@ -122,3 +134,4 @@ std::string	execScript(std::string htmlPath, std::string petition) {
 		return getCGIOutput(args);
 	}
 }
+*/

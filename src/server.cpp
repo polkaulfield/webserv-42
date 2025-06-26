@@ -51,15 +51,13 @@ Server::Server(int port, std::string endpoint)
         std::cout << "Socket creation failed!" << std::endl;
         std::exit(0);
     }
-
-    // Debug view params
-    std::cout << "Got these parameters:" << std::endl;
 }
 
 void Server::start()
 {
-    char petition_buf[2048];
+    char buf[1024];
     int clientSocket;
+    int b_read = 0;
     while (true)
     {
         // We need to create a client socket for each connection
@@ -68,9 +66,16 @@ void Server::start()
         if (clientSocket == -1)
             std::cout << "Detected clientSocket error!" << std::endl;
         // This gets the data clientSocket listened to petition_buf
-        recv(clientSocket, petition_buf, sizeof(petition_buf), 0);
+        while (b_read != -1)
+            b_read = recv(clientSocket, buf, sizeof(buf), 0);
+        if (b_read == -1 )
+        {
+            std::cout << "Socket error!" << std::endl;
+            std::exit(0);
+        }
+        buf[b_read] = '\0';
         // Parse client request
-        ClientRequest clientRequest = ClientRequest(petition_buf);
+        ClientRequest clientRequest = ClientRequest(buf);
         // Create server response
         ServerResponse serverResponse = ServerResponse(clientRequest.getMethod(), clientRequest.getPath());
         send(clientSocket, serverResponse.getResponse().data(), serverResponse.getResponse().length(), 0);
