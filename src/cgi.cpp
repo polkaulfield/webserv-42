@@ -1,3 +1,5 @@
+//INFO for cgi: https://forhjy.medium.com/42-webserv-cgi-programming-66d63c3b22db
+
 std::string getExtension(std::string htmlPath) {
 	size_t	pos = htmlPath.find(".");
 	size_t  arg = htmlPath.find("?");
