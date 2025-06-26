@@ -45,7 +45,7 @@ void Location::setAllowMethods(std::string option) {
 	if (option.length() <= 15)
 		std::cout << "error in allow methods" <<std::endl;
 
-	while(end < option.length()) {
+	while(end > 0 && (size_t)end < option.length()) {
 		if (option[end] == ' ' || option[end] == ';') {
 			if (option.compare(start, end - start, "GET") == 0)
 				GET = true;
