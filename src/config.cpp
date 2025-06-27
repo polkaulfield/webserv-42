@@ -1,4 +1,6 @@
-#include "../includes/Config.hpp"
+#include "../include/config.hpp"
+#include <sstream>
+#include <iostream>
 
 //  CONSTRUCTOR & DESTRUCTOR //
 Config::Config(void) {

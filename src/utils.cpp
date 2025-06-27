@@ -56,3 +56,10 @@ void    printDict(std::map<std::string, std::string> dict)
               << std::endl;
     }
 }
+
+bool    startsWith(std::string str, std::string prefix)
+{
+    if (str.find(prefix) == 0)
+        return true;
+    return false;
+}

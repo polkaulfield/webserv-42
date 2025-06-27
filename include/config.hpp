@@ -1,16 +1,11 @@
 #ifndef CONFIG_HPP
 # define CONFIG_HPP
 
-# include <iostream>
-# include <cstdlib>
 # include <unistd.h>
-# include <sstream>
-# include "Location.hpp"
+# include "location.hpp"
 
 # define GREEN "\x1B[32m"
 # define RESET "\x1B[0m"
-
-
 
 struct location_t;
 class Location;

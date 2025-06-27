@@ -55,7 +55,7 @@ Content-Length: " + intToString(buffer.length()) +
 }
 
 // Here we return the classic 404 not found
-std::string ServerResponse::_buildNotFoundResponse(void)
+std::string ServerResponse::buildNotFoundResponse(void)
 {
     std::string response = "HTTP/1.1 404 Not Found\r\n\
 Content-Type: text/html\r\n\
@@ -102,13 +102,13 @@ ServerResponse::ServerResponse(std::string method, std::string path)
         }
         else {
             // If file doesnt exist make a 404 not found
-            _response = _buildNotFoundResponse();
+            _response = buildNotFoundResponse();
         }
     }
-    //else if (method == "POST")
-    //{
-    //
-    //}
+    else if (method == "POST")
+    {
+
+    }
 }
 
 ServerResponse::~ServerResponse(void)

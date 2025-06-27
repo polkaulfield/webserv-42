@@ -1,10 +1,7 @@
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
-# include <iostream>
-# include <cstdlib>
+#include <string>
 # include <unistd.h>
-# include <sstream>
-# include "Config.hpp"
 
 class Location {
 private:
@@ -34,6 +31,7 @@ public:
 
 //  METHODS  //
 	int	searchLocationConfig(std::string option);
+	bool hasMethod(std::string method);
 };
 
 struct location_t {

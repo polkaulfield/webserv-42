@@ -16,9 +16,9 @@ class ClientRequest
   public:
     ClientRequest();
     ClientRequest(char *request);
-    ClientRequest(const ClientRequest& clientRequest);
+    //ClientRequest(const ClientRequest& clientRequest);
     ~ClientRequest();
-    ClientRequest &operator=(const ClientRequest& clientRequest);
+    //ClientRequest &operator=(const ClientRequest& clientRequest);
     void setMethod(std::string method);
     void setPath(std::string path);
     void setHttpVer(std::string httpVer);

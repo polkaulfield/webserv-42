@@ -1,6 +1,7 @@
 #include "../include/server.hpp"
-#include "../include/clientRequest.hpp"
 #include "../include/serverResponse.hpp"
+#include "../include/config.hpp"
+#include "../include/utils.hpp"
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
@@ -9,7 +10,6 @@
 #include <wait.h>
 #include <string.h>
 #include <cstdlib>
-#include <sys/stat.h>
 #include <sys/stat.h>
 
 // This is to close the server socket on ctrl+c
@@ -42,10 +42,10 @@ int Server::_createServerSocket(int port)
     return serverSocket;
 }
 
-Server::Server(int port, std::string endpoint)
+Server::Server(Config config)
 {
-    _endpoint = endpoint;
-    _serverSocket = _createServerSocket(port);
+    _locationList = config.getFirstLocation();
+    _serverSocket = _createServerSocket(config.getPort());
     if (!_serverSocket)
     {
         std::cout << "Socket creation failed!" << std::endl;
@@ -53,21 +53,54 @@ Server::Server(int port, std::string endpoint)
     }
 }
 
+Server::Server(int port, std::string endpoint)
+{
+    _locationList = NULL;
+    _endpoint = endpoint;
+    _serverSocket = _createServerSocket(port);
+    if (!_serverSocket)
+    {
+        std::cout << "Socket creation failed!" << std::endl;
+        std::exit(0);
+    }
+    std::cout << "Socket creation succeded" << std::endl;
+}
+
+bool Server::_checkLocation(ClientRequest clientRequest)
+{
+    location_t* location_iter = _locationList;
+    while (location_iter)
+    {
+        std::cout << "Checking locations" << std::endl;
+        Location* location = &location_iter->location;
+        if (location->hasMethod(clientRequest.getMethod()) && startsWith(clientRequest.getPath(), location->getDirectory()))
+        {
+            return true;
+        }
+        location_iter = location_iter->next;
+    }
+    return false;
+}
+
 void Server::start()
 {
     char buf[1024];
     int clientSocket;
     int b_read = 0;
+    ServerResponse serverResponse;
+    ClientRequest clientRequest;
+    std::cout << "Starting listen loop" << std::endl;
     while (true)
     {
         // We need to create a client socket for each connection
         // using the bound socket to PORT we created before (serverSocket)
         clientSocket = accept(_serverSocket, NULL, NULL);
+        std::cout << "Got connection" << std::endl;
         if (clientSocket == -1)
             std::cout << "Detected clientSocket error!" << std::endl;
         // This gets the data clientSocket listened to petition_buf
-        while (b_read != -1)
-            b_read = recv(clientSocket, buf, sizeof(buf), 0);
+        //while (b_read != -1)
+        b_read = recv(clientSocket, buf, sizeof(buf), 0);
         if (b_read == -1 )
         {
             std::cout << "Socket error!" << std::endl;
@@ -75,10 +108,20 @@ void Server::start()
         }
         buf[b_read] = '\0';
         // Parse client request
-        ClientRequest clientRequest = ClientRequest(buf);
-        // Create server response
-        ServerResponse serverResponse = ServerResponse(clientRequest.getMethod(), clientRequest.getPath());
-        send(clientSocket, serverResponse.getResponse().data(), serverResponse.getResponse().length(), 0);
+        std::cout << "Parsing client request" << std::endl;
+        clientRequest = ClientRequest(buf);
+        // If theres no locationlist all paths and methods are valid for now (debug)
+        if (!_locationList || _checkLocation(clientRequest))
+        {
+            std::cout << "Ok" << std::endl;
+            serverResponse = ServerResponse(clientRequest.getMethod(), clientRequest.getPath());
+            send(clientSocket, serverResponse.getResponse().data(), serverResponse.getResponse().length(), 0);
+        }
+        else
+        {
+            std::cout << "Failed" << std::endl;
+            send(clientSocket, ServerResponse().buildNotFoundResponse().data(), 0, 0);
+        }
         // We need to close after sending
         close(clientSocket);
     }
@@ -89,3 +132,4 @@ Server::~Server(void)
 {
     close(_serverSocket);
 }
+int b_read = 0;

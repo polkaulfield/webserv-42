@@ -8,17 +8,17 @@ class ServerResponse
 
     std::string _getContentType(std::string path);
     std::string _buildOkResponse(std::string &buffer, std::string path);
-    std::string _buildNotFoundResponse(void);
     std::string _makeFileBuffer(std::string path);
     std::string _getExtension(std::string htmlPath);
 
   public:
     ServerResponse();
     ServerResponse(std::string method, std::string path);
-    ServerResponse(const ServerResponse& serverResponse);
+    //ServerResponse(const ServerResponse& serverResponse);
     ~ServerResponse();
-    ServerResponse &operator=(const ServerResponse& serverResponse);
+    //ServerResponse &operator=(const ServerResponse& serverResponse);
 
     std::string getResponse(void);
+    static std::string buildNotFoundResponse(void);
 
 };
