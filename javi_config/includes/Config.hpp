@@ -34,12 +34,12 @@ private:
 //  METHODS  //
 	std::string	_takeParams(std::string option, int *error);
 //  CHECKERS  //
-	int		checkRoot(void);
-	int		checkPort(void);
-	int		checkIndex(void);
-	int		checkClientMaxBodySize(void);
-	int		checkCgiPath(void);
-	int		checkCgiExt(void);
+	int		_checkRoot(void);
+	int		_checkPort(void);
+	int		_checkIndex(void);
+	int		_checkClientMaxBodySize(void);
+	int		_checkCgiPath(void);
+	int		_checkCgiExt(void);
 public:
 //  CONSTRUCTOR  //
 	Config(void);

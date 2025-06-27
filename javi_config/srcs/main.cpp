@@ -15,7 +15,7 @@ int checkArrayConfig(Config *config) {
 	int error = 0;
 	int size = sizeof(config) / 4;
 
-//	std::cout << "size :" << sizeof(config) << std::endl;
+//	std::cout << "size :" << sizeof(config) / 4 << std::endl;
 
 	for (int i = 0; i < size; i++) {
 		std::cout << GREEN << "Checking Config: " << i + 1 << RESET << std::endl;
@@ -36,12 +36,12 @@ int number_configs(std::string configFile) {
 	int server_count = 0;
 	configFd.open(configFile.data(), std::ifstream::in);
 	while (std::getline(configFd, line)) {
-		if ("server" == line)
+		if (line.compare(0, 6, "server") == 0)
 			server_count++;
 	}
 
 	configFd.close();
-	std::cout << server_count << std::endl;
+	//std::cout << server_count << std::endl;
 	return server_count;
 }
 
@@ -62,16 +62,16 @@ Config	*takeConfig(char *configFile) {
 	int j = -1;
 	while(std::getline(configFd, line)) {
 		tmp.clear();
-		if (line.empty())
-			continue ;
 		for (size_t i = 0; i < line.length(); i++) { // remove tabs and space and put inside of tmp
 			if ((tmp.empty()) && (line[i] == ' ' || line[i] == '\t'))
 				continue ;
+			if (line[i] == '#')
+				break ;
 			tmp.push_back(line[i]);
 		}
-		if (tmp[0] == '#')
+		if (tmp.empty())
 			continue ;
-		else if (tmp == "server") // handle in what config[j] we are
+		else if (tmp == "server" && tmp.length() == 6) // handle in what config[j] we are
 			++j;
 		else if (j == -1) //if not server found
 			exitConfig(config, configFd, "Error: not found server {}");
@@ -89,7 +89,7 @@ Config	*takeConfig(char *configFile) {
 				exitConfig(config, configFd, "Error: brackets");
 			else if (brackets == 1 && config[j].searchConfig(tmp)) // indentation lvl 1
 				exitConfig(config, configFd, "");
-			else if (brackets == 2 && config[j].getLastLocation()->location.searchLocationConfig(tmp))// indentation lvl 1
+			else if (brackets == 2 && config[j].getLastLocation()->location.searchLocationConfig(tmp))// indentation lvl 2
 				exitConfig(config, configFd, "");
 		}
 	}
@@ -98,10 +98,10 @@ Config	*takeConfig(char *configFile) {
 	//std::cout << std::endl;
 	//std::cout << std::endl;
 	//config[0].printConfig();
-	std::cout << std::endl;
+//	std::cout << std::endl;
 	//config[1].printConfig();
 
-	std::cout << std::endl;
+//	std::cout << std::endl;
 	if (checkArrayConfig(config))
 		exitConfig(config, configFd, "");
 	//deleteConfig(config);

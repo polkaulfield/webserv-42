@@ -139,21 +139,21 @@ void	Config::printConfig(void) {
 	}
 }
 //  CHECKERS  //
-int	Config::checkRoot(void) {
+int	Config::_checkRoot(void) {
 	if (!access(_root.data(), F_OK))
 		return 0;
 	std::cout << GREEN << "\tError in root: " << _root << " is not accesible"<< RESET << std::endl;
 	return 1;
 }
 
-int	Config::checkPort(void) {
+int	Config::_checkPort(void) {
 	if (_port > 0 && _port < 10000)
 		return 0;
 	std::cout << GREEN << "\tError in port value: " << _port << " is not valid" << RESET << std::endl;
 	return 1;
 }
 
-int Config::checkIndex(void) {
+int Config::_checkIndex(void) {
 	std::string index_root(_root + _index);
 	if (!access(index_root.data(), F_OK))
 		return 0;
@@ -161,14 +161,14 @@ int Config::checkIndex(void) {
 	return 1;
 }
 
-int	Config::checkClientMaxBodySize(void) {
+int	Config::_checkClientMaxBodySize(void) {
 	if (_client_max_body_size > 0 && _client_max_body_size < 1000000)
 		return 0;
 	std::cout << GREEN << "\tError in cliente max body size: " << _client_max_body_size << " is not valid" << RESET << std::endl;
 	return 1;
 }
 
-int Config::checkCgiPath(void) {
+int Config::_checkCgiPath(void) {
 	if (!_cgi)
 		return 0;
 	if (_cgi_path.empty()) {
@@ -182,7 +182,7 @@ int Config::checkCgiPath(void) {
 	return 1;
 }
 
-int	Config::checkCgiExt(void) {
+int	Config::_checkCgiExt(void) {
 	if (!_cgi)
 		return 0;
 	if (_cgi_ext.empty()) {
@@ -214,12 +214,12 @@ int Config::checkLocations(void) {
 
 int	Config::checkConfig(void) {
 	int error = 0;
-	error += checkRoot();
-	error += checkPort();
-	error += checkIndex();
-	error += checkClientMaxBodySize();
-	error += checkCgiPath();
-	error += checkCgiExt();
+	error += _checkRoot();
+	error += _checkPort();
+	error += _checkIndex();
+	error += _checkClientMaxBodySize();
+	error += _checkCgiPath();
+	error += _checkCgiExt();
 	error += checkLocations();
 	return error;
 }
