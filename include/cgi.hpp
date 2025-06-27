@@ -1,11 +1,17 @@
 #include <string>
+#include <cstring>
+#include <iostream>
+#include <wait.h>
+#include <vector>
+#include <sstream>
 #include "clientRequest.hpp"
+#include "Config.hpp"
 
 class Cgi
 {
     private:
         std::string _executable;
-        void _populateEnv(char** env, ClientRequest clientRequest);
+        char** _populateEnv(ClientRequest const& clientRequest, Config const& config, std::string petition, std::string htmlPath);
 
     public:
         Cgi(ClientRequest clientRequest);

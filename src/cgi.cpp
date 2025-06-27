@@ -3,15 +3,50 @@
 
 // This function is to be called before executing the cgi behind fork. We set all the parameters inside
 // the params map as a new environment for the child cgi process
-void Cgi::_populateEnv(char** env, ClientRequest clientRequest)
-{
-    //TODO: We need to pass all the needed env variables from info to cgi after forking
+
+char**	vectorToArray(std::vector<std::string> envVars) {
+	std::vector<std::string>::size_type	size = envVars.size();
+	char	**env = new char*[size + 1];
+
+	for (std::vector<std::string>::size_type i = 0; i < size; i++) {
+		std::vector<std::string>::size_type	len = envVars[i].length();
+		env[i] = new char[len + 1];
+		std::strcpy(env[i], envVars[i].c_str());
+	}
+	env[size] = NULL;
+	return env;
 }
 
+char** Cgi::_populateEnv(ClientRequest& clientRequest, Config& config, std::string petition, std::string htmlPath)
+{
+    //TODO: We need to pass all the needed env variables from info to cgi after forking
+	std::vector<std::string>	envVars;
 
+	// Variables basicas
+	envVars.push_back("REQUEST_METHOD=" + clientRequest.getMethod());
+	envVars.push_back("CONTENT_TYPE=" + clientRequest.getContentType());
+	envVars.push_back("SCRIPT_NAME=" + htmlPath);
+	envVars.push_back("QUERY_STRING=" + extractQuery(petition));
 
+	//utilizamos ostringstream para convertir int en string
+	std::string	postData = clientRequest.getData();
+	std::ostringstream	dataLength;
+	dataLength << postData.length();
+	envVars.push_back("CONTENT_LENGTH=" + dataLength.str());
 
-/*
+	//variables del servidor --> cuando este juntado lo de javi
+	std::ostringstream	portNumber;
+	portNumber << config.getPort();
+	envVars.push_back("SERVER_NAME=" + config.getServerName());
+	envVars.push_back("SERVER_PORT=" + portNumber.str());
+	envVars.push_back("DOCUMENT_ROOT=" + config.getRoot());
+
+	//Variables HTTP
+	envVars.push_back("HTTP_HOST=" + extractHost(petition));
+
+	return vectorToArray(envVars);
+}
+
 std::string getExtension(std::string htmlPath) {
 	size_t	pos = htmlPath.find(".");
 	size_t  arg = htmlPath.find("?");
@@ -52,6 +87,20 @@ std::string	extractQuery(std::string petition) {
 	else
 		return petition.substr(posQuestion + 1, posHTTP - posQuestion - 1);
 }
+
+// void	extractHostandPort(std::string petition, std::string& serverName, std::string& serverPort) {
+// 	std::string	host = extractHost(petition);
+
+// 	size_t	colonPos = host.find(":");
+// 	if (colonPos != std::string::npos) {
+// 		serverName = host.substr(0, colonPos);
+// 		serverPort = host.substr(colonPos + 1);
+// 	}
+// 	else {
+// 		serverName = host;
+// 		serverPort = "80";
+// 	}
+// }
 
 std::string	extractHost(std::string petition) {
 	size_t	posHost = petition.find("Host: ");
@@ -134,4 +183,3 @@ std::string	execScript(std::string htmlPath, std::string petition) {
 		return getCGIOutput(args);
 	}
 }
-*/
