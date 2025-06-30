@@ -1,5 +1,5 @@
 #include "../include/location.hpp"
-#include "../include/config.hpp"
+#include "../include/Config.hpp"
 #include <iostream>
 //  CONSTRUCTORS & DESTRUCTOR //
  Location::Location(void) {
@@ -13,6 +13,10 @@ Location::Location(std::string directory) {
 	_GET = false;
 	_POST = false;
 	_DELETE = false;
+	std::cout << _directory << ": is created" << std::endl;
+	std::cout << _directory << ": is created" << std::endl;
+	std::cout << _directory << ": is created" << std::endl;
+	std::cout << _directory << ": is created" << std::endl;
 	//std::cout << _directory << " is created (location)" << std::endl;
 }
 
@@ -28,17 +32,22 @@ Location &Location::operator = (const Location &src) {
 }
 
 Location::~Location(void) {
-	;//std::cout << directory << ": is destroyed" << std::endl;
+	std::cout << _directory << ": is destroyed" << std::endl;
+	std::cout << _directory << ": is destroyed" << std::endl;
+	std::cout << _directory << ": is destroyed" << std::endl;
+	std::cout << _directory << ": is destroyed" << std::endl;
 }
 
 //  GETTER  //
-std::string	Location::getDirectory(void) {return _directory;}
+std::string	&Location::getDirectory(void) {return _directory;}
 std::string Location::getRedirect(void) {return _redirect;}
 bool	Location::getGet(void) {return _GET;}
 bool	Location::getPost(void) {return _POST;}
 bool	Location::getDelete(void) {return _DELETE;}
 
 //  SETTERS  //
+void	Location::setDirectory(std::string directory) {_directory = directory;}
+
 void Location::setAllowMethods(std::string option) {
 	int start = 14;
 	int end = start + 1;
@@ -104,11 +113,11 @@ std::string	Location::_takeParams(std::string option, int *error) {
 
 bool Location::hasMethod(std::string method)
 {
-    if (GET && method == "GET")
+    if (_GET && method == "GET")
         return true;
-    if (POST && method == "POST")
+    if (_POST && method == "POST")
         return true;
-    if (DELETE && method == "DELETE")
+    if (_DELETE && method == "DELETE")
         return true;
     return false;
 }

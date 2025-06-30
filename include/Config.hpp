@@ -9,6 +9,12 @@
 
 struct location_t;
 class Location;
+class Config;
+
+void exitConfig(Config *config, std::ifstream &configFd, std::string error);
+int checkArrayConfig(Config *config);
+int number_configs(std::string configFile);
+Config	*takeConfig(char *configFile);
 
 class Config {
 private:

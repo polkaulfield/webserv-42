@@ -1,4 +1,4 @@
-#include "../include/config.hpp"
+#include "../include/Config.hpp"
 #include <sstream>
 #include <iostream>
 
@@ -26,7 +26,7 @@ Config::~Config(void) {
 		iter = iter->next;
 		delete tmp;
 	}
-	//std::cout << "Destroying Config" << std::endl;
+	std::cout << "Destroying Config" << std::endl;
 }
 
 //  GETTERS  //
@@ -126,15 +126,15 @@ void	Config::printConfig(void) {
 		return ;
 	}
 	while (iter) {
-		std::cout << "Location:" << iter->location.getDirectory() << std::endl;
-		if (iter->location.getGet())
+		std::cout << "Location:" << iter->location->getDirectory() << std::endl;
+		if (iter->location->getGet())
 			std::cout << "GET (true)" << std::endl;
-		if (iter->location.getPost())
+		if (iter->location->getPost())
 			std::cout << "POST (true)" << std::endl;
-		if (iter->location.getDelete())
+		if (iter->location->getDelete())
 			std::cout << "DELETE (true)" << std::endl;
-		if (!iter->location.getRedirect().empty()) {
-			std::cout << "redirect: " << iter->location.getRedirect() << std::endl;
+		if (!iter->location->getRedirect().empty()) {
+			std::cout << "redirect: " << iter->location->getRedirect() << std::endl;
 		}
 		std::cout << std::endl;
 		iter = iter->next;
@@ -201,10 +201,10 @@ int Config::checkLocations(void) {
 	location_t *iter = _firstLocation;
 	std::string roots;
 	while (iter) {
-		if (iter->location.getDirectory() != "/" && iter->location.getDirectory() != "/redirect") {
-			roots.append(_root + iter->location.getDirectory());
+		if (iter->location->getDirectory() != "/" && iter->location->getDirectory() != "/redirect") {
+			roots.append(_root + iter->location->getDirectory());
 			if (access(roots.data(), F_OK)) {
-				std::cout << GREEN << "\tError in Location: " << iter->location.getDirectory() << " is not accesible" << RESET << std::endl;
+				std::cout << GREEN << "\tError in Location: " << iter->location->getDirectory() << " is not accesible" << RESET << std::endl;
 				return 1;
 			}
 			roots.clear();
@@ -238,8 +238,8 @@ location_t	*Config::addLocation(std::string _directory) {
 	_lastLocation->next = tmpLocation;
 	tmpLocation->next = NULL;
 	int start = _directory.find(' ');
-
-	tmpLocation->location = Location(_directory.substr(start + 1, _directory.length() - start));
+	//Location tmp(_directory.substr(start + 1, _directory.length() - start));
+	tmpLocation->location = new Location(_directory.substr(start + 1, _directory.length() - start));
 	// set default values
 	_lastLocation = tmpLocation;
 	return tmpLocation;
@@ -249,8 +249,8 @@ Location	*Config::searchLocation(std::string option) {
 	location_t	*iter = _firstLocation;
 	Location	*location = NULL;
 	while (iter) {
-		if (iter->location.getDirectory() == option) {
-			location = &iter->location;
+		if (iter->location->getDirectory() == option) {
+			location = iter->location;
 			break ;
 		}
 		iter = iter->next;

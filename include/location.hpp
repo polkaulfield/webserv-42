@@ -20,10 +20,11 @@ public:
 	~Location(void);
 
 //  SETTERS  //
+	void	setDirectory(std::string directory);
 	void	setAllowMethods(std::string option);
 	void	setRedirect(std::string redirect);
 //  GETTER  //
-	std::string	getDirectory(void);
+	std::string	&getDirectory(void);
 	std::string getRedirect(void);
 	bool		getGet(void);
 	bool		getPost(void);
@@ -35,7 +36,7 @@ public:
 };
 
 struct location_t {
-	Location location;
+	Location *location;
 	struct location_t	*next;
 };
 #endif

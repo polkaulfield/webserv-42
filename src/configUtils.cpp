@@ -2,7 +2,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "../includes/Config.hpp"
+#include <cstdlib>
+#include "../include/Config.hpp"
+
 void exitConfig(Config *config, std::ifstream &configFd, std::string error) {
 	if (!error.empty())
 		std::cout << GREEN << error << RESET << std::endl;
@@ -89,7 +91,7 @@ Config	*takeConfig(char *configFile) {
 				exitConfig(config, configFd, "Error: brackets");
 			else if (brackets == 1 && config[j].searchConfig(tmp)) // indentation lvl 1
 				exitConfig(config, configFd, "");
-			else if (brackets == 2 && config[j].getLastLocation()->location.searchLocationConfig(tmp))// indentation lvl 2
+			else if (brackets == 2 && config[j].getLastLocation()->location->searchLocationConfig(tmp))// indentation lvl 2
 				exitConfig(config, configFd, "");
 		}
 	}
@@ -103,7 +105,7 @@ Config	*takeConfig(char *configFile) {
 
 //	std::cout << std::endl;
 	if (checkArrayConfig(config))
-		exitConfig(config, configFd, "");
+		;//exitConfig(config, configFd, "");
 	//deleteConfig(config);
 	configFd.close();
 	//delete []config;
@@ -112,7 +114,7 @@ Config	*takeConfig(char *configFile) {
 
 
 
-int main(int argc, char **argv) {
+/*int main(int argc, char **argv) {
 	if (argc != 2) {
 		std::cout << GREEN << "Error: 2 arguments needed" << RESET << std::endl;
 		return 1;
@@ -121,4 +123,4 @@ int main(int argc, char **argv) {
 	config[0].printConfig();
 	delete []config;
 	return 0;
-}
+}*/
