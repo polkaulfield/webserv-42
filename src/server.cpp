@@ -1,6 +1,6 @@
 #include "../include/server.hpp"
 #include "../include/serverResponse.hpp"
-#include "../include/Config.hpp"
+#include "../include/config.hpp"
 #include "../include/utils.hpp"
 #include <iostream>
 #include <string>
@@ -42,10 +42,9 @@ int Server::_createServerSocket(int port)
     return serverSocket;
 }
 
-Server::Server(const Config& config)
+Server::Server(const Config& config) : _config(config)
 {
 	config.printConfig();
-	_config = &config;
     _locationList = config.getFirstLocation();
     std::cout << "Location: " << _locationList->location->getDirectory() << " " << _locationList << std::endl;
     _serverSocket = _createServerSocket(config.getPort());
@@ -56,7 +55,7 @@ Server::Server(const Config& config)
     }
 }
 
-Server::Server(int port, const std::string& endpoint)
+Server::Server(int port, const std::string& endpoint , const Config& config) : _config(config)
 {
     _locationList = NULL;
     _endpoint = endpoint;

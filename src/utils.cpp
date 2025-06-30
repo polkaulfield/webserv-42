@@ -62,8 +62,12 @@ bool    startsWith(std::string str, std::string prefix)
 	std::cout << str.find_last_of("/")  << "---" << str << "---" << prefix << std::endl;
     int last = str.find_last_of("/");
     if (prefix.length() == 1 && prefix == "/")
+    {
     	return true;
-	else if (str.compare(0, last + 1, prefix) == 0)
+    }
+	if (str.compare(0, last + 1, prefix) == 0)
+	{
         return true;
+	}
     return false;
 }

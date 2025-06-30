@@ -1,4 +1,4 @@
-#include "../include/Config.hpp"
+#include "../include/config.hpp"
 #include <sstream>
 #include <iostream>
 
@@ -106,7 +106,7 @@ int	Config::searchConfig(std::string option) {
 	return 0;
 }
 
-void	Config::printConfig(void) {
+void	Config::printConfig(void) const {
 	std::cout << "server name: " << _server_name << std::endl;
 	std::cout << "port listen: " << _port << std::endl;
 	std::cout << "host: " << _host << std::endl;

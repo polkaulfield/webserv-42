@@ -1,5 +1,5 @@
 #include "../include/location.hpp"
-#include "../include/Config.hpp"
+#include "../include/config.hpp"
 #include <iostream>
 //  CONSTRUCTORS & DESTRUCTOR //
  Location::Location(void) {

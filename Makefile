@@ -10,7 +10,7 @@ $(INCLUDES_DIR)/clientRequest.hpp \
 $(INCLUDES_DIR)/serverResponse.hpp \
 $(INCLUDES_DIR)/server.hpp \
 $(INCLUDES_DIR)/location.hpp \
-$(INCLUDES_DIR)/Config.hpp
+$(INCLUDES_DIR)/config.hpp
 SRCS := $(SRC_DIR)/webserv.cpp \
 $(SRC_DIR)/utils.cpp \
 $(SRC_DIR)/clientRequest.cpp \

@@ -70,7 +70,7 @@ public:
 //  METHODS  //
 	int		searchConfig(std::string option);
 	int		searchLocationConfig(std::string option);
-	void	printConfig(void);
+	void	printConfig(void) const;
 //  CHECKERS  //
 	int		checkConfig(void);
 	int		checkLocations(void);

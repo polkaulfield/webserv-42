@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include "clientRequest.hpp"
 #include "location.hpp"
-#include "Config.hpp"
+#include "config.hpp"
 
 
 
@@ -12,7 +12,7 @@ class Server
     int _serverSocket;
     std::string _endpoint;
     location_t* _locationList;
-    Config *_config;
+    const Config& _config;
 
     void    _sigintHandle(int signum);
     int _createServerSocket(int port);
@@ -20,8 +20,8 @@ class Server
 
   public:
     Server();
-    Server(int port, std::string endpoint);
-    Server(Config config);
+    Server(int port, const std::string& endpoint, const Config& config);
+    Server(const Config& config);
     Server(const Server& server);
     ~Server();
     Server &operator=(const Server& server);

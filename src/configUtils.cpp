@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-#include "../include/Config.hpp"
+#include "../include/config.hpp"
 
 void exitConfig(Config *config, std::ifstream &configFd, std::string error) {
 	if (!error.empty())
