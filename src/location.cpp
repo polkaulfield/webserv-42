@@ -1,5 +1,6 @@
-#include "../includes/Location.hpp"
-#include "../includes/Config.hpp"
+#include "../include/location.hpp"
+#include "../include/config.hpp"
+#include <iostream>
 //  CONSTRUCTORS & DESTRUCTOR //
  Location::Location(void) {
 	_GET = false;
@@ -99,4 +100,15 @@ std::string	Location::_takeParams(std::string option, int *error) {
 	//std::cout << start << std::endl;
 	//std::cout << end << std::endl;
 	return option.substr(start + 1, end - start - 1);
+}
+
+bool Location::hasMethod(std::string method)
+{
+    if (GET && method == "GET")
+        return true;
+    if (POST && method == "POST")
+        return true;
+    if (DELETE && method == "DELETE")
+        return true;
+    return false;
 }
