@@ -19,17 +19,17 @@ class ClientRequest
     //ClientRequest(const ClientRequest& clientRequest);
     ~ClientRequest();
     //ClientRequest &operator=(const ClientRequest& clientRequest);
-    void setMethod(std::string method);
-    void setPath(std::string path);
-    void setHttpVer(std::string httpVer);
-    void setReturnCode(std::string returnCode);
-    void setContentType(std::string contentType);
+    void setMethod(const std::string& method);
+    void setPath(const std::string& path);
+    void setHttpVer(const std::string& httpVer);
+    void setReturnCode(const std::string& returnCode);
+    void setContentType(const std::string& contentType);
 
-    std::string getMethod();
-    std::string getPath();
-    std::string getHttpVer();
-    std::string getReturnCode();
-    std::string getContentType();
-    std::string getData();
+    std::string getMethod() const;
+    std::string getPath() const;
+    std::string getHttpVer() const;
+    std::string getReturnCode() const;
+    std::string getContentType() const;
+    std::string getData() const;
 
 };

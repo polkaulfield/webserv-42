@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../include/cgi.hpp"
+#include <iostream>
 
 std::string getExtension(std::string htmlPath) {
 	size_t	pos = htmlPath.find(".");
@@ -121,5 +122,3 @@ char**	vectorToArray(std::vector<std::string> envVars) {
 	env[size] = NULL;
 	return env;
 }
-
-

@@ -1,11 +1,9 @@
 #include <string>
 #include <cstring>
-#include <iostream>
 #include <wait.h>
 #include <vector>
-#include <sstream>
 #include "clientRequest.hpp"
-#include "Config.hpp"
+#include "config.hpp"
 
 class Cgi
 {

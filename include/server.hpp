@@ -14,12 +14,12 @@ class Server
 
     void    _sigintHandle(int signum);
     int _createServerSocket(int port);
-    bool _checkLocation(ClientRequest clientRequest);
+    bool _checkLocation(const ClientRequest& clientRequest);
 
   public:
     Server();
-    Server(int port, std::string endpoint);
-    Server(Config config);
+    Server(int port, const std::string& endpoint);
+    Server(const Config& config);
     Server(const Server& server);
     ~Server();
     Server &operator=(const Server& server);

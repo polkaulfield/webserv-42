@@ -41,13 +41,13 @@ public:
 	~Config(void);
 //  GETTERS  //
 	std::string getServerName(void);
-	int			getPort(void);
+	int			getPort(void) const;
 	std::string getHost(void);
 	std::string getRoot(void);
 	std::string getIndex(void);
 	std::string getErrorPage(void);
 	int			getClientMaxBodySize(void);
-	location_t	*getFirstLocation(void);
+	location_t	*getFirstLocation(void) const;
 	location_t	*getIterLocation(void);
 	location_t	*getLastLocation(void);
 	//  SETTERS  //

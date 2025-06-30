@@ -31,13 +31,13 @@ Config::~Config(void) {
 
 //  GETTERS  //
 std::string Config::getServerName(void) {return _server_name;}
-int			Config::getPort(void) {return _port;}
+int			Config::getPort(void) const {return _port;}
 std::string Config::getHost(void) {return _host;}
 std::string Config::getRoot(void) {return _root;};
 std::string Config::getIndex(void) {return _index;}
 std::string Config::getErrorPage(void) {return _error_page;}
 int			Config::getClientMaxBodySize(void) {return _client_max_body_size;}
-location_t	*Config::getFirstLocation(void) {return _firstLocation;}
+location_t	*Config::getFirstLocation(void) const {return _firstLocation;}
 location_t	*Config::getIterLocation(void) {return _iterLocation;}
 location_t	*Config::getLastLocation(void) {return _lastLocation;}
 

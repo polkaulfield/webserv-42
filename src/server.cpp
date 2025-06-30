@@ -42,7 +42,7 @@ int Server::_createServerSocket(int port)
     return serverSocket;
 }
 
-Server::Server(Config config)
+Server::Server(const Config& config)
 {
     _locationList = config.getFirstLocation();
     _serverSocket = _createServerSocket(config.getPort());
@@ -53,7 +53,7 @@ Server::Server(Config config)
     }
 }
 
-Server::Server(int port, std::string endpoint)
+Server::Server(int port, const std::string& endpoint)
 {
     _locationList = NULL;
     _endpoint = endpoint;
@@ -66,14 +66,14 @@ Server::Server(int port, std::string endpoint)
     std::cout << "Socket creation succeded" << std::endl;
 }
 
-bool Server::_checkLocation(ClientRequest clientRequest)
+bool Server::_checkLocation(const ClientRequest& clientRequest)
 {
     location_t* location_iter = _locationList;
     while (location_iter)
     {
         std::cout << "Checking locations" << std::endl;
         Location* location = &location_iter->location;
-        if (location->hasMethod(clientRequest.getMethod()) && startsWith(clientRequest.getPath(), location->getDirectory()))
+        if (location->hasMethod(clientRequest.getMethod()) && startsWith("/" + clientRequest.getPath(), location->getDirectory()))
         {
             return true;
         }

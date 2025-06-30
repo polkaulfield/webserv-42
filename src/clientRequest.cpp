@@ -74,23 +74,23 @@ ClientRequest::~ClientRequest(void)
 }
 
 // Method Getter
-void ClientRequest::setMethod(std::string method) { _method = method; }
-std::string ClientRequest::getMethod() { return _method; }
+void ClientRequest::setMethod(const std::string& method) { _method = method; }
+std::string ClientRequest::getMethod() const { return _method; }
 
 // Path Getter
-void ClientRequest::setPath(std::string path) { _path = path; }
-std::string ClientRequest::getPath() { return _path; }
+void ClientRequest::setPath(const std::string& path) { _path = path; }
+std::string ClientRequest::getPath() const { return _path; }
 
 // HTTP Version Getter
-void ClientRequest::setHttpVer(std::string httpVer) { _httpVer = httpVer; }
-std::string ClientRequest::getHttpVer() { return _httpVer; }
+void ClientRequest::setHttpVer(const std::string& httpVer) { _httpVer = httpVer; }
+std::string ClientRequest::getHttpVer() const { return _httpVer; }
 
 // Return Code Getter
-void ClientRequest::setReturnCode(std::string returnCode) { _returnCode = returnCode; }
-std::string ClientRequest::getReturnCode() { return _returnCode; }
+void ClientRequest::setReturnCode(const std::string& returnCode) { _returnCode = returnCode; }
+std::string ClientRequest::getReturnCode() const { return _returnCode; }
 
 // Content Type Getter
-void ClientRequest::setContentType(std::string contentType) { _contentType = contentType; }
-std::string ClientRequest::getContentType() { return _contentType; }
+void ClientRequest::setContentType(const std::string& contentType) { _contentType = contentType; }
+std::string ClientRequest::getContentType() const { return _contentType; }
 
-std::string ClientRequest::getData() { return _data; }
+std::string ClientRequest::getData() const { return _data; }
