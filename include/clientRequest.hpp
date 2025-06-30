@@ -11,6 +11,10 @@ class ClientRequest
     std::string _returnCode;
     std::string _contentType;
     std::string _data;
+    std::string _userAgent;
+    std::string _accept;
+    std::string _acceptLanguage;
+    std::string _connection;
 
     std::string _getBody(std::string request);
   public:
@@ -31,5 +35,10 @@ class ClientRequest
     std::string getReturnCode() const;
     std::string getContentType() const;
     std::string getData() const;
+    std::string getQuery() const;
+    std::string getUserAgent() const;
+    std::string getAccept() const;
+    std::string getAcceptLanguage() const;
+    std::string getConnection() const;
 
 };

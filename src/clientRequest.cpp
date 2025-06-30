@@ -8,6 +8,54 @@
 #include <iostream>
 #include <bits/stdc++.h>
 
+//-----------------------------------------------------
+//esto pasarlo a un utils mejor no?
+std::string	extractUserAgent(std::string petition) {
+	size_t	pos = petition.find("User-Agent:");
+	if (pos == std::string::npos)
+		return "";
+	size_t	start = pos + 12;
+	size_t	end = petition.find("\r\n", start);
+	if (end == std::string::npos)
+		return "";
+	return petition.substr(start, end - start);
+}
+
+std::string	extractAccept(std::string petition) {
+	size_t	pos = petition.find("Accept: ");
+	if (pos == std::string::npos)
+		return "";
+	size_t	start = pos + 8;
+	size_t	end = petition.find("\r\n", start);
+	if (end == std::string::npos)
+		return "";
+	return petition.substr(start, end - start);
+}
+
+std::string	extractAcceptLanguage(std::string petition) {
+	size_t	pos = petition.find("Accept-Language: ");
+	if (pos == std::string::npos)
+		return "";
+	size_t	start = pos + 17;
+	size_t	end = petition.find("\r\n", start);
+	if (end == std::string::npos)
+		return "";
+	return petition.substr(start, end - start);
+}
+
+std::string	extractConnection(std::string petition) {
+	size_t	pos = petition.find("Connection: ");
+	if (pos == std::string::npos)
+		return "";
+	size_t	start = pos + 12;
+	size_t	end = petition.find("\r\n", start);
+	if (end == std::string::npos)
+		return "";
+	return petition.substr(start, end - start);
+}
+
+//-----------------------------------------------------------
+
 std::string ClientRequest::_getBody(std::string request)
 {
     std::string body;
@@ -94,3 +142,12 @@ void ClientRequest::setContentType(const std::string& contentType) { _contentTyp
 std::string ClientRequest::getContentType() const { return _contentType; }
 
 std::string ClientRequest::getData() const { return _data; }
+
+// Query getter
+std::string ClientRequest::getQuery() const { return _queryString; }
+
+// some other getters
+std::string ClientRequest::getUserAgent() const { return _userAgent; }
+std::string ClientRequest::getAccept() const { return _accept; }
+std::string ClientRequest::getAcceptLanguage() const { return _acceptLanguage; }
+std::string ClientRequest::getConnection() const { return _connection; }

@@ -6,12 +6,11 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 16:10:55 by arcebria          #+#    #+#             */
-/*   Updated: 2025/06/30 16:19:57 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/06/30 21:07:03 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cgi.hpp"
-#include <iostream>
 
 std::string getExtension(std::string htmlPath) {
 	size_t	pos = htmlPath.find(".");
@@ -54,61 +53,17 @@ std::string	extractQuery(std::string petition) {
 		return petition.substr(posQuestion + 1, posHTTP - posQuestion - 1);
 }
 
-std::string	extractHost(std::string petition) {
-	size_t	posHost = petition.find("Host: ");
-	if (posHost == std::string::npos)
-		return "";
-	size_t	start = posHost + 6;
-	size_t	posNextLine = petition.find("\r\n", start);
-	if (posNextLine == std::string::npos)
-		return "";
-	return petition.substr(start, posNextLine - start);
+// std::string	extractHost(std::string petition) {
+// 	size_t	posHost = petition.find("Host: ");
+// 	if (posHost == std::string::npos)
+// 		return "";
+// 	size_t	start = posHost + 6;
+// 	size_t	posNextLine = petition.find("\r\n", start);
+// 	if (posNextLine == std::string::npos)
+// 		return "";
+// 	return petition.substr(start, posNextLine - start);
 
-}
-
-std::string	extractUserAgent(std::string petition) {
-	size_t	pos = petition.find("User-Agent:");
-	if (pos == std::string::npos)
-		return "";
-	size_t	start = pos + 12;
-	size_t	end = petition.find("\r\n", start);
-	if (end == std::string::npos)
-		return "";
-	return petition.substr(start, end - start);
-}
-
-std::string	extractAccept(std::string petition) {
-	size_t	pos = petition.find("Accept: ");
-	if (pos == std::string::npos)
-		return "";
-	size_t	start = pos + 8;
-	size_t	end = petition.find("\r\n", start);
-	if (end == std::string::npos)
-		return "";
-	return petition.substr(start, end - start);
-}
-
-std::string	extractAcceptLanguage(std::string petition) {
-	size_t	pos = petition.find("Accept-Language: ");
-	if (pos == std::string::npos)
-		return "";
-	size_t	start = pos + 17;
-	size_t	end = petition.find("\r\n", start);
-	if (end == std::string::npos)
-		return "";
-	return petition.substr(start, end - start);
-}
-
-std::string	extractConnection(std::string petition) {
-	size_t	pos = petition.find("Connection: ");
-	if (pos == std::string::npos)
-		return "";
-	size_t	start = pos + 12;
-	size_t	end = petition.find("\r\n", start);
-	if (end == std::string::npos)
-		return "";
-	return petition.substr(start, end - start);
-}
+// }
 
 char**	vectorToArray(std::vector<std::string> envVars) {
 	std::vector<std::string>::size_type	size = envVars.size();
@@ -122,3 +77,5 @@ char**	vectorToArray(std::vector<std::string> envVars) {
 	env[size] = NULL;
 	return env;
 }
+
+
