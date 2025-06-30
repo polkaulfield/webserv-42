@@ -104,7 +104,7 @@ ServerResponse::ServerResponse(std::string method, std::string path)
 			buffer = cgiHandler.execScript(path, clientRequest, config);
 			_response = _buildOkResponse(buffer, path);
 		}
-		if (!path.empty())
+		else if (!path.empty())
 		{
 			buffer = _makeFileBuffer(path);
 			_response = _buildOkResponse(buffer, path);
