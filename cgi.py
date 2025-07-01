@@ -1,26 +1,39 @@
-#!/usr/bin/python3
+import os
+import html
 
-import sys
+def env_vars_to_html():
+    env_vars = os.environ
+    html_content = """
+    <html>
+    <head>
+        <title>Environment Variables</title>
+        <style>
+            table { border-collapse: collapse; width: 60%; margin: 20px auto; }
+            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            body { font-family: Arial, sans-serif; }
+        </style>
+    </head>
+    <body>
+        <h2 style="text-align:center;">Environment Variables</h2>
+        <table>
+            <tr><th>Variable</th><th>Value</th></tr>
+    """
 
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: python script.py <page_title>", file=sys.stderr)
-        sys.exit(1)
+    for key, value in env_vars.items():
+        safe_key = html.escape(key)
+        safe_value = html.escape(value)
+        html_content += f"<tr><td>{safe_key}</td><td>{safe_value}</td></tr>"
 
-    title = sys.argv[1]
+    html_content += """
+        </table>
+    </body>
+    </html>
+    """
 
-    html_content = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{title}</title>
-</head>
-<body>
-    <h1>Welcome to {title}</h1>
-</body>
-</html>"""
+    return html_content
 
-    print(html_content)
-
+# Example usage
 if __name__ == "__main__":
-    main()
+    html_string = env_vars_to_html()
+    print(html_string)

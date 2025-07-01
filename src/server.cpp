@@ -42,9 +42,11 @@ int Server::_createServerSocket(int port)
     return serverSocket;
 }
 
-Server::Server(const Config& config)
+Server::Server(const Config& config) : _config(config)
 {
+	config.printConfig();
     _locationList = config.getFirstLocation();
+    std::cout << "Location: " << _locationList->location->getDirectory() << " " << _locationList << std::endl;
     _serverSocket = _createServerSocket(config.getPort());
     if (!_serverSocket)
     {
@@ -53,7 +55,7 @@ Server::Server(const Config& config)
     }
 }
 
-Server::Server(int port, const std::string& endpoint)
+Server::Server(int port, const std::string& endpoint , const Config& config) : _config(config)
 {
     _locationList = NULL;
     _endpoint = endpoint;
@@ -69,14 +71,14 @@ Server::Server(int port, const std::string& endpoint)
 bool Server::_checkLocation(const ClientRequest& clientRequest)
 {
     location_t* location_iter = _locationList;
+    std::cout << "path: " << clientRequest.getPath() << std::endl;
     while (location_iter)
     {
-        std::cout << "Checking locations" << std::endl;
-        Location* location = &location_iter->location;
+        std::cout << "Checking locations"<< std::endl;
+        Location *location = location_iter->location;
+        std::cout << startsWith("/" + clientRequest.getPath(), location->getDirectory()) << std::endl;
         if (location->hasMethod(clientRequest.getMethod()) && startsWith("/" + clientRequest.getPath(), location->getDirectory()))
-        {
             return true;
-        }
         location_iter = location_iter->next;
     }
     return false;
@@ -111,7 +113,7 @@ void Server::start()
         std::cout << "Parsing client request" << std::endl;
         clientRequest = ClientRequest(buf);
         // If theres no locationlist all paths and methods are valid for now (debug)
-        if (!_locationList || _checkLocation(clientRequest))
+        if (_checkLocation(clientRequest) != 0)
         {
             std::cout << "Ok" << std::endl;
             serverResponse = ServerResponse(clientRequest.getMethod(), clientRequest.getPath());
@@ -120,7 +122,7 @@ void Server::start()
         else
         {
             std::cout << "Failed" << std::endl;
-            send(clientSocket, ServerResponse().buildNotFoundResponse().data(), 0, 0);
+            //send(clientSocket, ServerResponse().buildNotFoundResponse().data(), 0, 0);
         }
         // We need to close after sending
         close(clientSocket);

@@ -20,6 +20,7 @@ $(SRC_DIR)/cgiUtils.cpp \
 $(SRC_DIR)/serverResponse.cpp \
 $(SRC_DIR)/location.cpp \
 $(SRC_DIR)/config.cpp \
+$(SRC_DIR)/configUtils.cpp \
 $(SRC_DIR)/server.cpp
 OBJS := $(SRCS:.cpp=.o)
 DEPS := $(OBJS:.o=.d)
