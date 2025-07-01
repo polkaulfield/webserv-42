@@ -58,13 +58,13 @@ std::string	extractConnection(std::string petition) {
 
 std::string ClientRequest::_getBody(std::string request)
 {
-    std::string body;
-    size_t pos1;
+	std::string body;
+	size_t pos1;
 
-    pos1 = request.find("\r\n\r\n");
-    if (pos1 == std::string::npos)
-        return "";
-    return request.substr(pos1 + 4);
+	pos1 = request.find("\r\n\r\n");
+	if (pos1 == std::string::npos)
+		return "";
+	return request.substr(pos1 + 4);
 }
 
 ClientRequest::ClientRequest(void)
@@ -80,14 +80,19 @@ ClientRequest::ClientRequest(char *req)
 {
     std::string request = req;
     std::stringstream ss(request);
-    std::string field;
-    ss >> field;
-    _method = field;
-    ss >> field;
-    _path = field;
-    ss >> field;
-    _httpVer = field;
-    _data = _getBody(request);
+	std::string field;
+	ss >> field;
+	_method = field;
+	ss >> field;
+	_path = field;
+	ss >> field;
+	_httpVer = field;
+	_data = _getBody(request);
+
+	//uploadFile
+	_isMultipart = false;
+	_boundary = "";
+	_uploadedFiles.clear();
 
     // Debug view params
     std::cout << "Got this data: " << std::endl << _data << std::endl << "End Data" << std::endl;
