@@ -51,7 +51,7 @@ Server::Server(const Config& config) : _config(config)
     if (!_serverSocket)
     {
         std::cout << "Socket creation failed!" << std::endl;
-        std::exit(0);
+        std::exit(1);
     }
 }
 
@@ -63,7 +63,7 @@ Server::Server(int port, const std::string& endpoint , const Config& config) : _
     if (!_serverSocket)
     {
         std::cout << "Socket creation failed!" << std::endl;
-        std::exit(0);
+        std::exit(1);
     }
     std::cout << "Socket creation succeded" << std::endl;
 }
@@ -116,7 +116,7 @@ void Server::start()
         if (_checkLocation(clientRequest) != 0)
         {
             std::cout << "Ok" << std::endl;
-            serverResponse = ServerResponse(clientRequest.getMethod(), clientRequest.getPath());
+            serverResponse = ServerResponse(clientRequest, _config);
             send(clientSocket, serverResponse.getResponse().data(), serverResponse.getResponse().length(), 0);
         }
         else

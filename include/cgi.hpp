@@ -14,12 +14,12 @@ class Cgi
 {
 	private:
 		std::string _executable;
-		char** _populateEnv(ClientRequest& clientRequest, Config& config, std::string htmlPath);
+		char** _populateEnv(const ClientRequest& clientRequest, const Config& config);
 	public:
-		Cgi(ClientRequest clientRequest);
+		Cgi(const ClientRequest& clientRequest);
 		Cgi();
 		~Cgi();
-		std::string	execScript(std::string htmlPath, ClientRequest& clientRequest, Config& config);
+		std::string	execScript(const ClientRequest& clientRequest, const Config& config);
 };
 
 std::string getExtension(std::string htmlPath);

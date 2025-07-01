@@ -7,12 +7,11 @@
 #include "../include/server.hpp"
 #include "../include/config.hpp"
 
-#define PORT 8080
+#define PORT 9090
 
 int main(int argc, char **argv)
 {
     (void)argv;
-    (void)argc;
     if (argc != 2)
         return 1;
     Config *config = takeConfig(argv[1]);

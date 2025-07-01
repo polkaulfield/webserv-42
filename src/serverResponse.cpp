@@ -91,30 +91,27 @@ ServerResponse::ServerResponse(void)
 	_response = "";
 }
 
-ServerResponse::ServerResponse(std::string method, std::string path)
+ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& config)
 {
 	std::string buffer;
-	if (method == "GET")
+	if (clientRequest.getMethod() == "GET")
 	{
-		if (isCGI(path)) {
-			ClientRequest	clientRequest;
-			Config			config;
-
+		if (isCGI(clientRequest.getPath())) {
 			Cgi				cgiHandler;
-			buffer = cgiHandler.execScript(path, clientRequest, config);
-			_response = _buildOkResponse(buffer, path);
+			buffer = cgiHandler.execScript(clientRequest, config);
+			_response = _buildOkResponse(buffer, clientRequest.getPath());
 		}
-		else if (!path.empty())
+		else if (!clientRequest.getPath().empty())
 		{
-			buffer = _makeFileBuffer(path);
-			_response = _buildOkResponse(buffer, path);
+			buffer = _makeFileBuffer(clientRequest.getPath());
+			_response = _buildOkResponse(buffer, clientRequest.getPath());
 		}
 		else {
 			// If file doesnt exist make a 404 not found
 			_response = buildNotFoundResponse();
 		}
 	}
-	else if (method == "POST")
+	else if (clientRequest.getMethod() == "POST")
 	{
 
 	}

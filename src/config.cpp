@@ -30,10 +30,10 @@ Config::~Config(void) {
 }
 
 //  GETTERS  //
-std::string Config::getServerName(void) {return _server_name;}
+std::string Config::getServerName(void) const {return _server_name;}
 int			Config::getPort(void) const {return _port;}
-std::string Config::getHost(void) {return _host;}
-std::string Config::getRoot(void) {return _root;};
+std::string Config::getHost(void) const {return _host;}
+std::string Config::getRoot(void) const {return _root;};
 std::string Config::getIndex(void) {return _index;}
 std::string Config::getErrorPage(void) {return _error_page;}
 int			Config::getClientMaxBodySize(void) {return _client_max_body_size;}
