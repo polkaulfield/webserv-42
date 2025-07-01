@@ -46,10 +46,10 @@ public:
 	Config(void);
 	~Config(void);
 //  GETTERS  //
-	std::string getServerName(void);
+	std::string getServerName(void) const;
 	int			getPort(void) const;
-	std::string getHost(void);
-	std::string getRoot(void);
+	std::string getHost(void) const;
+	std::string getRoot(void) const;
 	std::string getIndex(void);
 	std::string getErrorPage(void);
 	int			getClientMaxBodySize(void);

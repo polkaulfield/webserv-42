@@ -1,5 +1,7 @@
-#include <string>
-#include <unistd.h>
+#ifndef CLIENTREQUEST_HPP
+# define CLIENTREQUEST_HPP
+# include <string>
+# include <unistd.h>
 
 class ClientRequest
 {
@@ -42,3 +44,4 @@ class ClientRequest
     std::string getConnection() const;
 
 };
+#endif

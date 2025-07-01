@@ -10,7 +10,7 @@ Cgi::Cgi() {}
 
 Cgi::~Cgi() {}
 
-char** Cgi::_populateEnv(ClientRequest& clientRequest, Config& config, std::string htmlPath)
+char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& config)
 {
     //TODO: We need to pass all the needed env variables from info to cgi after forking
 	std::vector<std::string>	envVars;
@@ -18,9 +18,12 @@ char** Cgi::_populateEnv(ClientRequest& clientRequest, Config& config, std::stri
 	// Variables basicas
 	envVars.push_back("REQUEST_METHOD=" + clientRequest.getMethod());
 	envVars.push_back("CONTENT_TYPE=" + clientRequest.getContentType());
-	envVars.push_back("SCRIPT_NAME=" + htmlPath);
+	envVars.push_back("SCRIPT_NAME=" + clientRequest.getPath());
 	envVars.push_back("QUERY_STRING=" + clientRequest.getQuery());
-
+	std::cout << "QUERY ENV" << clientRequest.getQuery() << std::endl;
+	std::cout << "=========================================" << std::endl;
+	config.printConfig();
+	std::cout << "=========================================" << std::endl;
 	//utilizamos ostringstream para convertir int en string
 	std::string	postData = clientRequest.getData();
 	std::ostringstream	dataLength;
@@ -35,12 +38,12 @@ char** Cgi::_populateEnv(ClientRequest& clientRequest, Config& config, std::stri
 	envVars.push_back("HTTP_HOST=" + config.getHost());
 	envVars.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	envVars.push_back("SERVER_PROTOCOL=HTTP/1.1");
-	envVars.push_back("SERVER_SOFTWARE=WebServ/1.0"); //PONERLE EL NOMBRE DEL SERVER
-
+	envVars.push_back("SERVER_SOFTWARE=WebServ/1.0");
 	envVars.push_back("HTTP_USER_AGENT=" + clientRequest.getUserAgent());
 	envVars.push_back("HTTP_ACCEPT=" + clientRequest.getAccept());
 	envVars.push_back("HTTP_ACCEPT_LANGUAGE=" + clientRequest.getAcceptLanguage());
 	envVars.push_back("HTTP_CONNECTION=" + clientRequest.getConnection());
+	envVars.push_back("PATH_INFO=" + clientRequest.getPath());
 
 	//variables opcionales que se podrian implementar. Hacen falta??
 	//envVars.push_back("PATH_INFO=");
@@ -102,25 +105,26 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 	}
 }
 
-std::string	Cgi::execScript(std::string htmlPath, ClientRequest& clientRequest, Config& config) {
+std::string	Cgi::execScript(const ClientRequest& clientRequest, const Config& config) {
 
     std::cout << "Executing script!!" << std::endl;
-	std::string	interpreter = determineInterpreter(htmlPath);
+    std::string path = clientRequest.getPath();
+	std::string	interpreter = determineInterpreter(path);
 
-	char** env = _populateEnv(clientRequest, config, htmlPath);
+	char** env = _populateEnv(clientRequest, config);
 	std::string postData = clientRequest.getData();
 
 	if (!interpreter.empty()) {
 		char	*args[] = {
 			(char *)interpreter.c_str(), // el (char *) entiendo que es para castearlo a char * sin const
-			(char *)htmlPath.c_str(),
+			(char *)path.c_str(),
 			NULL
 		};
 		return getCGIOutput(args, env, postData);
 	}
 	else {
 		char	*args[] = {
-			(char *)htmlPath.c_str(),
+			(char *)path.c_str(),
 			NULL
 		};
 		return getCGIOutput(args, env, postData);
