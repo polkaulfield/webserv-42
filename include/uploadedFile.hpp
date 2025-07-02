@@ -6,7 +6,7 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:51:48 by arcebria          #+#    #+#             */
-/*   Updated: 2025/07/02 21:26:23 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/07/02 21:51:24 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 struct UploadedFile {
 	std::string filename;
 	std::string fieldName;
+	std::string contentType;
 	std::vector<char> content;
 	size_t size;
 
