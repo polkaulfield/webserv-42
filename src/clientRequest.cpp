@@ -69,17 +69,17 @@ std::string ClientRequest::_getBody(std::string request)
 
 ClientRequest::ClientRequest(void)
 {
-    _method = "GET";
-    _path = "/";
-    _httpVer = "HTTP/1.1";
-    _returnCode = "200 OK";
-    _contentType = "text/html";
+	_method = "GET";
+	_path = "/";
+	_httpVer = "HTTP/1.1";
+	_returnCode = "200 OK";
+	_contentType = "text/html";
 }
 
 ClientRequest::ClientRequest(char *req)
 {
-    std::string request = req;
-    std::stringstream ss(request);
+	std::string request = req;
+	std::stringstream ss(request);
 	std::string field;
 	ss >> field;
 	_method = field;
@@ -93,32 +93,33 @@ ClientRequest::ClientRequest(char *req)
 	_isMultipart = false;
 	_boundary = "";
 	_uploadedFiles.clear();
+	_parseContentType(req);
 
-    // Debug view params
-    std::cout << "Got this data: " << std::endl << _data << std::endl << "End Data" << std::endl;
-    std::cout << "Got this req: " << std::endl << request << std::endl << "End req" << std::endl;
+	// Debug view params
+	std::cout << "Got this data: " << std::endl << _data << std::endl << "End Data" << std::endl;
+	std::cout << "Got this req: " << std::endl << request << std::endl << "End req" << std::endl;
 
-    // Process path req
-    _path = _path.substr(1);
+	// Process path req
+	_path = _path.substr(1);
 
-    // Append index.html if its a subdir or root dir
-    if (isDir(_path))
-        _path += "/index.html";
-    if (_path == "")
-        _path = "index.html";
-    // If there is a query string split into _path and _queryString
-    _queryString = "";
-    size_t qPos = _path.find("?");
-    if (qPos != std::string::npos)
-    {
-        _queryString = _path.substr(qPos + 1);
-        _path = _path.substr(0, qPos);
-    }
-    std::cout << "_queryString: " << _queryString << std::endl;
-    // URLS have spaced encoded with %20. We replace them with normal spaces
-    _path = searchAndReplace(_path, "%20"," ");
-    if (access(_path.c_str(), F_OK) == -1)
-        _path = "";
+	// Append index.html if its a subdir or root dir
+	if (isDir(_path))
+		_path += "/index.html";
+	if (_path == "")
+		_path = "index.html";
+	// If there is a query string split into _path and _queryString
+	_queryString = "";
+	size_t qPos = _path.find("?");
+	if (qPos != std::string::npos)
+	{
+		_queryString = _path.substr(qPos + 1);
+		_path = _path.substr(0, qPos);
+	}
+	std::cout << "_queryString: " << _queryString << std::endl;
+	// URLS have spaced encoded with %20. We replace them with normal spaces
+	_path = searchAndReplace(_path, "%20"," ");
+	if (access(_path.c_str(), F_OK) == -1)
+		_path = "";
 }
 
 ClientRequest::~ClientRequest(void)

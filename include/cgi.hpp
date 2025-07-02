@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include "clientRequest.hpp"
 #include "../include/config.hpp"
+#include "../include/utils.hpp"
 
 
 class Cgi

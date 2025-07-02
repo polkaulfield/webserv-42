@@ -1,3 +1,6 @@
+#ifndef CLIENTREQUEST_HPP
+#define CLIENTREQUEST_HPP
+
 #include <unistd.h>
 #include "uploadedFile.hpp"
 
@@ -25,7 +28,7 @@ class ClientRequest
 		std::string _extractBoundary(std::string const& contentType);
 		bool _parseMultipartBody(std::string const& body);
 		void _parseMultipartPart(std::string const& part);
-		std::string _trimLeft(std::string const& str);
+		std::string _trimLeft(std::string str);
 
 		std::string _getBody(std::string request);
 
@@ -59,4 +62,5 @@ class ClientRequest
 		const std::vector<UploadedFile>& getUploadedFiles() const;
 		const std::string& getBoundary() const;
 };
+
 #endif

@@ -25,15 +25,19 @@ char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& confi
 	config.printConfig();
 	std::cout << "=========================================" << std::endl;
 	//utilizamos ostringstream para convertir int en string
-	std::string	postData = clientRequest.getData();
-	std::ostringstream	dataLength;
-	dataLength << postData.length();
-	envVars.push_back("CONTENT_LENGTH=" + dataLength.str());
+	// std::string	postData = clientRequest.getData();
+	// std::ostringstream	dataLength;
+	// dataLength << postData.length();
+	// envVars.push_back("CONTENT_LENGTH=" + dataLength.str());
 
-	std::ostringstream	portNumber;
-	portNumber << config.getPort();
+	//lo mismo que la parte comentada pero utilizando la funcion de utils, no borro lo de arriba por si acaso
+	envVars.push_back("CONTENT_LENGHT=" + intToString(clientRequest.getData().length()));
+
+	// std::ostringstream	portNumber;
+	// portNumber << config.getPort();
 	envVars.push_back("SERVER_NAME=" + config.getServerName());
-	envVars.push_back("SERVER_PORT=" + portNumber.str());
+	//envVars.push_back("SERVER_PORT=" + portNumber.str());
+	envVars.push_back("SERVER_PORT=" + intToString(config.getPort()));
 	envVars.push_back("DOCUMENT_ROOT=" + config.getRoot());
 	envVars.push_back("HTTP_HOST=" + config.getHost());
 	envVars.push_back("GATEWAY_INTERFACE=CGI/1.1");
