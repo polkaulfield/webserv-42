@@ -11,6 +11,7 @@
 #include <string.h>
 #include <cstdlib>
 #include <sys/stat.h>
+#include <list>
 
 // This is to close the server socket on ctrl+c
 void    Server::_sigintHandle(int signum)
@@ -84,6 +85,7 @@ bool Server::_checkLocation(const ClientRequest& clientRequest)
     return false;
 }
 
+// TODO this https://beej.us/guide/bgnet/examples/pollserver.c
 void Server::start()
 {
     char buf[1024];

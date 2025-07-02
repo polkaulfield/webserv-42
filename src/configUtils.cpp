@@ -95,14 +95,6 @@ Config	*takeConfig(char *configFile) {
 				exitConfig(config, configFd, "");
 		}
 	}
-
-	//std::cout << std::endl;
-	//std::cout << std::endl;
-	//std::cout << std::endl;
-	//config[0].printConfig();
-//	std::cout << std::endl;
-	//config[1].printConfig();
-
 //	std::cout << std::endl;
 	if (checkArrayConfig(config))
 		;//exitConfig(config, configFd, "");
