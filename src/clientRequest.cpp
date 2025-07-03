@@ -89,11 +89,13 @@ ClientRequest::ClientRequest(char *req)
 	_httpVer = field;
 	_data = _getBody(request);
 
-	//uploadFile
+//-----------------------------------------------------
+	//PARTE DE UPLOAD FILES
 	_isMultipart = false;
 	_boundary = "";
 	_uploadedFiles.clear();
 	_parseContentType(req);
+//-----------------------------------------------------
 
 	// Debug view params
 	std::cout << "Got this data: " << std::endl << _data << std::endl << "End Data" << std::endl;
@@ -157,3 +159,15 @@ std::string ClientRequest::getUserAgent() const { return _userAgent; }
 std::string ClientRequest::getAccept() const { return _accept; }
 std::string ClientRequest::getAcceptLanguage() const { return _acceptLanguage; }
 std::string ClientRequest::getConnection() const { return _connection; }
+
+
+//-------------------------------------------------------------
+// getters de upload files
+
+bool	ClientRequest::isMultipart() const { return _isMultipart; }
+
+const std::vector<UploadedFile>& ClientRequest::getUploadedFiles() const { return _uploadedFiles; }
+
+std::string const& ClientRequest::getBoundary() const { return _boundary; }
+
+//---------------------------------------------------------------

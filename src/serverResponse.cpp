@@ -113,7 +113,10 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 	}
 	else if (clientRequest.getMethod() == "POST")
 	{
-
+		if (clientRequest.isMultipart() && !clientRequest.getUploadedFiles().empty())
+			_handleFileUpload(clientRequest, config);
+		else
+			_response = _buildErrorResponse(400, "Bad Request");
 	}
 }
 

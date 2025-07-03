@@ -19,16 +19,18 @@ class ClientRequest
 		std::string _acceptLanguage;
 		std::string _connection;
 
+//----------------------------------------------------------
 		//uploadFile
 		std::string _boundary;
 		std::vector<UploadedFile> _uploadedFiles;
 		bool _isMultipart;
+
 		void _parseContentType(std::string const& request);
 		std::string _trimLeft(std::string contentType);
 		std::string _extractBoundary(std::string const& contentType);
 		bool _parseMultipartBody(std::string const& body);
 		void _parseMultipartPart(std::string const& part);
-		std::string _trimLeft(std::string str);
+//------------------------------------------------------------
 
 		std::string _getBody(std::string request);
 
@@ -57,10 +59,12 @@ class ClientRequest
 		std::string getAcceptLanguage() const;
 		std::string getConnection() const;
 
+//--------------------------------------------------------------------
 		//uploadFile
 		bool isMultipart() const;
 		const std::vector<UploadedFile>& getUploadedFiles() const;
 		const std::string& getBoundary() const;
+//--------------------------------------------------------------------
 };
 
 #endif
