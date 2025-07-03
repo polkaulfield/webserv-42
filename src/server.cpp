@@ -67,6 +67,12 @@ Server::Server(int port, const std::string& endpoint , Config& config) : _config
     std::cout << "Socket creation succeded" << std::endl;
 }
 
+const Server& Server::operator=(const Server& server)
+{
+    server._config = _config;
+    return server;
+}
+
 bool Server::_checkLocation(const ClientRequest& clientRequest)
 {
     /*std::cout << "path: " << clientRequest.getPath() << std::endl;

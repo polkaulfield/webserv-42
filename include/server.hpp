@@ -24,9 +24,8 @@ class Server
     Server();
     Server(int port, const std::string& endpoint, Config& config);
     Server(Config& config);
-    Server(const Server& server);
     ~Server();
-    Server &operator=(const Server& server);
+    const Server &operator=(const Server& server);
 
     int start(void);
     void sendResponse(ClientRequest clientRequest, int clientSocket);

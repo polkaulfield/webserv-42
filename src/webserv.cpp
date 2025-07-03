@@ -3,9 +3,7 @@
 #include <unistd.h>
 #include <wait.h>
 #include <sys/stat.h>
-#include <cstdlib>
 #include <list>
-#include <iostream>
 #include "../include/serverResponse.hpp"
 #include "../include/server.hpp"
 #include "../include/config.hpp"
@@ -18,10 +16,11 @@ int main(int argc, char **argv)
     (void)argv;
     if (argc != 2)
         return 1;
+    std::list<Config> configList = takeConfig(argv[1]);
     std::list<Server> serverList;
     for (std::list<Config>::iterator config = configList.begin(); config != configList.end(); ++config)
     {
-        serverList.push_back(Server(config));
+        serverList.push_back(Server(*config));
     }
     PollManager pollManager = PollManager(serverList);
     pollManager.start();

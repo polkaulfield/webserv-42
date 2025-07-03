@@ -57,11 +57,9 @@ void PollManager::start(void)
     ClientRequest clientRequest;
     struct pollfd *pfds = (struct pollfd*)malloc(sizeof *pfds * fd_size);
 
-    int i = 0;
     // Start all the server listener sockets and add their fds to the pfds arr
     for (std::list<Server>::iterator server = _serverList.begin(); server != _serverList.end(); ++server)
     {
-        server->start();
         _add_to_pfds(&pfds, server->getServerSocket(), &fd_count, &fd_size);
     }
     for(int i = 0; i < fd_count; i++) {
@@ -83,7 +81,6 @@ void PollManager::start(void)
                 } else {
                     // If not the listener, we're just a regular client
                     b_read = recv(pfds[i].fd, buffer, sizeof buffer, 0);
-                    int sender_fd = pfds[i].fd;
 
                     if (b_read <= 0) {
                         // Got error or connection closed by client

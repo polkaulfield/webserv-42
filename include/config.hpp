@@ -51,7 +51,7 @@ public:
 	std::string getIndex(void);
 	std::string getErrorPage(void);
 	int			getClientMaxBodySize(void);
-	std::list<Location*>	getLocationList(void) const;
+	std::list<Location*>	getLocationList(void);
 	//  SETTERS  //
 	void	setServerName(std::string _server_Name);
 	void	setPort(std::string port);
@@ -65,7 +65,7 @@ public:
 //  METHODS  //
 	int		searchConfig(std::string option);
 	int		searchLocationConfig(std::string option);
-	void	printConfig(void);
+	void	printConfig(void) const;
 //  CHECKERS  //
 	int		checkConfig(void);
 	int		checkLocations(void);
