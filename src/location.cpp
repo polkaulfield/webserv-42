@@ -6,16 +6,16 @@
 	_GET = false;
 	_POST = false;
 	_DELETE = false;
+	_autoindex = false;
 	//std::cout << "default is created (location)" << std::endl;
 }
 Location::Location(std::string directory) {
-	_directory = directory;
+	int start = directory.find(" ");
+	_directory = directory.substr(start + 1);
 	_GET = false;
 	_POST = false;
 	_DELETE = false;
-	std::cout << _directory << ": is created" << std::endl;
-	std::cout << _directory << ": is created" << std::endl;
-	std::cout << _directory << ": is created" << std::endl;
+	_autoindex = false;
 	std::cout << _directory << ": is created" << std::endl;
 	//std::cout << _directory << " is created (location)" << std::endl;
 }
@@ -33,9 +33,6 @@ Location &Location::operator = (const Location &src) {
 
 Location::~Location(void) {
 	std::cout << _directory << ": is destroyed" << std::endl;
-	std::cout << _directory << ": is destroyed" << std::endl;
-	std::cout << _directory << ": is destroyed" << std::endl;
-	std::cout << _directory << ": is destroyed" << std::endl;
 }
 
 //  GETTER  //
@@ -44,6 +41,7 @@ std::string Location::getRedirect(void) {return _redirect;}
 bool	Location::getGet(void) {return _GET;}
 bool	Location::getPost(void) {return _POST;}
 bool	Location::getDelete(void) {return _DELETE;}
+bool	Location::getAutoindex(void) {return _autoindex;}
 
 //  SETTERS  //
 void	Location::setDirectory(std::string directory) {_directory = directory;}
@@ -57,8 +55,10 @@ void Location::setAllowMethods(std::string option) {
 
 	while(end > 0 && (size_t)end < option.length()) {
 		if (option[end] == ' ' || option[end] == ';') {
-			if (option.compare(start, end - start, "GET") == 0)
+			if (option.compare(start, end - start, "GET") == 0) {
 				_GET = true;
+				std::cout << _directory << "--------------------------------" << std::endl;
+			}
 			else if (option.compare(start, end - start, "POST") == 0)
 				_POST = true;
 			else if (option.compare(start, end - start, "DELETE") == 0)
@@ -74,8 +74,13 @@ void Location::setAllowMethods(std::string option) {
 	}
 }
 
-void	Location::setRedirect(std::string redirect) {
-	_redirect = redirect;
+void	Location::setRedirect(std::string redirect) {_redirect = redirect;}
+
+void	Location::setAutoindex(std::string autoindex) {
+	if (autoindex == "on")
+		_autoindex = true;
+	else
+		_autoindex = false;
 }
 
 //  METHODS
@@ -86,8 +91,8 @@ int Location::searchLocationConfig(std::string option) {
 		setAllowMethods(option);
 	else if (option.compare(0, 7, "return ") == 0)
 		setRedirect(_takeParams(option, &error));
-	else if (option.compare(0, 1, "") == 0)
-		;
+	else if (option.compare(0, 10, "autoindex ") == 0)
+		setAutoindex(_takeParams(option, &error));
 	else {
 		std::cout << GREEN << "Error not found: " << option << RESET << std::endl;
 		return 1;

@@ -10,6 +10,7 @@ private:
 	bool _POST;
 	bool _DELETE;
 	std::string	_redirect;
+	bool _autoindex;
 //  METHODS  //
 	std::string	_takeParams(std::string option, int *error);
 public:
@@ -23,20 +24,17 @@ public:
 	void	setDirectory(std::string directory);
 	void	setAllowMethods(std::string option);
 	void	setRedirect(std::string redirect);
+	void	setAutoindex(std::string autoindex);
 //  GETTER  //
 	std::string	&getDirectory(void);
 	std::string getRedirect(void);
 	bool		getGet(void);
 	bool		getPost(void);
 	bool		getDelete(void);
+	bool		getAutoindex(void);
 
 //  METHODS  //
 	int	searchLocationConfig(std::string option);
 	bool hasMethod(std::string method);
-};
-
-struct location_t {
-	Location *location;
-	struct location_t	*next;
 };
 #endif

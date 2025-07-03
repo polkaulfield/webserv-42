@@ -11,17 +11,17 @@ class Server
   private:
     int _serverSocket;
     std::string _endpoint;
-    location_t* _locationList;
-    const Config& _config;
+    std::list<Location*> _locationList;
+    Config& _config;
 
     void    _sigintHandle(int signum);
     int _createServerSocket(int port);
-    bool _checkLocation(const ClientRequest& clientRequest);
+    bool _checkLocation(const ClientRequest& clientRequest) ;
 
   public:
     Server();
-    Server(int port, const std::string& endpoint, const Config& config);
-    Server(const Config& config);
+    Server(int port, const std::string& endpoint, Config& config);
+    Server(Config& config);
     Server(const Server& server);
     ~Server();
     Server &operator=(const Server& server);
