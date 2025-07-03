@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <wait.h>
 #include <sys/stat.h>
+#include <cstdlib>
+#include <list>
+#include <iostream>
 #include "../include/serverResponse.hpp"
 #include "../include/server.hpp"
 #include "../include/config.hpp"
