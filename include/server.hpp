@@ -1,3 +1,5 @@
+#ifndef SERVER_HPP
+# define SERVER_HPP
 #include <string>
 #include <unistd.h>
 #include "clientRequest.hpp"
@@ -28,5 +30,8 @@ class Server
     ~Server();
     Server &operator=(const Server& server);
 
-    void start(void);
+    int start(void);
+    void sendResponse(ClientRequest clientRequest, int clientSocket);
+    int getServerSocket();
 };
+#endif

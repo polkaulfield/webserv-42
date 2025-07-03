@@ -11,7 +11,6 @@
 #include <string.h>
 #include <cstdlib>
 #include <sys/stat.h>
-#include <list>
 
 // This is to close the server socket on ctrl+c
 void    Server::_sigintHandle(int signum)
@@ -31,11 +30,11 @@ int Server::_createServerSocket(int port)
     serverAddress.sin_port = htons(port);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     serverAddress.sin_addr.s_addr = INADDR_ANY;
-    int optval = 1;
     // This is EXTREMELY important. This tells the kernel it doesnt have to lock PORT
     // so if the serverSocket is closed we can reuse it right away. If this line is missing
     // we have to wait 2~ min until the system frees the port.
-    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+    int yes = 1;
+    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
     // Attach the socket to the port and listen
     if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
         std::exit(1);
@@ -85,55 +84,32 @@ bool Server::_checkLocation(const ClientRequest& clientRequest)
     return false;
 }
 
-// TODO this https://beej.us/guide/bgnet/examples/pollserver.c
-void Server::start()
-{
-    char buf[1024];
-    int clientSocket;
-    int b_read = 0;
-    ServerResponse serverResponse;
-    ClientRequest clientRequest;
-    std::cout << "Starting listen loop" << std::endl;
-    while (true)
-    {
-        // We need to create a client socket for each connection
-        // using the bound socket to PORT we created before (serverSocket)
-        clientSocket = accept(_serverSocket, NULL, NULL);
-        std::cout << "Got connection" << std::endl;
-        if (clientSocket == -1)
-            std::cout << "Detected clientSocket error!" << std::endl;
-        // This gets the data clientSocket listened to petition_buf
-        //while (b_read != -1)
-        b_read = recv(clientSocket, buf, sizeof(buf), 0);
-        if (b_read == -1 )
-        {
-            std::cout << "Socket error!" << std::endl;
-            std::exit(0);
-        }
-        buf[b_read] = '\0';
-        // Parse client request
-        std::cout << "Parsing client request" << std::endl;
-        clientRequest = ClientRequest(buf);
-        // If theres no locationlist all paths and methods are valid for now (debug)
-        if (_checkLocation(clientRequest) != 0)
-        {
-            std::cout << "Ok" << std::endl;
-            serverResponse = ServerResponse(clientRequest, _config);
-            send(clientSocket, serverResponse.getResponse().data(), serverResponse.getResponse().length(), 0);
-        }
-        else
-        {
-            std::cout << "Failed" << std::endl;
-            //send(clientSocket, ServerResponse().buildNotFoundResponse().data(), 0, 0);
-        }
-        // We need to close after sending
-        close(clientSocket);
-    }
-    return ;
-}
-
 Server::~Server(void)
 {
     close(_serverSocket);
 }
-int b_read = 0;
+
+int Server::getServerSocket(void)
+{
+    return _serverSocket;
+}
+
+void Server::sendResponse(ClientRequest clientRequest, int clientSocket)
+{
+    ServerResponse serverResponse;
+    std::cout << "Parsing client request" << std::endl;
+
+    // If theres no locationlist all paths and methods are valid for now (debug)
+    if (_checkLocation(clientRequest) != 0)
+    {
+        std::cout << "Ok" << std::endl;
+        serverResponse = ServerResponse(clientRequest, _config);
+        send(clientSocket, serverResponse.getResponse().data(), serverResponse.getResponse().length(), 0);
+    }
+    else
+    {
+        std::cout << "Failed to find valid endpoint" << std::endl;
+        send(clientSocket, ServerResponse().buildNotFoundResponse().data(), 0, 0);
+    }
+    close(clientSocket);
+}
