@@ -44,14 +44,14 @@ public:
 	Config(void);
 	~Config(void);
 //  GETTERS  //
-	std::string getServerName(void);
+	std::string getServerName(void) const;
 	int			getPort(void) const;
-	std::string getHost(void);
-	std::string getRoot(void);
+	std::string getHost(void) const;
+	std::string getRoot(void) const;
 	std::string getIndex(void);
 	std::string getErrorPage(void);
 	int			getClientMaxBodySize(void);
-	std::list<Location*>	getLocationList(void) const;
+	std::list<Location*>	getLocationList(void);
 	//  SETTERS  //
 	void	setServerName(std::string _server_Name);
 	void	setPort(std::string port);
@@ -65,7 +65,7 @@ public:
 //  METHODS  //
 	int		searchConfig(std::string option);
 	int		searchLocationConfig(std::string option);
-	void	printConfig(void);
+	void	printConfig(void) const;
 //  CHECKERS  //
 	int		checkConfig(void);
 	int		checkLocations(void);

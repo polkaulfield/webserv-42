@@ -1,5 +1,7 @@
 #include <string>
 #include <unistd.h>
+#include "../include/config.hpp"
+#include "../include/clientRequest.hpp"
 
 class ServerResponse
 {
@@ -13,7 +15,7 @@ class ServerResponse
 
   public:
     ServerResponse();
-    ServerResponse(std::string method, std::string path);
+    ServerResponse(ClientRequest& clientRequest, const Config& config);
     //ServerResponse(const ServerResponse& serverResponse);
     ~ServerResponse();
     //ServerResponse &operator=(const ServerResponse& serverResponse);

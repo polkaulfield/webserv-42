@@ -25,8 +25,8 @@ std::string getExtension(std::string htmlPath) {
 bool	isCGI(std::string htmlPath) {
 	std::string	extension = getExtension(htmlPath);
 	std::cout << "GOT CGI FILE!" << std::endl;
-	return	(extension == ".py" || extension == ".php" ||
-			 extension == ".pl" || extension == ".cgi");
+	return	(extension == ".py" || extension == ".php" || extension == ".sh" ||
+			 extension == ".pl" || extension == ".cgi" || extension == ".bin");
 }
 
 std::string	determineInterpreter(std::string htmlPath) {
@@ -34,6 +34,7 @@ std::string	determineInterpreter(std::string htmlPath) {
 	if (extension == ".py") return "/usr/bin/python3";
 	else if (extension == ".php") return "/usr/bin/php";
 	else if (extension == ".pl") return "/usr/bin/perl";
+	else if (extension == ".sh") return "/bin/bash";
 	else return ""; // para los .cgi
 }
 
@@ -77,5 +78,3 @@ char**	vectorToArray(std::vector<std::string> envVars) {
 	env[size] = NULL;
 	return env;
 }
-
-

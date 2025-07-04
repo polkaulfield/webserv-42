@@ -3,26 +3,26 @@
 #include <unistd.h>
 #include <wait.h>
 #include <sys/stat.h>
-#include <cstdlib>
 #include <list>
-#include <iostream>
 #include "../include/serverResponse.hpp"
 #include "../include/server.hpp"
 #include "../include/config.hpp"
-
-#define PORT 8080
+#include "../include/pollManager.hpp"
+#include <poll.h>
+#include <list>
 
 int main(int argc, char **argv)
 {
     (void)argv;
-    (void)argc;
     if (argc != 2)
         return 1;
     std::list<Config> configList = takeConfig(argv[1]);
-    configList.front().printConfig();
-   	Server server = Server(configList.front());
-   	configList.front().printConfig();
-   	server.start();
-
+    std::list<Server> serverList;
+    for (std::list<Config>::iterator config = configList.begin(); config != configList.end(); ++config)
+    {
+        serverList.push_back(Server(*config));
+    }
+    PollManager pollManager = PollManager(serverList);
+    pollManager.start();
     return 0;
 }

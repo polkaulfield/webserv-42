@@ -26,14 +26,14 @@ Config::~Config(void) {
 }
 
 //  GETTERS  //
-std::string Config::getServerName(void) {return _server_name;}
+std::string Config::getServerName(void) const {return _server_name;}
 int			Config::getPort(void) const {return _port;}
-std::string Config::getHost(void) {return _host;}
-std::string Config::getRoot(void) {return _root;};
+std::string Config::getHost(void) const {return _host;}
+std::string Config::getRoot(void) const {return _root;};
 std::string Config::getIndex(void) {return _index;}
 std::string Config::getErrorPage(void) {return _error_page;}
 int			Config::getClientMaxBodySize(void) {return _client_max_body_size;}
-std::list<Location *>	Config::getLocationList(void) const {return _locationList;}
+std::list<Location *>	Config::getLocationList(void) {return _locationList;}
 
 //  SETTERS  //
 void	Config::setServerName(std::string server_name) {_server_name = server_name;}
@@ -100,7 +100,7 @@ int	Config::searchConfig(std::string option) {
 	return 0;
 }
 
-void	Config::printConfig(void) {
+void	Config::printConfig(void) const{
 	std::cout << "server name: " << _server_name << std::endl;
 	std::cout << "port listen: " << _port << std::endl;
 	std::cout << "host: " << _host << std::endl;
@@ -118,7 +118,7 @@ void	Config::printConfig(void) {
 		std::cout << GREEN << "Not location found" << RESET << std::endl;
 		return ;
 	}
-	for (std::list<Location*>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
+	for (std::list<Location*>::const_iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
 		std::cout << "Location:" << (*iter)->getDirectory() << std::endl;
 		if ((*iter)->getGet())
 			std::cout << "GET (true)" << std::endl;
