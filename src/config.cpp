@@ -15,13 +15,10 @@ Config::Config(void) {
 }
 
 Config::~Config(void) {
-	//location_t	*iter = _firstLocation;
-	//location_t	*tmp;
-	//while (iter) {
-	//	tmp = iter;
-	//	iter = iter->next;
-	//	delete tmp;
-	//}
+	for (std::list<Location*>::iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
+		if (*iter)
+			delete *iter;
+	}
 	std::cout << "Destroying Config" << std::endl;
 }
 
