@@ -15,10 +15,10 @@ Config::Config(void) {
 }
 
 Config::~Config(void) {
-	for (std::list<Location*>::iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
-		if (*iter)
+	/*for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
+		if (iter)
 			delete *iter;
-	}
+	}*/
 	std::cout << "Destroying Config" << std::endl;
 }
 
@@ -30,7 +30,7 @@ std::string Config::getRoot(void) const {return _root;};
 std::string Config::getIndex(void) {return _index;}
 std::string Config::getErrorPage(void) {return _error_page;}
 int			Config::getClientMaxBodySize(void) {return _client_max_body_size;}
-std::list<Location *>	Config::getLocationList(void) {return _locationList;}
+std::list<Location>	&Config::getLocationList(void) {return _locationList;}
 
 //  SETTERS  //
 void	Config::setServerName(std::string server_name) {_server_name = server_name;}
@@ -86,7 +86,7 @@ int	Config::searchConfig(std::string option) {
 	else if (option.compare(0, 8, "cgi_ext ") == 0)
 		setCgiExt(_takeParams(option, &error));
 	else if (option.compare(0, 9, "location ") == 0) {
-		_locationList.push_back(new Location(option));
+		_locationList.push_back(Location(option));
 	}
 	else {
 		std::cout << GREEN << "Error not found: " << option << RESET << std::endl;
@@ -115,18 +115,20 @@ void	Config::printConfig(void) const{
 		std::cout << GREEN << "Not location found" << RESET << std::endl;
 		return ;
 	}
-	for (std::list<Location*>::const_iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
-		std::cout << "Location:" << (*iter)->getDirectory() << std::endl;
-		if ((*iter)->getGet())
+	for (std::list<Location>::const_iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
+		std::cout << "Location:" << iter->getDirectory() << std::endl;
+		if (iter->getGet())
 			std::cout << "GET (true)" << std::endl;
-		if ((*iter)->getPost())
+		if (iter->getPost())
 			std::cout << "POST (true)" << std::endl;
-		if ((*iter)->getDelete())
+		if (iter->getDelete())
 			std::cout << "DELETE (true)" << std::endl;
-		if (!(*iter)->getRedirect().empty())
-			std::cout << "redirect: " << (*iter)->getRedirect() << std::endl;
-		if ((*iter)->getAutoindex())
+		if (!iter->getRedirect().empty())
+			std::cout << "redirect: " << iter->getRedirect() << std::endl;
+		if (iter->getAutoindex())
 			std::cout << "Autoindex: true" << std::endl;
+		if (iter->getDirectoryListing())
+			std::cout << "Directory Listing: true" << std::endl;
 	}
 }
 //  CHECKERS  //
@@ -188,11 +190,11 @@ int	Config::_checkCgiExt(void) {
 
 int Config::checkLocations(void) {
 	std::string roots;
-	for (std::list<Location*>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
-		if ((*iter)->getDirectory() != "/" && (*iter)->getDirectory() != "/redirect") {
-			roots.append(_root + (*iter)->getDirectory());
+	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
+		if (iter->getDirectory() != "/" && iter->getDirectory() != "/redirect") {
+			roots.append(_root + iter->getDirectory());
 			if (access(roots.data(), F_OK)) {
-				std::cout << GREEN << "\tError in Location: " << (*iter)->getDirectory() << " is not accesible" << RESET << std::endl;
+				std::cout << GREEN << "\tError in Location: " << iter->getDirectory() << " is not accesible" << RESET << std::endl;
 				return 1;
 			}
 			roots.clear();
@@ -217,9 +219,9 @@ int	Config::checkConfig(void) {
 //  LINKED LIST LOCATIONS  //
 
 Location	*Config::searchLocation(std::string option) {
-	for (std::list<Location*>::iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
-		if ((*iter)->getDirectory() == option || (*iter)->getDirectory() + "/" == option)
-			return *iter;
+	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
+		if (iter->getDirectory() == option || iter->getDirectory() + "/" == option)
+			return &*iter;
 	}
 	return NULL;
 }

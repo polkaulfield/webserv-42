@@ -13,7 +13,7 @@ class Server
   private:
     int _serverSocket;
     std::string _endpoint;
-    std::list<Location*> _locationList;
+    std::list<Location> _locationList;
     Config& _config;
 
     void    _sigintHandle(int signum);

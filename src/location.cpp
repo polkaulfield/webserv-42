@@ -16,6 +16,7 @@ Location::Location(std::string directory) {
 	_POST = false;
 	_DELETE = false;
 	_autoindex = false;
+	_directory_listing = false;
 	std::cout << _directory << ": is created" << std::endl;
 	//std::cout << _directory << " is created (location)" << std::endl;
 }
@@ -27,6 +28,8 @@ Location &Location::operator = (const Location &src) {
 		_POST = src._POST;
 		_DELETE = src._DELETE;
 		_redirect = src._redirect;
+		_autoindex = src._autoindex;
+		_directory_listing = src._directory_listing;
 	}
 	return *this;
 }
@@ -36,12 +39,13 @@ Location::~Location(void) {
 }
 
 //  GETTER  //
-std::string	&Location::getDirectory(void) {return _directory;}
-std::string Location::getRedirect(void) {return _redirect;}
-bool	Location::getGet(void) {return _GET;}
-bool	Location::getPost(void) {return _POST;}
-bool	Location::getDelete(void) {return _DELETE;}
-bool	Location::getAutoindex(void) {return _autoindex;}
+std::string	Location::getDirectory(void) const {return _directory;}
+std::string Location::getRedirect(void) const {return _redirect;}
+bool	Location::getGet(void) const {return _GET;}
+bool	Location::getPost(void) const {return _POST;}
+bool	Location::getDelete(void) const {return _DELETE;}
+bool	Location::getAutoindex(void) const {return _autoindex;}
+bool	Location::getDirectoryListing(void) const {return _directory_listing;}
 
 //  SETTERS  //
 void	Location::setDirectory(std::string directory) {_directory = directory;}
@@ -79,8 +83,11 @@ void	Location::setRedirect(std::string redirect) {_redirect = redirect;}
 void	Location::setAutoindex(std::string autoindex) {
 	if (autoindex == "on")
 		_autoindex = true;
-	else
-		_autoindex = false;
+}
+
+void	Location::setDirectoryListing(std::string directory_listing) {
+	if (directory_listing == "on")
+		_directory_listing = true;
 }
 
 //  METHODS
@@ -93,6 +100,8 @@ int Location::searchLocationConfig(std::string option) {
 		setRedirect(_takeParams(option, &error));
 	else if (option.compare(0, 10, "autoindex ") == 0)
 		setAutoindex(_takeParams(option, &error));
+	else if (option.compare(0, 18, "directory_listing ") == 0)
+		setDirectoryListing(_takeParams(option, &error));
 	else {
 		std::cout << GREEN << "Error not found: " << option << RESET << std::endl;
 		return 1;

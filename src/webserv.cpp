@@ -18,9 +18,10 @@ int main(int argc, char **argv)
 
 	if (argc > 1)
     	;
-	std::list<Config*> configList = takeConfig(argv[1]);
+	std::list<Config> configList = takeConfig(argv[1]);
 	if (configList.empty())
 		return 1;
+	configList.front().printConfig();
     //std::list<Server> serverList;
     //for (std::list<Config>::iterator config = configList.begin(); config != configList.end(); ++config)
     //{
