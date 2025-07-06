@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     {
         serverList.push_back(Server(*config));
     }
-    PollManager pollManager = PollManager(serverList);
+    PollManager pollManager(serverList);
     pollManager.start();
     return 0;
 }

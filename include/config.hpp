@@ -42,6 +42,8 @@ private:
 public:
 //  CONSTRUCTOR  //
 	Config(void);
+	Config(const Config &src);
+	Config &operator = (const Config &src);
 	~Config(void);
 //  GETTERS  //
 	std::string getServerName(void) const;

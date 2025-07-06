@@ -38,7 +38,7 @@ PollManager::PollManager(void)
 
 }
 
-PollManager::PollManager(std::list<Server> serverList)
+PollManager::PollManager(std::list<Server> &serverList)
 {
     _serverList = serverList;
 }

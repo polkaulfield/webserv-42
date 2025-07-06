@@ -26,11 +26,13 @@ class Server
   public:
     Server();
     Server(Config& config);
+    Server(const Server &src);
     ~Server();
     const Server &operator=(const Server& server);
 
+    void printConfig(void);
     int start(void);
-    void sendResponse(ClientRequest clientRequest, int clientSocket);
+    void sendResponse(ClientRequest &clientRequest, int clientSocket);
     int getServerSocket();
 };
 #endif

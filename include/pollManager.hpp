@@ -17,7 +17,7 @@ class PollManager
     void _del_from_pfds(struct pollfd pfds[], int i, int *fd_count);
   public:
     PollManager();
-    PollManager(std::list<Server> serverList);
+    PollManager(std::list<Server> &serverList);
     ~PollManager();
 
 

@@ -82,10 +82,27 @@ Server::Server(Config& config) : _config(config)
     _serverSocket = _createServerSocket(config.getPort());
 }
 
+Server::Server(const Server &src) : _config(src._config) {
+	std::cout << "Server Copy constructor" << std::endl;
+	*this = src;
+}
+
 const Server& Server::operator=(const Server& server)
 {
-    server._config = _config;
-    return server;
+	std::cout << "Server asign operator" << std::endl;
+	if (this != &server) {
+		for (int i = 0; i < MAX_EVENTS; i++) {
+			_events[i] = server._events[i];
+			_events[i].data.fd = dup(server._events[i].data.fd);
+		}
+		_serverSocket = dup(server._serverSocket);
+	    _locationList = server._locationList;
+	    _config = server._config;
+	    _endpoint = server._endpoint;
+	}
+    std::cout << _serverSocket << " " << server._serverSocket << std::endl;
+    //_config.printConfig();
+    return *this;
 }
 
 bool Server::_checkLocation(const ClientRequest& clientRequest)
@@ -127,7 +144,7 @@ int Server::getServerSocket(void)
     return _serverSocket;
 }
 
-void Server::sendResponse(ClientRequest clientRequest, int clientSocket)
+void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
 {
     ServerResponse serverResponse;
     std::cout << "Parsing client request" << std::endl;
@@ -146,3 +163,5 @@ void Server::sendResponse(ClientRequest clientRequest, int clientSocket)
     }
     close(clientSocket);
 }
+
+void Server::printConfig(void) {_config.printConfig();}
