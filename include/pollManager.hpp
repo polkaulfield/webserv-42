@@ -15,7 +15,8 @@ class PollManager
     std::string _getBody(std::string request);
     void _add_to_pfds(struct pollfd *pfds[], int newfd, int *fd_count, int *fd_size);
     void _del_from_pfds(struct pollfd pfds[], int i, int *fd_count);
-    bool _isServerSocket(int socket);
+    Server& _getServerByEventFd(int socket, bool *found);
+    Server& _getServerByClientSocket(int socket, bool *found);
   public:
     PollManager();
     PollManager(std::list<Server> &serverList);

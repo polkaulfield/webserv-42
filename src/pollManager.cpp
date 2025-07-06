@@ -10,41 +10,34 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-bool PollManager::_isServerSocket(int socket)
+Server& PollManager::_getServerByEventFd(int socket, bool *found)
 {
     for (std::list<Server>::iterator server = _serverList.begin(); server != _serverList.end(); ++server)
     {
         // Check here if one of the polls is a server
         if (socket == server->getServerSocket())
-            return true;
+        {
+            *found = true;
+            return *server;
+        }
     }
-    return false;
+    *found = false;
+    return _serverList.front();
 }
 
-void PollManager::_add_to_pfds(struct pollfd *pfds[], int newfd, int *fd_count, int *fd_size)
+Server& PollManager::_getServerByClientSocket(int socket, bool *found)
 {
-    // If we don't have room, add more space in the pfds array
-    if (*fd_count == *fd_size) {
-        *fd_size *= 2; // Double it
-
-        *pfds = (struct pollfd *)realloc(*pfds, sizeof(**pfds) * (*fd_size));
+    for (std::list<Server>::iterator server = _serverList.begin(); server != _serverList.end(); ++server)
+    {
+        if(server->hasClientSocket(socket))
+        {
+            *found = true;
+            return *server;
+        }
     }
-
-    (*pfds)[*fd_count].fd = newfd;
-    (*pfds)[*fd_count].events = POLLIN; // Check ready-to-read
-
-    (*fd_count)++;
+    *found = false;
+    return _serverList.front();
 }
-
-// Remove an index from the set
-void PollManager::_del_from_pfds(struct pollfd pfds[], int i, int *fd_count)
-{
-    // Copy the one from the end over this one
-    pfds[i] = pfds[*fd_count-1];
-
-    (*fd_count)--;
-}
-
 
 PollManager::PollManager(std::list<Server> &serverList)
 {
@@ -63,6 +56,7 @@ void PollManager::start(void)
     int b_read;
     char buffer[1024];
     int clientSocket;
+    int serverSocket;
     ClientRequest clientRequest;
     int epollFd;
     struct epoll_event event, events[MAX_EVENTS];
@@ -91,15 +85,20 @@ void PollManager::start(void)
                 std::cerr << "Failed to wait for events." << std::endl;
                 break;
             }
+            else
             {
                 for (int i = 0; i < numEvents; ++i) {
-                    int event_fd = events[i].data.fd;
-                    if(_isServerSocket(event_fd))
+                    int eventFd = events[i].data.fd;
+                    bool isServer = false;
+                    Server &server = _getServerByEventFd(eventFd, &isServer);
+                    if (isServer)
                     {
+                        // Okay so we are the server socket. Assign this variable for clarity.
+                        serverSocket = server.getServerSocket();
                         // If listener is ready to read, handle new connection
                         struct sockaddr_in clientAddress;
                         socklen_t clientAddressLength = sizeof(clientAddress);
-                        clientSocket = accept(event_fd, (struct sockaddr*)&clientAddress, &clientAddressLength);
+                        clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientAddressLength);
                         if (clientSocket == -1) {
                             std::cerr << "Detected clientSocket error!" << std::endl;
                             perror("accept");
@@ -113,33 +112,46 @@ void PollManager::start(void)
                             close(clientSocket);
                             continue;
                         }
+                        server.addClientSocket(clientSocket);
                     }
                     else {
-                        clientSocket = event_fd;
-                        b_read = recv(clientSocket, buffer, sizeof buffer - 1, 0);
-                        if (b_read <= 0) {
-                            // Got error or connection closed by client
-                            if (b_read == 0) {
-                                // Connection closed
-                                std::cout << "Connection closed!" << std::endl;
-                            } else {
-                                perror("recv");
-                                std::cout << "Socket error!" << std::endl;
-                            }
-                        }
-                        else
+                        // Not a server. We assume its client
+                        bool found = false;
+                        Server& server = _getServerByClientSocket(eventFd, &found);
+                        // Check if the client is associated to a server for sanity
+                        if (found)
                         {
-                            // We got some good data from the browser
-                            // Null terminate the buffer so it doesnt get out of hand
-                            buffer[b_read] = '\0';
-                            // Create the request we are gonna send back
-                            clientRequest = ClientRequest(buffer);
-                            _serverList.front().sendResponse(clientRequest, clientSocket);
+                            //Then the socket is the client fd
+                            clientSocket = eventFd;
+                            // Read from da socket
+                            b_read = recv(clientSocket, buffer, sizeof buffer - 1, 0);
+                            if (b_read <= 0) {
+                                // Got error or connection closed by client
+                                if (b_read == 0) {
+                                    // Connection closed7070
+                                    std::cout << "Connection closed!" << std::endl;
+                                } else {
+                                    perror("recv");
+                                    std::cout << "Socket error!" << std::endl;
+                                }
+                            }
+                            else
+                            {
+                                // We got some good data from the browser
+                                // Null terminate the buffer so it doesnt get out of hand
+                                buffer[b_read] = '\0';
+                                // Create the request we are gonna send back
+                                clientRequest = ClientRequest(buffer);
+                                _serverList.front().sendResponse(clientRequest, clientSocket);
+                            }
+                            // Remove the client socket from server and epoll
+                            close(clientSocket);
+                            server.delClientSocket(clientSocket);
+                            epoll_ctl(epollFd, EPOLL_CTL_DEL, clientSocket, &event);
                         }
-                        close(clientSocket);
-                        epoll_ctl(epollFd, EPOLL_CTL_DEL, clientSocket, &event);
+
                     }
                 }
-            } // END handle data from client
-        } // END got ready-to-read from poll()
-    } // END looping through file descriptors
+            }
+        }
+    }

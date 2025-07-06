@@ -14,6 +14,7 @@ class Server
 {
   private:
     epoll_event _events[MAX_EVENTS];
+    std::list<int> _clientSocketList;
     int _serverSocket;
     std::string _endpoint;
     std::list<Location*> _locationList;
@@ -33,6 +34,9 @@ class Server
     void printConfig(void);
     int start(void);
     void sendResponse(ClientRequest &clientRequest, int clientSocket);
+    void addClientSocket(int clientSocket);
+    void delClientSocket(int clientSocket);
+    bool hasClientSocket(int clientSocket);
     int getServerSocket();
 };
 #endif

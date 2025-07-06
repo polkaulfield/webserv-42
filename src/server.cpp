@@ -12,7 +12,9 @@
 #include <wait.h>
 #include <string.h>
 #include <cstdlib>
+#include <algorithm>
 #include <sys/stat.h>
+#include <list>
 #define MAX_CLIENTS 50
 
 // This is to close the server socket on ctrl+c
@@ -142,6 +144,25 @@ Server::~Server(void)
 int Server::getServerSocket(void)
 {
     return _serverSocket;
+}
+
+void Server::addClientSocket(int clientSocket)
+{
+    _clientSocketList.push_back(clientSocket);
+}
+
+void Server::delClientSocket(int clientSocket)
+{
+    _clientSocketList.remove(clientSocket);
+}
+
+bool Server::hasClientSocket(int clientSocket)
+{
+    std::list<int>::iterator pos;
+    pos = find(_clientSocketList.begin(), _clientSocketList.end(), clientSocket);
+    if (pos != _clientSocketList.end())
+        return true;
+    return false;
 }
 
 void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
