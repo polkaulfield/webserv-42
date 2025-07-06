@@ -1,5 +1,6 @@
 #include "../include/pollManager.hpp"
 #include <cstddef>
+#include <list>
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -8,6 +9,17 @@
 #include <cstdlib>
 #include <sys/socket.h>
 #include <netinet/in.h>
+
+bool PollManager::_isServerSocket(int socket)
+{
+    for (std::list<Server>::iterator server = _serverList.begin(); server != _serverList.end(); ++server)
+    {
+        // Check here if one of the polls is a server
+        if (socket == server->getServerSocket())
+            return true;
+    }
+    return false;
+}
 
 void PollManager::_add_to_pfds(struct pollfd *pfds[], int newfd, int *fd_count, int *fd_size)
 {
@@ -33,10 +45,6 @@ void PollManager::_del_from_pfds(struct pollfd pfds[], int i, int *fd_count)
     (*fd_count)--;
 }
 
-PollManager::PollManager(void)
-{
-
-}
 
 PollManager::PollManager(std::list<Server> &serverList)
 {
@@ -47,6 +55,8 @@ PollManager::~PollManager(void)
 {
 
 }
+
+
 
 void PollManager::start(void)
 {
@@ -81,54 +91,53 @@ void PollManager::start(void)
                 std::cerr << "Failed to wait for events." << std::endl;
                 break;
             }
-            for (std::list<Server>::iterator server = _serverList.begin(); server != _serverList.end(); ++server)
             {
                 for (int i = 0; i < numEvents; ++i) {
-                    // Check here if one of the polls is a server
-                    if (events[i].data.fd == server->getServerSocket())
+                    int event_fd = events[i].data.fd;
+                    if(_isServerSocket(event_fd))
                     {
-                       // If listener is ready to read, handle new connection
-                       clientSocket = accept(server->getServerSocket(), NULL, NULL);
-
-                       if (clientSocket == -1) {
-                           std::cerr << "Detected clientSocket error!" << std::endl;
-                           std::exit(1);
+                        // If listener is ready to read, handle new connection
+                        struct sockaddr_in clientAddress;
+                        socklen_t clientAddressLength = sizeof(clientAddress);
+                        clientSocket = accept(event_fd, (struct sockaddr*)&clientAddress, &clientAddressLength);
+                        if (clientSocket == -1) {
+                            std::cerr << "Detected clientSocket error!" << std::endl;
+                            perror("accept");
+                            continue;
                         }
-                       else {
-                           std::cout << "Got a new connection!" << std::endl;
-                           event.events = EPOLLIN;
-                           event.data.fd = clientSocket;
-                           if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientSocket, &event) == -1) {
-                               std::cerr << "2Failed to add client socket to epoll instance." << std::endl;
-                               close(clientSocket);
-                               continue;
-                           }
-                        }
-                    }
-                    else
-                    {
-                        clientSocket = events[i].data.fd;
-                    }
-                    b_read = recv(clientSocket, buffer, sizeof buffer, 0);
-                    if (b_read <= 0) {
-                        // Got error or connection closed by client
-                        if (b_read == 0) {
-                            // Connection closed
-                            std::cout << "Connection closed!" << std::endl;
-                        } else {
-                            std::cout << "Socket error!" << std::endl;
-                            close(clientSocket); // Bye!
+                        std::cout << "Got a new connection!" << std::endl;
+                        event.events = EPOLLIN;
+                        event.data.fd = clientSocket;
+                        if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientSocket, &event) == -1) {
+                            std::cerr << "Failed to add client socket to epoll instance." << std::endl;
+                            close(clientSocket);
+                            continue;
                         }
                     }
-                    else
-                    {
-                        // We got some good data from the browser
-                        // Null terminate the buffer so it doesnt get out of hand
-                        buffer[b_read] = '\0';
-                        // Create the request we are gonna send back
-                        clientRequest = ClientRequest(buffer);
-                        server->sendResponse(clientRequest, clientSocket);
+                    else {
+                        clientSocket = event_fd;
+                        b_read = recv(clientSocket, buffer, sizeof buffer - 1, 0);
+                        if (b_read <= 0) {
+                            // Got error or connection closed by client
+                            if (b_read == 0) {
+                                // Connection closed
+                                std::cout << "Connection closed!" << std::endl;
+                            } else {
+                                perror("recv");
+                                std::cout << "Socket error!" << std::endl;
+                            }
+                        }
+                        else
+                        {
+                            // We got some good data from the browser
+                            // Null terminate the buffer so it doesnt get out of hand
+                            buffer[b_read] = '\0';
+                            // Create the request we are gonna send back
+                            clientRequest = ClientRequest(buffer);
+                            _serverList.front().sendResponse(clientRequest, clientSocket);
+                        }
                         close(clientSocket);
+                        epoll_ctl(epollFd, EPOLL_CTL_DEL, clientSocket, &event);
                     }
                 }
             } // END handle data from client
