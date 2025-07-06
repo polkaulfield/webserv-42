@@ -1,13 +1,9 @@
 #include "../include/pollManager.hpp"
-#include <csignal>
-#include <cstddef>
-#include <exception>
 #include <list>
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <iostream>
-#include <bits/stdc++.h>
 #include <cstdlib>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -53,6 +49,8 @@ int PollManager::_initEpollWithServers(std::list<Server>& serverList)
     {
         event.events = EPOLLIN;
         event.data.fd = server->getServerSocket();
+        // Add the server sockets to a list so we can check the fds easily later
+        _serverSocketList.insert(server->getServerSocket());
         if (epoll_ctl(epollFd, EPOLL_CTL_ADD, server->getServerSocket(), &event) == -1) {
             return (-1);
         }
@@ -90,10 +88,11 @@ void PollManager::start(void)
             }
             else
             {
+                // Iterate for all the events ready set by epoll
                 for (int i = 0; i < numEvents; ++i) {
                     int eventFd = events[i].data.fd;
-                    // Check if the event raised by poll is a server socket
-                    try {
+                    // Check if the eventFd is a socketfd in the socket list
+                    if (_serverSocketList.count(eventFd)) {
                         Server &server = _getServerByEventFd(eventFd);
                         // Okay so we are the server socket. Assign this variable for clarity.
                         int serverSocket = server.getServerSocket();
@@ -116,49 +115,35 @@ void PollManager::start(void)
                         }
                         server.addClientSocket(clientSocket);
                     }
-                    catch (const std::exception& e)
-                    {
-                        // Check if the exception indicates the socket fd wasnt a server
-                        // We assume it's a client
-                        if (strcmp(e.what(), "Not a server socket") == 0)
-                        {
-                            // Check if the client is associated to a server for sanity
-                            try {
-                                Server& server = _getServerByClientSocket(eventFd);
-                                //Then the socket is the client fd
-                                int clientSocket = eventFd;
-                                // Read from the socket
-                                char buffer[1024];
-                                int b_read = recv(clientSocket, buffer, sizeof buffer - 1, 0);
-                                if (b_read <= 0) {
-                                    // Got error or connection closed by client
-                                    if (b_read == 0) {
-                                        // Connection closed
-                                        std::cout << "Connection closed!" << std::endl;
-                                    } else {
-                                        perror("recv");
-                                        std::cout << "Socket error!" << std::endl;
-                                    }
-                                }
-                                else
-                                {
-                                    // We got some good data from the browser
-                                    // Null terminate the buffer so it doesnt get out of hand
-                                    buffer[b_read] = '\0';
-                                    // Create the request we are gonna send back
-                                    ClientRequest clientRequest = ClientRequest(buffer);
-                                    _serverList.front().sendResponse(clientRequest, clientSocket);
-                                }
-                                // Remove the client socket from server and epoll
-                                close(clientSocket);
-                                server.delClientSocket(clientSocket);
-                                epoll_ctl(epollFd, EPOLL_CTL_DEL, clientSocket, &event);
-                            }
-                            catch (const std::exception& e)
-                            {
-                                std::cerr << "Exception: " << e.what() << std::endl;
+                    else {
+                        Server& server = _getServerByClientSocket(eventFd);
+                        //Then the socket is the client fd
+                        int clientSocket = eventFd;
+                        // Read from the socket
+                        char buffer[1024];
+                        int b_read = recv(clientSocket, buffer, sizeof buffer - 1, 0);
+                        if (b_read <= 0) {
+                            // Got error or connection closed by client
+                            if (b_read == 0) {
+                                // Connection closed
+                                std::cout << "Connection closed!" << std::endl;
+                            } else {
+                                perror("recv");
+                                std::cout << "Socket error!" << std::endl;
                             }
                         }
+                        else {
+                            // We got some good data from the browser
+                            // Null terminate the buffer so it doesnt get out of hand
+                            buffer[b_read] = '\0';
+                            // Create the request we are gonna send back
+                            ClientRequest clientRequest = ClientRequest(buffer);
+                            server.sendResponse(clientRequest, clientSocket);
+                        }
+                        // Remove the client socket from server and epoll
+                        close(clientSocket);
+                        server.delClientSocket(clientSocket);
+                        epoll_ctl(epollFd, EPOLL_CTL_DEL, clientSocket, &event);
                     }
                 }
             }
