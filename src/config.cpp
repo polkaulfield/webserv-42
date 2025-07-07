@@ -18,7 +18,6 @@ Config::Config(const Config &src) {
 	*this = src;
 }
 
-
 Config &Config::operator = (const Config &src) {
 	if (this != &src) {
 		_server_name = src._server_name;
@@ -36,46 +35,55 @@ Config &Config::operator = (const Config &src) {
 }
 
 Config::~Config(void) {
-	/*for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
-		if (iter)
-			delete *iter;
-	}*/
-	//std::cout << "Destroying Config" << std::endl;
-	;
+	;//std::cout << "Destroying Config" << std::endl;
 }
 
 //  GETTERS  //
 std::string Config::getServerName(void) const {return _server_name;}
+
 int			Config::getPort(void) const {return _port;}
+
 std::string Config::getHost(void) const {return _host;}
-std::string Config::getRoot(void) const {return _root;};
+
+std::string Config::getRoot(void) const {return _root;}
+
 std::string Config::getIndex(void) {return _index;}
+
 std::string Config::getErrorPage(void) {return _error_page;}
+
 int			Config::getClientMaxBodySize(void) {return _client_max_body_size;}
+
 std::list<Location>	&Config::getLocationList(void) {return _locationList;}
 
 //  SETTERS  //
 void	Config::setServerName(std::string server_name) {_server_name = server_name;}
 
+//istringstream converts the std::string to numbers
 void	Config::setPort(std::string port) {
 	std::istringstream value(port);
 	value >> _port;
 }
 
 void	Config::setHost(std::string host) {_host = host;}
+
 void	Config::setRoot(std::string root) {_root = root;}
+
 void	Config::setIndex(std::string index) {_index = index;}
+
 void	Config::setErrorPage(std::string error_page) {_error_page = error_page;}
 
+//istringstream converts the std::string to numbers
 void	Config::setClientMaxBodySize(std::string client_max_body_size) {
 	std::istringstream value(client_max_body_size);
 	value >> _client_max_body_size;
 }
 
 void	Config::setCgiPath(std::string cgi_path) {_cgi = true; _cgi_path = cgi_path;}
+
 void	Config::setCgiExt(std::string cgi_ext) {_cgi = true; _cgi_ext = cgi_ext;}
 
 //  METHODS  //
+// this function take the string from config and search the begind of value till ';'
 std::string	Config::_takeParams(std::string option, int *error) {
 	int start = option.find(" ");
 	int end = option.find(";");
@@ -210,6 +218,7 @@ int	Config::_checkCgiExt(void) {
 	return 1;
 }
 
+//roots is a tmp string for take the _root string and append the directory of current location
 int Config::checkLocations(void) {
 	std::string roots;
 	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {

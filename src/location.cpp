@@ -38,24 +38,31 @@ Location::~Location(void) {
 }
 
 //  GETTER  //
+
 std::string	Location::getDirectory(void) const {return _directory;}
+
 std::string Location::getRedirect(void) const {return _redirect;}
+
 bool	Location::getGet(void) const {return _GET;}
+
 bool	Location::getPost(void) const {return _POST;}
+
 bool	Location::getDelete(void) const {return _DELETE;}
+
 bool	Location::getAutoindex(void) const {return _autoindex;}
+
 bool	Location::getDirectoryListing(void) const {return _directory_listing;}
 
 //  SETTERS  //
 void	Location::setDirectory(std::string directory) {_directory = directory;}
 
+// This function search where begin the methods and search them looking for the space
 void Location::setAllowMethods(std::string option) {
-	int start = 14;
-	int end = start + 1;
-	//std::string tmp;
+	int start = option.find(" ");
+	int end = ++start + 1;
+
 	if (option.length() <= 15)
 		std::cout << "error in allow methods" <<std::endl;
-
 	while(end > 0 && (size_t)end < option.length()) {
 		if (option[end] == ' ' || option[end] == ';') {
 			if (option.compare(start, end - start, "GET") == 0)
@@ -67,9 +74,6 @@ void Location::setAllowMethods(std::string option) {
 			else
 				std::cout << GREEN << option.substr(start, end - start) << RESET << std::endl;
 			start = end + 1;
-		}
-		else {
-			;//tmp.push_back(option[end]);
 		}
 		end++;
 	}
@@ -108,7 +112,6 @@ int Location::searchLocationConfig(std::string option) {
 	return 0;
 }
 
-
 std::string	Location::_takeParams(std::string option, int *error) {
 	int start = option.find(" ");
 	int end = option.find(";");
@@ -117,8 +120,6 @@ std::string	Location::_takeParams(std::string option, int *error) {
 		*error = 1;
 		return "Error";
 	}
-	//std::cout << start << std::endl;
-	//std::cout << end << std::endl;
 	return option.substr(start + 1, end - start - 1);
 }
 

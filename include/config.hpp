@@ -13,7 +13,6 @@ class Config;
 
 void exitConfig(std::list<Config> &configList, std::ifstream &configFd, std::string error);
 int checkConfigList(std::list<Config> &configList);
-int number_configs(std::string configFile);
 std::list<Config> takeConfig(const char *configFile);
 
 class Config {
