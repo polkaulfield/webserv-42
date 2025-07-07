@@ -3,6 +3,8 @@
 #include "../include/config.hpp"
 #include "../include/clientRequest.hpp"
 
+struct	UploadedFile;
+
 class ServerResponse
 {
 	private:

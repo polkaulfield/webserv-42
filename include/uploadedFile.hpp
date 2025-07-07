@@ -6,7 +6,7 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:51:48 by arcebria          #+#    #+#             */
-/*   Updated: 2025/07/03 21:17:09 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:50:59 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,10 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include "clientRequest.hpp"
-#include "serverResponse.hpp"
 #include "../include/utils.hpp"
+
+class	ServerResponse;
+class	ClientRequest;
 
 struct UploadedFile {
 	std::string _filename;
