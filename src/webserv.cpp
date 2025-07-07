@@ -14,20 +14,16 @@
 
 int main(int argc, char **argv)
 {
-	//std::list<Config> *configList;
-
-	if (argc > 1)
-    	;
-	std::list<Config> configList = takeConfig(argv[1]);
-	if (configList.empty())
-		return 1;
-	configList.front().printConfig();
-    //std::list<Server> serverList;
-    //for (std::list<Config>::iterator config = configList.begin(); config != configList.end(); ++config)
-    //{
-     //   serverList.push_back(Server(*config));
-     //}
-    //PollManager pollManager = PollManager(serverList);
-    //pollManager.start();
+    (void)argv;
+    if (argc != 2)
+        return 1;
+    std::list<Config> configList = takeConfig(argv[1]);
+    std::list<Server> serverList;
+    for (std::list<Config>::iterator config = configList.begin(); config != configList.end(); ++config)
+    {
+        serverList.push_back(Server(*config));
+    }
+    PollManager pollManager(serverList);
+    pollManager.start();
     return 0;
 }

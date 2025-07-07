@@ -14,6 +14,27 @@ Config::Config(void) {
 	_cgi = false;
 }
 
+Config::Config(const Config &src) {
+	*this = src;
+}
+
+
+Config &Config::operator = (const Config &src) {
+	if (this != &src) {
+		_server_name = src._server_name;
+		_port = src._port;
+		_host = src._host;
+		_root = src._root;
+		_index = src._index;
+		_error_page = src._error_page;
+		_cgi = src._cgi;
+		_cgi_path = src._cgi_path;
+		_cgi_ext = src._cgi_ext;
+		_locationList = src._locationList;
+	}
+	return *this;
+}
+
 Config::~Config(void) {
 	/*for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
 		if (iter)
