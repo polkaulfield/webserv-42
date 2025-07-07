@@ -40,7 +40,8 @@ Config::~Config(void) {
 		if (iter)
 			delete *iter;
 	}*/
-	std::cout << "Destroying Config" << std::endl;
+	//std::cout << "Destroying Config" << std::endl;
+	;
 }
 
 //  GETTERS  //
@@ -168,7 +169,7 @@ int	Config::_checkPort(void) {
 }
 
 int Config::_checkIndex(void) {
-	std::string index_root(_root + _index);
+	std::string index_root(_root + "/" + _index);
 	if (!access(index_root.data(), F_OK))
 		return 0;
 	std::cout << GREEN << "\tError in index: " << _index << " is not accesible" << RESET << std::endl;
@@ -189,7 +190,7 @@ int Config::_checkCgiPath(void) {
 		std::cout << GREEN << "\tError: Not found Cgi Path" << RESET << std::endl;
 		return 1;
 	}
-	std::string cgi_root(_root + _cgi_path);
+	std::string cgi_root(_root + _cgi_path + _cgi_ext);
 	if (!access(cgi_root.data(), F_OK))
 		return 0;
 	std::cout << GREEN << "\tError in Cgi Path: " << _cgi_path << " is not accesible" << RESET << std::endl;

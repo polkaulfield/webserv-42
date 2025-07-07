@@ -17,8 +17,7 @@ Location::Location(std::string directory) {
 	_DELETE = false;
 	_autoindex = false;
 	_directory_listing = false;
-	std::cout << _directory << ": is created" << std::endl;
-	//std::cout << _directory << " is created (location)" << std::endl;
+	//std::cout << _directory << ": is created" << std::endl;
 }
 
 Location &Location::operator = (const Location &src) {
@@ -35,7 +34,7 @@ Location &Location::operator = (const Location &src) {
 }
 
 Location::~Location(void) {
-	std::cout << _directory << ": is destroyed" << std::endl;
+	//std::cout << _directory << ": is destroyed" << std::endl;
 }
 
 //  GETTER  //
@@ -59,10 +58,8 @@ void Location::setAllowMethods(std::string option) {
 
 	while(end > 0 && (size_t)end < option.length()) {
 		if (option[end] == ' ' || option[end] == ';') {
-			if (option.compare(start, end - start, "GET") == 0) {
+			if (option.compare(start, end - start, "GET") == 0)
 				_GET = true;
-				std::cout << _directory << "--------------------------------" << std::endl;
-			}
 			else if (option.compare(start, end - start, "POST") == 0)
 				_POST = true;
 			else if (option.compare(start, end - start, "DELETE") == 0)

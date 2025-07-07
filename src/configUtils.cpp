@@ -29,7 +29,7 @@ int checkConfigList(std::list<Config> &configList) {
 				if (++subiter == configList.end())
 					break;
 			}
-			if (iter->getHost() == subiter->getHost() || iter->getPort() == subiter->getPort()) {
+			if (/*iter->getHost() == subiter->getHost() || */iter->getPort() == subiter->getPort()) {
 				std::cout << GREEN << "\tError: This Config has the same Host/Port than other server" << RESET << std::endl;
 				error++;
 				break;
@@ -80,10 +80,8 @@ std::list<Config>	takeConfig(const char *configFile) {
 		}
 		if (tmp.empty())
 			continue ;
-		else if (tmp == "server" && tmp.length() == 6) { // handle in what config[count] we are
+		else if (tmp == "server" && tmp.length() == 6)// handle in what config[count] we are
 			configList.push_back(Config());
-			std::cout << configList.max_size() << std::endl;
-		}
 		else if (configList.empty()) //if not server found
 			exitConfig(configList, configFd, "Error: not found server {}");
 		else if (brackets == 2 && configList.back().getLocationList().empty()) {
@@ -107,9 +105,8 @@ std::list<Config>	takeConfig(const char *configFile) {
 	}
 	//configList.front().printConfig();
 	if (checkConfigList(configList))
-		;//exitConfig(configList, configFd, "");
+		exitConfig(configList, configFd, "");
 	configFd.close();
-	std::cout << "..." << std::endl;
 	return configList;
 }
 
