@@ -89,8 +89,8 @@ std::list<Config>	takeConfig(char *configFile) {
 		}
 	}
 	//configList.front().printConfig();
-	//if (checkConfigList(configList))
-		//exitConfig(config, configFd, "");
+	if (checkConfigList(configList))
+		exitConfig(configList, configFd, "");
 	configFd.close();
 	return configList;
 }
