@@ -91,7 +91,7 @@ void PollManager::start(void)
                 // Iterate for all the events ready set by epoll
                 for (int i = 0; i < numEvents; ++i) {
                     int eventFd = events[i].data.fd;
-                    // Check if the eventFd is a socketfd in the socket list
+                    // Check if the eventFd is a socketfd in the server list
                     if (_serverSocketList.count(eventFd)) {
                         Server &server = _getServerByEventFd(eventFd);
                         // Okay so we are the server socket. Assign this variable for clarity.
@@ -137,7 +137,7 @@ void PollManager::start(void)
                             // Null terminate the buffer so it doesnt get out of hand
                             buffer[b_read] = '\0';
                             // Create the request we are gonna send back
-                            ClientRequest clientRequest = ClientRequest(buffer);
+                            ClientRequest clientRequest = ClientRequest(buffer, server.getConfig());
                             server.sendResponse(clientRequest, clientSocket);
                         }
                         // Remove the client socket from server and epoll

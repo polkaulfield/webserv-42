@@ -38,5 +38,6 @@ class Server
     void delClientSocket(int clientSocket);
     bool hasClientSocket(int clientSocket);
     int getServerSocket();
+    const Config& getConfig(void) const;
 };
 #endif

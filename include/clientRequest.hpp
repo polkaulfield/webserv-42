@@ -2,6 +2,7 @@
 # define CLIENTREQUEST_HPP
 # include <string>
 # include <unistd.h>
+# include "config.hpp"
 
 class ClientRequest
 {
@@ -21,7 +22,7 @@ class ClientRequest
     std::string _getBody(std::string request);
   public:
     ClientRequest();
-    ClientRequest(char *request);
+    ClientRequest(char *request, const Config& config);
     //ClientRequest(const ClientRequest& clientRequest);
     ~ClientRequest();
     //ClientRequest &operator=(const ClientRequest& clientRequest);

@@ -87,8 +87,10 @@ void	Location::setAutoindex(std::string autoindex) {
 }
 
 void	Location::setDirectoryListing(std::string directory_listing) {
-	if (directory_listing == "on")
+	if (directory_listing == "on") {
 		_directory_listing = true;
+		_GET = true;
+	}
 }
 
 //  METHODS

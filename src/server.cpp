@@ -27,8 +27,6 @@ void    Server::_sigintHandle(int signum)
 // This creates a socket listening on PORT. From it we create the clientSocket to handle the connections
 int Server::_createServerSocket(int port)
 {
-    int epollFd;
-    struct epoll_event event;
 
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (_serverSocket == -1)
@@ -56,21 +54,6 @@ int Server::_createServerSocket(int port)
         std::cerr << "Failed to listen." << std::endl;
         close(serverSocket);
         std::exit(1);
-    }
-    epollFd = epoll_create1(0);
-    if (epollFd == -1)
-    {
-        std::cerr << "Failed to create epoll" << std::endl;
-        close(serverSocket);
-        std::exit(1);
-    }
-    event.events = EPOLLIN;
-    event.data.fd = serverSocket;
-    if (epoll_ctl(epollFd, EPOLL_CTL_ADD, serverSocket, &event) == -1) {
-        std::cerr << "Failed to add server socket to epoll instance." << std::endl;
-        close(serverSocket);
-        close(epollFd);
-        return 1;
     }
     return serverSocket;
 }
@@ -119,7 +102,7 @@ bool Server::_checkLocation(const ClientRequest& clientRequest)
             return true;
     }
     return false;*/
-    std::string root = "/" + clientRequest.getPath();
+    std::string root = _config.getRoot() + clientRequest.getPath();
     int	end = 0;
     std::string tmp = root;
     bool value_return = false;
@@ -183,6 +166,11 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
         send(clientSocket, ServerResponse().buildNotFoundResponse().data(), 0, 0);
     }
     close(clientSocket);
+}
+
+const Config& Server::getConfig(void) const
+{
+	return _config;
 }
 
 void Server::printConfig(void) {_config.printConfig();}
