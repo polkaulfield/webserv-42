@@ -16,14 +16,6 @@
 #include <list>
 #define MAX_CLIENTS 50
 
-// This is to close the server socket on ctrl+c
-void    Server::_sigintHandle(int signum)
-{
-    (void)signum;
-    std::cout << "Closing socket!" << std::endl;
-    close(_serverSocket);
-    std::exit(0);
-}
 
 // This creates a socket listening on PORT. From it we create the clientSocket to handle the connections
 int Server::_createServerSocket(int port)
@@ -159,6 +151,16 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
 const Config& Server::getConfig(void) const
 {
 	return _config;
+}
+
+void Server::closeAllSockets(void)
+{
+    for (std::list<int>::iterator clientSocket = _clientSocketList.begin(); clientSocket != _clientSocketList.end(); ++clientSocket)
+    {
+        std::cout << "Closing client socket!" << std::endl;
+        close(*clientSocket);
+    }
+    close(_serverSocket);
 }
 
 void Server::printConfig(void) {_config.printConfig();}

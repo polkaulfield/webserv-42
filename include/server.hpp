@@ -20,7 +20,7 @@ class Server
     std::list<Location> _locationList;
     Config& _config;
 
-    void    _sigintHandle(int signum);
+    static void    _sigintHandle(int signum);
     int _createServerSocket(int port);
     bool _checkLocation(const ClientRequest& clientRequest) ;
 
@@ -37,6 +37,7 @@ class Server
     void addClientSocket(int clientSocket);
     void delClientSocket(int clientSocket);
     bool hasClientSocket(int clientSocket);
+    void closeAllSockets(void);
     int getServerSocket();
     const Config& getConfig(void) const;
 };
