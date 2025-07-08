@@ -3,21 +3,27 @@
 #include <unistd.h>
 #include <wait.h>
 #include <sys/stat.h>
+#include <list>
+#include <iostream>
 #include "../include/serverResponse.hpp"
 #include "../include/server.hpp"
 #include "../include/config.hpp"
-
-#define PORT 9090
+#include "../include/pollManager.hpp"
+#include <poll.h>
+#include <list>
 
 int main(int argc, char **argv)
 {
     (void)argv;
     if (argc != 2)
         return 1;
-    Config *config = takeConfig(argv[1]);
-    Server server = Server(config[0]);
-    config[0].printConfig();
-    server.start();
-
+    std::list<Config> configList = takeConfig(argv[1]);
+    std::list<Server> serverList;
+    for (std::list<Config>::iterator config = configList.begin(); config != configList.end(); ++config)
+    {
+        serverList.push_back(Server(*config));
+    }
+    PollManager pollManager(serverList);
+    pollManager.start();
     return 0;
 }

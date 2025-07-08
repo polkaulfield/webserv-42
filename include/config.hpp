@@ -2,19 +2,18 @@
 # define CONFIG_HPP
 
 # include <unistd.h>
+# include <list>
 # include "location.hpp"
 
 # define GREEN "\x1B[32m"
 # define RESET "\x1B[0m"
 
-struct location_t;
 class Location;
 class Config;
 
-void exitConfig(Config *config, std::ifstream &configFd, std::string error);
-int checkArrayConfig(Config *config);
-int number_configs(std::string configFile);
-Config	*takeConfig(char *configFile);
+void exitConfig(std::list<Config> &configList, std::ifstream &configFd, std::string error);
+int checkConfigList(std::list<Config> &configList);
+std::list<Config> takeConfig(const char *configFile);
 
 class Config {
 private:
@@ -29,9 +28,7 @@ private:
 	bool		_cgi;
 	std::string	_cgi_path;
 	std::string	_cgi_ext;
-	location_t	*_firstLocation;
-	location_t	*_iterLocation;
-	location_t	*_lastLocation;
+	std::list<Location> _locationList;
 //  METHODS  //
 	std::string	_takeParams(std::string option, int *error);
 //  CHECKERS  //
@@ -44,6 +41,8 @@ private:
 public:
 //  CONSTRUCTOR  //
 	Config(void);
+	Config(const Config &src);
+	Config &operator = (const Config &src);
 	~Config(void);
 //  GETTERS  //
 	std::string getServerName(void) const;
@@ -53,9 +52,7 @@ public:
 	std::string getIndex(void);
 	std::string getErrorPage(void);
 	int			getClientMaxBodySize(void);
-	location_t	*getFirstLocation(void) const;
-	location_t	*getIterLocation(void);
-	location_t	*getLastLocation(void);
+	std::list<Location>	&getLocationList(void);
 	//  SETTERS  //
 	void	setServerName(std::string _server_Name);
 	void	setPort(std::string port);
@@ -64,7 +61,6 @@ public:
 	void	setIndex(std::string index);
 	void	setErrorPage(std::string error_page);
 	void	setClientMaxBodySize(std::string client_max_body_size);
-	void	setLocation(location_t *location);
 	void	setCgiPath(std::string cgi_path);
 	void	setCgiExt(std::string cgi_ext);
 //  METHODS  //
@@ -76,7 +72,6 @@ public:
 	int		checkLocations(void);
 
 //  LINEKED LIST LOCATIONS //
-	location_t	*addLocation(std::string _directory);
 	Location	*searchLocation(std::string option);
 };
 

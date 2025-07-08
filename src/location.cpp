@@ -6,18 +6,18 @@
 	_GET = false;
 	_POST = false;
 	_DELETE = false;
+	_autoindex = false;
 	//std::cout << "default is created (location)" << std::endl;
 }
 Location::Location(std::string directory) {
-	_directory = directory;
+	int start = directory.find(" ");
+	_directory = directory.substr(start + 1);
 	_GET = false;
 	_POST = false;
 	_DELETE = false;
-	std::cout << _directory << ": is created" << std::endl;
-	std::cout << _directory << ": is created" << std::endl;
-	std::cout << _directory << ": is created" << std::endl;
-	std::cout << _directory << ": is created" << std::endl;
-	//std::cout << _directory << " is created (location)" << std::endl;
+	_autoindex = false;
+	_directory_listing = false;
+	//std::cout << _directory << ": is created" << std::endl;
 }
 
 Location &Location::operator = (const Location &src) {
@@ -27,34 +27,42 @@ Location &Location::operator = (const Location &src) {
 		_POST = src._POST;
 		_DELETE = src._DELETE;
 		_redirect = src._redirect;
+		_autoindex = src._autoindex;
+		_directory_listing = src._directory_listing;
 	}
 	return *this;
 }
 
 Location::~Location(void) {
-	std::cout << _directory << ": is destroyed" << std::endl;
-	std::cout << _directory << ": is destroyed" << std::endl;
-	std::cout << _directory << ": is destroyed" << std::endl;
-	std::cout << _directory << ": is destroyed" << std::endl;
+	//std::cout << _directory << ": is destroyed" << std::endl;
 }
 
 //  GETTER  //
-std::string	&Location::getDirectory(void) {return _directory;}
-std::string Location::getRedirect(void) {return _redirect;}
-bool	Location::getGet(void) {return _GET;}
-bool	Location::getPost(void) {return _POST;}
-bool	Location::getDelete(void) {return _DELETE;}
+
+std::string	Location::getDirectory(void) const {return _directory;}
+
+std::string Location::getRedirect(void) const {return _redirect;}
+
+bool	Location::getGet(void) const {return _GET;}
+
+bool	Location::getPost(void) const {return _POST;}
+
+bool	Location::getDelete(void) const {return _DELETE;}
+
+bool	Location::getAutoindex(void) const {return _autoindex;}
+
+bool	Location::getDirectoryListing(void) const {return _directory_listing;}
 
 //  SETTERS  //
 void	Location::setDirectory(std::string directory) {_directory = directory;}
 
+// This function search where begin the methods and search them looking for the space
 void Location::setAllowMethods(std::string option) {
-	int start = 14;
-	int end = start + 1;
-	//std::string tmp;
+	int start = option.find(" ");
+	int end = ++start + 1;
+
 	if (option.length() <= 15)
 		std::cout << "error in allow methods" <<std::endl;
-
 	while(end > 0 && (size_t)end < option.length()) {
 		if (option[end] == ' ' || option[end] == ';') {
 			if (option.compare(start, end - start, "GET") == 0)
@@ -67,15 +75,22 @@ void Location::setAllowMethods(std::string option) {
 				std::cout << GREEN << option.substr(start, end - start) << RESET << std::endl;
 			start = end + 1;
 		}
-		else {
-			;//tmp.push_back(option[end]);
-		}
 		end++;
 	}
 }
 
-void	Location::setRedirect(std::string redirect) {
-	_redirect = redirect;
+void	Location::setRedirect(std::string redirect) {_redirect = redirect;}
+
+void	Location::setAutoindex(std::string autoindex) {
+	if (autoindex == "on")
+		_autoindex = true;
+}
+
+void	Location::setDirectoryListing(std::string directory_listing) {
+	if (directory_listing == "on") {
+		_directory_listing = true;
+		_GET = true;
+	}
 }
 
 //  METHODS
@@ -86,8 +101,10 @@ int Location::searchLocationConfig(std::string option) {
 		setAllowMethods(option);
 	else if (option.compare(0, 7, "return ") == 0)
 		setRedirect(_takeParams(option, &error));
-	else if (option.compare(0, 1, "") == 0)
-		;
+	else if (option.compare(0, 10, "autoindex ") == 0)
+		setAutoindex(_takeParams(option, &error));
+	else if (option.compare(0, 18, "directory_listing ") == 0)
+		setDirectoryListing(_takeParams(option, &error));
 	else {
 		std::cout << GREEN << "Error not found: " << option << RESET << std::endl;
 		return 1;
@@ -97,7 +114,6 @@ int Location::searchLocationConfig(std::string option) {
 	return 0;
 }
 
-
 std::string	Location::_takeParams(std::string option, int *error) {
 	int start = option.find(" ");
 	int end = option.find(";");
@@ -106,8 +122,6 @@ std::string	Location::_takeParams(std::string option, int *error) {
 		*error = 1;
 		return "Error";
 	}
-	//std::cout << start << std::endl;
-	//std::cout << end << std::endl;
 	return option.substr(start + 1, end - start - 1);
 }
 

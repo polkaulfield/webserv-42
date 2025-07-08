@@ -1,5 +1,8 @@
 #ifndef CLIENTREQUEST_HPP
-#define CLIENTREQUEST_HPP
+# define CLIENTREQUEST_HPP
+# include <string>
+# include <unistd.h>
+# include "config.hpp"
 
 #include <unistd.h>
 #include "uploadedFile.hpp"
@@ -33,19 +36,18 @@ class ClientRequest
 //------------------------------------------------------------
 
 		std::string _getBody(std::string request);
-
-
-	public:
-		ClientRequest();
-		ClientRequest(char *request);
-		//ClientRequest(const ClientRequest& clientRequest);
-		~ClientRequest();
-		//ClientRequest &operator=(const ClientRequest& clientRequest);
-		void setMethod(const std::string& method);
-		void setPath(const std::string& path);
-		void setHttpVer(const std::string& httpVer);
-		void setReturnCode(const std::string& returnCode);
-		void setContentType(const std::string& contentType);
+        
+        public:
+        ClientRequest();
+        ClientRequest(char *request, const Config& config);
+        //ClientRequest(const ClientRequest& clientRequest);
+        ~ClientRequest();
+        //ClientRequest &operator=(const ClientRequest& clientRequest);
+        void setMethod(const std::string& method);
+        void setPath(const std::string& path);
+        void setHttpVer(const std::string& httpVer);
+        void setReturnCode(const std::string& returnCode);
+        void setContentType(const std::string& contentType);
 
 		std::string getMethod() const;
 		std::string getPath() const;

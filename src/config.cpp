@@ -12,58 +12,78 @@ Config::Config(void) {
 	_error_page = "404.html";
 	_client_max_body_size = 1000000;
 	_cgi = false;
-	//
-	_firstLocation = NULL;
-	_iterLocation = NULL;
-	_lastLocation = NULL;
+}
+
+Config::Config(const Config &src) {
+	*this = src;
+}
+
+Config &Config::operator = (const Config &src) {
+	if (this != &src) {
+		_server_name = src._server_name;
+		_port = src._port;
+		_host = src._host;
+		_root = src._root;
+		_index = src._index;
+		_error_page = src._error_page;
+		_cgi = src._cgi;
+		_cgi_path = src._cgi_path;
+		_cgi_ext = src._cgi_ext;
+		_locationList = src._locationList;
+	}
+	return *this;
 }
 
 Config::~Config(void) {
-	location_t	*iter = _firstLocation;
-	location_t	*tmp;
-	while (iter) {
-		tmp = iter;
-		iter = iter->next;
-		delete tmp;
-	}
-	std::cout << "Destroying Config" << std::endl;
+	;//std::cout << "Destroying Config" << std::endl;
 }
 
 //  GETTERS  //
 std::string Config::getServerName(void) const {return _server_name;}
+
 int			Config::getPort(void) const {return _port;}
+
 std::string Config::getHost(void) const {return _host;}
-std::string Config::getRoot(void) const {return _root;};
+
+std::string Config::getRoot(void) const {return _root;}
+
 std::string Config::getIndex(void) {return _index;}
+
 std::string Config::getErrorPage(void) {return _error_page;}
+
 int			Config::getClientMaxBodySize(void) {return _client_max_body_size;}
-location_t	*Config::getFirstLocation(void) const {return _firstLocation;}
-location_t	*Config::getIterLocation(void) {return _iterLocation;}
-location_t	*Config::getLastLocation(void) {return _lastLocation;}
+
+std::list<Location>	&Config::getLocationList(void) {return _locationList;}
 
 //  SETTERS  //
 void	Config::setServerName(std::string server_name) {_server_name = server_name;}
 
+//istringstream converts the std::string to numbers
 void	Config::setPort(std::string port) {
 	std::istringstream value(port);
 	value >> _port;
 }
 
 void	Config::setHost(std::string host) {_host = host;}
+
 void	Config::setRoot(std::string root) {_root = root;}
+
 void	Config::setIndex(std::string index) {_index = index;}
+
 void	Config::setErrorPage(std::string error_page) {_error_page = error_page;}
 
+//istringstream converts the std::string to numbers
 void	Config::setClientMaxBodySize(std::string client_max_body_size) {
 	std::istringstream value(client_max_body_size);
 	value >> _client_max_body_size;
 }
 
 void	Config::setCgiPath(std::string cgi_path) {_cgi = true; _cgi_path = cgi_path;}
+
 void	Config::setCgiExt(std::string cgi_ext) {_cgi = true; _cgi_ext = cgi_ext;}
-void	Config::setLocation(location_t *location) {_iterLocation = location;}
 
 //  METHODS  //
+// this function take the string from config and search the begind of value till ';'
 std::string	Config::_takeParams(std::string option, int *error) {
 	int start = option.find(" ");
 	int end = option.find(";");
@@ -95,8 +115,9 @@ int	Config::searchConfig(std::string option) {
 		setCgiPath(_takeParams(option, &error));
 	else if (option.compare(0, 8, "cgi_ext ") == 0)
 		setCgiExt(_takeParams(option, &error));
-	else if (option.compare(0, 9, "location ") == 0)
-		addLocation(option);
+	else if (option.compare(0, 9, "location ") == 0) {
+		_locationList.push_back(Location(option));
+	}
 	else {
 		std::cout << GREEN << "Error not found: " << option << RESET << std::endl;
 		return 1;
@@ -106,7 +127,7 @@ int	Config::searchConfig(std::string option) {
 	return 0;
 }
 
-void	Config::printConfig(void) const {
+void	Config::printConfig(void) const{
 	std::cout << "server name: " << _server_name << std::endl;
 	std::cout << "port listen: " << _port << std::endl;
 	std::cout << "host: " << _host << std::endl;
@@ -120,24 +141,24 @@ void	Config::printConfig(void) const {
 		std::cout << "cgi ext:" << _cgi_ext << std::endl;
 	}
 	std::cout << std::endl;
-	location_t *iter = _firstLocation;
-	if (!iter) {
+	if (_locationList.empty()) {
 		std::cout << GREEN << "Not location found" << RESET << std::endl;
 		return ;
 	}
-	while (iter) {
-		std::cout << "Location:" << iter->location->getDirectory() << std::endl;
-		if (iter->location->getGet())
+	for (std::list<Location>::const_iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
+		std::cout << "Location:" << iter->getDirectory() << std::endl;
+		if (iter->getGet())
 			std::cout << "GET (true)" << std::endl;
-		if (iter->location->getPost())
+		if (iter->getPost())
 			std::cout << "POST (true)" << std::endl;
-		if (iter->location->getDelete())
+		if (iter->getDelete())
 			std::cout << "DELETE (true)" << std::endl;
-		if (!iter->location->getRedirect().empty()) {
-			std::cout << "redirect: " << iter->location->getRedirect() << std::endl;
-		}
-		std::cout << std::endl;
-		iter = iter->next;
+		if (!iter->getRedirect().empty())
+			std::cout << "redirect: " << iter->getRedirect() << std::endl;
+		if (iter->getAutoindex())
+			std::cout << "Autoindex: true" << std::endl;
+		if (iter->getDirectoryListing())
+			std::cout << "Directory Listing: true" << std::endl;
 	}
 }
 //  CHECKERS  //
@@ -156,7 +177,7 @@ int	Config::_checkPort(void) {
 }
 
 int Config::_checkIndex(void) {
-	std::string index_root(_root + _index);
+	std::string index_root(_root + "/" + _index);
 	if (!access(index_root.data(), F_OK))
 		return 0;
 	std::cout << GREEN << "\tError in index: " << _index << " is not accesible" << RESET << std::endl;
@@ -177,7 +198,7 @@ int Config::_checkCgiPath(void) {
 		std::cout << GREEN << "\tError: Not found Cgi Path" << RESET << std::endl;
 		return 1;
 	}
-	std::string cgi_root(_root + _cgi_path);
+	std::string cgi_root(_root + _cgi_path + _cgi_ext);
 	if (!access(cgi_root.data(), F_OK))
 		return 0;
 	std::cout << GREEN << "\tError in Cgi Path: " << _cgi_path << " is not accesible" << RESET << std::endl;
@@ -197,19 +218,18 @@ int	Config::_checkCgiExt(void) {
 	return 1;
 }
 
+//roots is a tmp string for take the _root string and append the directory of current location
 int Config::checkLocations(void) {
-	location_t *iter = _firstLocation;
 	std::string roots;
-	while (iter) {
-		if (iter->location->getDirectory() != "/" && iter->location->getDirectory() != "/redirect") {
-			roots.append(_root + iter->location->getDirectory());
+	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
+		if (iter->getDirectory() != "/" && iter->getDirectory() != "/redirect") {
+			roots.append(_root + iter->getDirectory());
 			if (access(roots.data(), F_OK)) {
-				std::cout << GREEN << "\tError in Location: " << iter->location->getDirectory() << " is not accesible" << RESET << std::endl;
+				std::cout << GREEN << "\tError in Location: " << iter->getDirectory() << " is not accesible" << RESET << std::endl;
 				return 1;
 			}
 			roots.clear();
 		}
-		iter = iter->next;
 	}
 	return 0;
 }
@@ -228,32 +248,11 @@ int	Config::checkConfig(void) {
 
 
 //  LINKED LIST LOCATIONS  //
-location_t	*Config::addLocation(std::string _directory) {
-	location_t *tmpLocation = new location_t;
-	if (!_firstLocation) {
-		_firstLocation = tmpLocation;
-		_iterLocation = tmpLocation;
-		_lastLocation = tmpLocation;
-	}
-	_lastLocation->next = tmpLocation;
-	tmpLocation->next = NULL;
-	int start = _directory.find(' ');
-	//Location tmp(_directory.substr(start + 1, _directory.length() - start));
-	tmpLocation->location = new Location(_directory.substr(start + 1, _directory.length() - start));
-	// set default values
-	_lastLocation = tmpLocation;
-	return tmpLocation;
-}
 
 Location	*Config::searchLocation(std::string option) {
-	location_t	*iter = _firstLocation;
-	Location	*location = NULL;
-	while (iter) {
-		if (iter->location->getDirectory() == option) {
-			location = iter->location;
-			break ;
-		}
-		iter = iter->next;
+	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
+		if (iter->getDirectory() == option || iter->getDirectory() + "/" == option)
+			return &*iter;
 	}
-	return location;
+	return NULL;
 }

@@ -76,7 +76,7 @@ ClientRequest::ClientRequest(void)
 	_contentType = "text/html";
 }
 
-ClientRequest::ClientRequest(char *req)
+ClientRequest::ClientRequest(char *req, const Config& config)
 {
 	std::string request = req;
 	std::stringstream ss(request);
@@ -97,12 +97,9 @@ ClientRequest::ClientRequest(char *req)
 	_parseContentType(req);
 //-----------------------------------------------------
 
-	// Debug view params
-	std::cout << "Got this data: " << std::endl << _data << std::endl << "End Data" << std::endl;
-	std::cout << "Got this req: " << std::endl << request << std::endl << "End req" << std::endl;
-
-	// Process path req
-	_path = _path.substr(1);
+    // Process path req
+    //_path = _path.substr(1);
+    _path = config.getRoot() + _path;
 
 	// Append index.html if its a subdir or root dir
 	if (isDir(_path))
