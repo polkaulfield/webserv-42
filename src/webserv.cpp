@@ -14,10 +14,11 @@
 
 int main(int argc, char **argv)
 {
-    (void)argv;
+	std::list<Config> configList;
     if (argc != 2)
-        return 1;
-    std::list<Config> configList = takeConfig(argv[1]);
+        configList = takeConfig("configs/default.conf");
+    else
+        configList = takeConfig(argv[1]);
     std::list<Server> serverList;
     for (std::list<Config>::iterator config = configList.begin(); config != configList.end(); ++config)
     {

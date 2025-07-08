@@ -59,24 +59,12 @@ void    printDict(std::map<std::string, std::string> dict)
 
 bool    startsWith(std::string str, std::string prefix)
 {
-	/*std::cout << str.find_last_of("/")  << "---" << str << "---" << prefix << std::endl;
     int last = str.find_last_of("/");
-    if (prefix.length() == 1 && prefix == "/" && last == 0)
-    {
+    if (prefix.length() == 1 && prefix == "/" && last == 0) {
     	return true;
     }
-	if (str.compare(0, prefix.length(), prefix) == 0)
-	{
-        return true;
+    if (str.compare(0, prefix.length(), prefix) == 0) {
+		return true;
 	}
-    return true;*/
-    int	end = 0;
-    std::string tmp;
-    bool value_return = false;
-    while (value_return || prefix.empty()) {
-    	end = str.find_last_of("/");
-     	tmp = str.substr(0, end);
-    }
-
-    return value_return;
+    return false;
 }
