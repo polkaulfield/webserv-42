@@ -5,14 +5,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "../include/utils.hpp"
 #include <iostream>
 #include <string>
 #include <unistd.h>
 #include <wait.h>
-#include <string.h>
 #include <cstdlib>
+#include <algorithm>
 #include <sys/stat.h>
+#include <list>
 #define MAX_CLIENTS 50
 
 // This is to close the server socket on ctrl+c
@@ -77,15 +77,34 @@ int Server::_createServerSocket(int port)
 
 Server::Server(Config& config) : _config(config)
 {
-	config.printConfig();
+	//config.printConfig();
+	_config = config;
     _locationList = config.getLocationList();
+    _serverSocket = 0;
     _serverSocket = _createServerSocket(config.getPort());
+}
+
+Server::Server(const Server &src) : _config(src._config) {
+	//std::cout << "Server Copy constructor" << std::endl;
+	*this = src;
 }
 
 const Server& Server::operator=(const Server& server)
 {
-    server._config = _config;
-    return server;
+	//std::cout << "Server asign operator" << std::endl;
+	if (this != &server) {
+		for (int i = 0; i < MAX_EVENTS; i++) {
+			_events[i] = server._events[i];
+			_events[i].data.fd = server._events[i].data.fd;
+		}
+		_serverSocket = dup(server._serverSocket);
+	    _locationList = server._locationList;
+	    _config = server._config;
+	    _endpoint = server._endpoint;
+	}
+    //std::cout << _serverSocket << " " << server._serverSocket << std::endl;
+    //_config.printConfig();
+    return *this;
 }
 
 bool Server::_checkLocation(const ClientRequest& clientRequest)
@@ -127,7 +146,26 @@ int Server::getServerSocket(void)
     return _serverSocket;
 }
 
-void Server::sendResponse(ClientRequest clientRequest, int clientSocket)
+void Server::addClientSocket(int clientSocket)
+{
+    _clientSocketList.push_back(clientSocket);
+}
+
+void Server::delClientSocket(int clientSocket)
+{
+    _clientSocketList.remove(clientSocket);
+}
+
+bool Server::hasClientSocket(int clientSocket)
+{
+    std::list<int>::iterator pos;
+    pos = find(_clientSocketList.begin(), _clientSocketList.end(), clientSocket);
+    if (pos != _clientSocketList.end())
+        return true;
+    return false;
+}
+
+void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
 {
     ServerResponse serverResponse;
     std::cout << "Parsing client request" << std::endl;
@@ -146,3 +184,5 @@ void Server::sendResponse(ClientRequest clientRequest, int clientSocket)
     }
     close(clientSocket);
 }
+
+void Server::printConfig(void) {_config.printConfig();}

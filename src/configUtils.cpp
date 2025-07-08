@@ -3,50 +3,47 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include <map>
 #include "../include/config.hpp"
 
 void exitConfig(std::list<Config> &configList, std::ifstream &configFd, std::string error) {
 	if (!error.empty())
 		std::cout << GREEN << error << RESET << std::endl;
 	configFd.close();
-	//delete []configList.back();
-	(void)configList;
+	configList.clear();
 	std::exit(1);
 }
 
-int checkConfigList(std::list<Config> &configList) { // ARREGLAR ESTA FUNCION
+// this function check all the variable, in config list and checks if have duped ports
+int checkConfigList(std::list<Config> &configList) {
 	int error = 0;
 	int count = 0;
 
 	for (std::list<Config>::iterator iter = configList.begin(); iter != configList.end(); ++iter) {
 		std::cout << GREEN << "Checking Config: " << ++count << RESET << std::endl;
 		error += iter->checkConfig();
-		std::cout << std::endl;
+		for (std::list<Config>::iterator subiter = iter; subiter != configList.end(); ++subiter) {
+			if (iter == subiter) {
+				if (++subiter == configList.end())
+					break;
+			}
+			if (/*iter->getHost() == subiter->getHost() || */iter->getPort() == subiter->getPort()) {
+				std::cout << GREEN << "\tError: This Config has the same Host/Port than other server" << RESET << std::endl;
+				error++;
+				break;
+			}
+		}
 	}
 	if (error > 0)
 		std::cout << GREEN << "Found " << error << " errors in the configuration file" <<  RESET << std::endl;
 	else
-		std::cout << GREEN << "OK!" << RESET << std::endl;;
+		std::cout << GREEN << "OK!" << RESET << std::endl;
 	return error;
 }
 
-int number_configs(std::string configFile) {
-	std::ifstream	configFd;
-	std::string		line;
 
-	int server_count = 0;
-	configFd.open(configFile.data(), std::ifstream::in);
-	while (std::getline(configFd, line)) {
-		if (line.compare(0, 6, "server") == 0)
-			server_count++;
-	}
 
-	configFd.close();
-	//std::cout << server_count << std::endl;
-	return server_count;
-}
-
-std::list<Config>	takeConfig(char *configFile) {
+std::list<Config>	takeConfig(const char *configFile) {
 	std::ifstream	configFd;
 	std::string 	line;
 	std::string		tmp;
@@ -56,7 +53,7 @@ std::list<Config>	takeConfig(char *configFile) {
 	configFd.open(configFile, std::ifstream::in);
 	while(std::getline(configFd, line)) {
 		tmp.clear();
-		for (size_t i = 0; i < line.length(); i++) { // remove tabs and space and put inside of tmp
+		for (size_t i = 0; i < line.length(); i++) { // this for remove tabs and space and put inside of tmp
 			if ((tmp.empty()) && (line[i] == ' ' || line[i] == '\t'))
 				continue ;
 			if (line[i] == '#')
@@ -65,11 +62,11 @@ std::list<Config>	takeConfig(char *configFile) {
 		}
 		if (tmp.empty())
 			continue ;
-		else if (tmp == "server" && tmp.length() == 6) // handle in what config[count] we are
+		else if (tmp == "server" && tmp.length() == 6)// append a new Config in the configList
 			configList.push_back(Config());
 		else if (configList.empty()) //if not server found
 			exitConfig(configList, configFd, "Error: not found server {}");
-		else if (brackets == 2 && configList.back().getLocationList().empty()) {
+		else if (brackets == 2 && configList.back().getLocationList().empty()) { //if found a new identation of brackets and not found a Location{}
 			exitConfig(configList, configFd, "Error: brackets found without a location");
 		}
 		else if ((tmp[0] == '{' || tmp[0] == '}') && tmp.length() == 1) { // handle brackets indentation
@@ -79,31 +76,18 @@ std::list<Config>	takeConfig(char *configFile) {
 				brackets--;
 		}
 		else {
-			if (brackets == 0 || brackets >= 3)
+			if (brackets == 0 || brackets >= 3) // wrong indentation lvl
 				exitConfig(configList, configFd, "Error: brackets");
 			else if (brackets == 1 && configList.back().searchConfig(tmp)) // indentation lvl 1
 				exitConfig(configList, configFd, "");
-			else if (brackets == 2 && configList.back().getLocationList().back()->searchLocationConfig(tmp))// indentation lvl 2
+			else if (brackets == 2 && configList.back().getLocationList().back().searchLocationConfig(tmp))// indentation lvl 2
 				exitConfig(configList, configFd, "");
-			//configList.back().printConfig();
 		}
 	}
-	//configList.front().printConfig();
-	//if (checkConfigList(configList))
-		//exitConfig(config, configFd, "");
+	if (configList.empty())
+		exitConfig(configList, configFd, "Error: Config File empty");
+	if (checkConfigList(configList)) // checking the values of all configs in the config list
+		exitConfig(configList, configFd, "");
 	configFd.close();
 	return configList;
 }
-
-
-
-/*int main(int argc, char **argv) {
-	if (argc != 2) {
-		std::cout << GREEN << "Error: 2 arguments needed" << RESET << std::endl;
-		return 1;
-	}
-	Config *config = takeConfig(argv[1]);
-	config[0].printConfig();
-	delete []config;
-	return 0;
-}*/

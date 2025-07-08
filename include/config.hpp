@@ -13,8 +13,7 @@ class Config;
 
 void exitConfig(std::list<Config> &configList, std::ifstream &configFd, std::string error);
 int checkConfigList(std::list<Config> &configList);
-int number_configs(std::string configFile);
-std::list<Config> takeConfig(char *configFile);
+std::list<Config> takeConfig(const char *configFile);
 
 class Config {
 private:
@@ -29,7 +28,7 @@ private:
 	bool		_cgi;
 	std::string	_cgi_path;
 	std::string	_cgi_ext;
-	std::list<Location*> _locationList;
+	std::list<Location> _locationList;
 //  METHODS  //
 	std::string	_takeParams(std::string option, int *error);
 //  CHECKERS  //
@@ -42,6 +41,8 @@ private:
 public:
 //  CONSTRUCTOR  //
 	Config(void);
+	Config(const Config &src);
+	Config &operator = (const Config &src);
 	~Config(void);
 //  GETTERS  //
 	std::string getServerName(void) const;
@@ -51,7 +52,7 @@ public:
 	std::string getIndex(void);
 	std::string getErrorPage(void);
 	int			getClientMaxBodySize(void);
-	std::list<Location*>	getLocationList(void);
+	std::list<Location>	&getLocationList(void);
 	//  SETTERS  //
 	void	setServerName(std::string _server_Name);
 	void	setPort(std::string port);

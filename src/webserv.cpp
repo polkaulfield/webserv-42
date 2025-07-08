@@ -4,6 +4,7 @@
 #include <wait.h>
 #include <sys/stat.h>
 #include <list>
+#include <iostream>
 #include "../include/serverResponse.hpp"
 #include "../include/server.hpp"
 #include "../include/config.hpp"
@@ -22,7 +23,7 @@ int main(int argc, char **argv)
     {
         serverList.push_back(Server(*config));
     }
-    PollManager pollManager = PollManager(serverList);
+    PollManager pollManager(serverList);
     pollManager.start();
     return 0;
 }
