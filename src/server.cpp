@@ -1,6 +1,7 @@
 #include "../include/server.hpp"
 #include "../include/serverResponse.hpp"
 #include "../include/config.hpp"
+#include "../include/utils.hpp"
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -92,31 +93,18 @@ const Server& Server::operator=(const Server& server)
 
 bool Server::_checkLocation(const ClientRequest& clientRequest)
 {
-    /*std::cout << "path: " << clientRequest.getPath() << std::endl;
-    for (std::list<Location*>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter)
+    //std::cout << "path: " << clientRequest.getPath() << std::endl;
+    for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter)
     {
         std::cout << "Checking locations"<< std::endl;
-        //std::cout << startsWith("/" + clientRequest.getPath(), (*iter)->getDirectory()) << std::endl;
-        //std::cout << (*iter)->hasMethod(clientRequest.getMethod()) << std::endl;
-        if ((*iter)->hasMethod(clientRequest.getMethod()) && startsWith("/" + clientRequest.getPath(), (*iter)->getDirectory()))
+        //std::cout << _config.getRoot() + iter->getDirectory() << std::endl;
+        //std::cout << clientRequest.getPath() << std::endl;
+        std::cout << startsWith( clientRequest.getPath(), _config.getRoot() + iter->getDirectory()) << std::endl;
+        std::cout << iter->hasMethod(clientRequest.getMethod()) << std::endl;
+        if (iter->hasMethod(clientRequest.getMethod()) && startsWith(clientRequest.getPath(), _config.getRoot() + iter->getDirectory()))
             return true;
     }
-    return false;*/
-    std::string root = _config.getRoot() + clientRequest.getPath();
-    int	end = 0;
-    std::string tmp = root;
-    bool value_return = false;
-    end = tmp.find_last_of("/");
-    tmp = tmp.substr(0, end + 1);
-    while (!value_return && end != -1) {
-	    end = tmp.find_last_of("/");
-	    tmp = tmp.substr(0, end + 1);
-      	if (_config.searchLocation(tmp) && _config.searchLocation(tmp)->hasMethod(clientRequest.getMethod()))
-       		value_return = true;
-        end = tmp.find_last_of("/");
-        tmp = tmp.substr(0, end);
-    }
-    return value_return;
+    return false;
 }
 
 Server::~Server(void)
