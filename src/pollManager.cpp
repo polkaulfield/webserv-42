@@ -91,7 +91,7 @@ void PollManager::start(void)
                 // Iterate for all the events ready set by epoll
                 for (int i = 0; i < numEvents; ++i) {
                     int eventFd = events[i].data.fd;
-                    // Check if the eventFd is a socketfd in the socket list
+                    // Check if the eventFd is a socketfd in the server list
                     if (_serverSocketList.count(eventFd)) {
                         Server &server = _getServerByEventFd(eventFd);
                         // Okay so we are the server socket. Assign this variable for clarity.
