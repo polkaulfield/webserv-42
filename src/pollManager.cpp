@@ -137,7 +137,7 @@ void PollManager::start(void)
                             // Null terminate the buffer so it doesnt get out of hand
                             buffer[b_read] = '\0';
                             // Create the request we are gonna send back
-                            ClientRequest clientRequest = ClientRequest(buffer);
+                            ClientRequest clientRequest = ClientRequest(buffer, server.getConfig());
                             server.sendResponse(clientRequest, clientSocket);
                         }
                         // Remove the client socket from server and epoll

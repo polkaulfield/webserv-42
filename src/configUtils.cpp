@@ -88,5 +88,6 @@ std::list<Config>	takeConfig(const char *configFile) {
 	if (checkConfigList(configList))
 		exitConfig(configList, configFd, "");
 	configFd.close();
+	configList.front().printConfig();
 	return configList;
 }

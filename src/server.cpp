@@ -102,7 +102,7 @@ bool Server::_checkLocation(const ClientRequest& clientRequest)
             return true;
     }
     return false;*/
-    std::string root = "/" + clientRequest.getPath();
+    std::string root = _config.getRoot() + clientRequest.getPath();
     int	end = 0;
     std::string tmp = root;
     bool value_return = false;
@@ -166,6 +166,11 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
         send(clientSocket, ServerResponse().buildNotFoundResponse().data(), 0, 0);
     }
     close(clientSocket);
+}
+
+const Config& Server::getConfig(void) const
+{
+	return _config;
 }
 
 void Server::printConfig(void) {_config.printConfig();}
