@@ -83,6 +83,7 @@ ClientRequest::ClientRequest(char *req, const Config& config)
     std::string field;
     ss >> field;
     _method = field;
+    std::cout << _method << std::endl;
     ss >> field;
     _path = field;
     ss >> field;
@@ -99,9 +100,9 @@ ClientRequest::ClientRequest(char *req, const Config& config)
 
     // Append index.html if its a subdir or root dir
     if (isDir(_path))
-        _path += "/index.html";
+        _path += "/" + config.getIndex();
     if (_path == "")
-        _path = "index.html";
+        _path = config.getIndex();
     // If there is a query string split into _path and _queryString
     _queryString = "";
     size_t qPos = _path.find("?");

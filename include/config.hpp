@@ -11,24 +11,26 @@
 class Location;
 class Config;
 
-void exitConfig(std::list<Config> &configList, std::ifstream &configFd, std::string error);
-int checkConfigList(std::list<Config> &configList);
-std::list<Config> takeConfig(const char *configFile);
+int					checkConfigList(std::list<Config> &configList);
+void				exitConfig(std::list<Config> &configList, std::ifstream &configFd, std::string error);
+bool				checkChars(std::string src, std::string not_valid_chars);
+bool				checkDigits(std::string src);
+std::list<Config>	takeConfig(const char *configFile);
 
 class Config {
 private:
-	std::string	_server_name;
-	//std::string ip_listen;
-	int			_port;
-	std::string	_host;
-	std::string	_root;
-	std::string	_index;
-	std::string	_error_page;
-	int			_client_max_body_size;
-	bool		_cgi;
-	std::string	_cgi_path;
-	std::string	_cgi_ext;
-	std::list<Location> _locationList;
+	std::string			_server_name;
+	int					_port;
+	std::string			_host;
+	std::string			_root;
+	std::string			_index;
+	std::string			_error_page;
+	int					_client_max_body_size;
+	bool				_cgi;
+	std::string			_cgi_path;
+	std::string			_cgi_ext;
+	std::list<Location>	_locationList;
+	int					_error_parser; // this flag is used for detect errors after parser
 //  METHODS  //
 	std::string	_takeParams(std::string option, int *error);
 //  CHECKERS  //
@@ -45,14 +47,15 @@ public:
 	Config &operator = (const Config &src);
 	~Config(void);
 //  GETTERS  //
-	std::string getServerName(void) const;
-	int			getPort(void) const;
-	std::string getHost(void) const;
-	std::string getRoot(void) const;
-	std::string getIndex(void);
-	std::string getErrorPage(void);
-	int			getClientMaxBodySize(void);
+	std::string			getServerName(void) const;
+	int					getPort(void) const;
+	std::string			getHost(void) const;
+	std::string			getRoot(void) const;
+	std::string			getIndex(void) const;
+	std::string 		getErrorPage(void);
+	int					getClientMaxBodySize(void);
 	std::list<Location>	&getLocationList(void);
+	int					getErrorsParser(void);
 	//  SETTERS  //
 	void	setServerName(std::string _server_Name);
 	void	setPort(std::string port);

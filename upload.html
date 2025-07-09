@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>File Upload</title>
+</head>
+<body>
+  <h1>Upload a File</h1>
+  
+  <input type="file" id="fileInput" />
+  <button id="uploadBtn">Upload</button>
+
+  <p id="status"></p>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const status = document.getElementById('status');
+
+    uploadBtn.addEventListener('click', () => {
+      const file = fileInput.files[0];
+      if (!file) {
+        status.textContent = 'Please select a file first.';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      fetch('/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      .then(response => {
+        if (response.ok) {
+          status.textContent = 'File uploaded successfully!';
+        } else {
+          status.textContent = `Upload failed: ${response.statusText}`;
+        }
+      })
+      .catch(err => {
+        status.textContent = 'Upload error: ' + err.message;
+      });
+    });
+  </script>
+</body>
+</html>
+
