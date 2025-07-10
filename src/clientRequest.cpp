@@ -114,8 +114,7 @@ ClientRequest::ClientRequest(char *req, const Config& config)
     std::cout << "_queryString: " << _queryString << std::endl;
     // URLS have spaced encoded with %20. We replace them with normal spaces
     _path = searchAndReplace(_path, "%20"," ");
-    if (access(_path.c_str(), F_OK) == -1)
-        _path = "";
+
 }
 
 ClientRequest::~ClientRequest(void)

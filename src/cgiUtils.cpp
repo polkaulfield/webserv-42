@@ -24,7 +24,6 @@ std::string getExtension(std::string htmlPath) {
 
 bool	isCGI(std::string htmlPath) {
 	std::string	extension = getExtension(htmlPath);
-	std::cout << "GOT CGI FILE!" << std::endl;
 	return	(extension == ".py" || extension == ".php" || extension == ".sh" ||
 			 extension == ".pl" || extension == ".cgi" || extension == ".bin");
 }
