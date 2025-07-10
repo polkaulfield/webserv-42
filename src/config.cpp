@@ -251,6 +251,16 @@ int Config::checkLocations(void) {
 				std::cout << GREEN << "\tError in Location: " << iter->getDirectory() << " is not accesible" << RESET << std::endl;
 				errors += 1;
 			}
+			if (iter->getIsUpload()) {
+				roots = _root + iter->getUploadDir();
+				if (!access(roots.data(), F_OK)) {
+					iter->setUploadDir(roots);
+				}
+				else {
+					std::cerr << GREEN << "\tError in Location: upload_to " << iter->getUploadDir() << " is not accesible" << RESET << std::endl;
+					errors += 1;
+				}
+			}
 			if (iter->checkAllowMethods()) {
 				std::cerr << GREEN << "\tError in Location " << iter->getDirectory() << ": Need a method" << RESET << std::endl;
 				errors += 1;
