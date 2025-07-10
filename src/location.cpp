@@ -186,9 +186,20 @@ bool	Location::checkUploadDir(std::string root) {
 	std::string tmp = _uploadDir;
 	_uploadDir = root + _uploadDir;
 	if (!access(_uploadDir.data(), F_OK)) {
-		_uploadDir = tmp;
+		//_uploadDir = tmp;
 		return false;
 	}
 	std::cerr << GREEN << "\tError in Location: upload_to " << tmp << " is not accesible" << RESET << std::endl;
+	return true;
+}
+
+bool	Location::checkRedirect(std::string root) {
+	if (_redirect[0] != '/')
+		return false;
+	std::string tmp = _redirect;
+	_redirect = root + _redirect;
+	if (!access(_redirect.data(), F_OK))
+		return false;
+	std::cerr << GREEN << "\tError in Location: return " << tmp << " is not accesible" << RESET << std::endl;
 	return true;
 }

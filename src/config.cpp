@@ -242,11 +242,12 @@ int	Config::_checkCgiExt(void) {
 int Config::checkLocations(void) {
 	int errors = 0;
 	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
-		if (iter->getDirectory() == "/redirect")
-			continue ;
-		errors += iter->checkDirectory(_root);
+		if (iter->getDirectory() != "/redirect")
+			errors += iter->checkDirectory(_root);
 		if (iter->getIsUpload())
 			errors += iter->checkUploadDir(_root);
+		if (!iter->getRedirect().empty())
+			errors += iter->checkRedirect(_root);
 		errors += iter->checkAllowMethods();
 	}
 	return errors;
