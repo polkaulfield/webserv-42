@@ -57,20 +57,14 @@ char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& confi
 }
 
 std::string	getCGIOutput(char **args, char **env, std::string postData) {
-	//int	pipeFd[2];
 	(void) postData;
 	int	outputFd[2];
 
-//	pipe(pipeFd);
 	pipe(outputFd);
 
 	pid_t	pid = fork();
 
 	if (pid == 0) {
-		//close(pipeFd[1]);
-		//dup2(pipeFd[0], STDIN_FILENO);
-		//close(pipeFd[0]);
-
 		close(outputFd[0]);
 		dup2(outputFd[1], STDOUT_FILENO);
 		close(outputFd[1]);
@@ -80,10 +74,6 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 		std::exit(1);
 	}
 	else if (pid > 0) {
-		//close(pipeFd[0]);
-		//if (!postData.empty())
-		//	write(pipeFd[1], postData.c_str(), postData.length());
-		//close(pipeFd[1]);
 		close(outputFd[1]);
 		std::string	output;
 		char	buffer[1024];
@@ -101,8 +91,6 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 		return output;
 	}
 	else {
-		//close(pipeFd[0]);
-	//	close(pipeFd[1]);
 		close(outputFd[0]);
 		close(outputFd[1]);
 		return "";

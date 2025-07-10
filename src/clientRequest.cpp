@@ -56,15 +56,14 @@ std::string	extractConnection(std::string petition) {
 
 //-----------------------------------------------------------
 
-std::string ClientRequest::_getBody(std::string request)
+std::string ClientRequest::_getBody(std::string const& request)
 {
-	std::string body;
-	size_t pos1;
-
-	pos1 = request.find("\r\n\r\n");
+	size_t pos1 = request.find("\r\n\r\n");
 	if (pos1 == std::string::npos)
 		return "";
-	return request.substr(pos1 + 4);
+
+	std::string body = request.substr(pos1 + 4);
+	return body;
 }
 
 ClientRequest::ClientRequest(void)
@@ -79,6 +78,7 @@ ClientRequest::ClientRequest(void)
 ClientRequest::ClientRequest(char *req, const Config& config)
 {
 	std::string request = req;
+
 	std::stringstream ss(request);
 	std::string field;
 	ss >> field;
@@ -97,10 +97,8 @@ ClientRequest::ClientRequest(char *req, const Config& config)
 	_parseContentType(req);
 //-----------------------------------------------------
 
-    // Process path req
-    //_path = _path.substr(1);
-    _path = config.getRoot() + _path;
-
+	// Process path req
+	_path = config.getRoot() + _path;
 	// Append index.html if its a subdir or root dir
 	if (isDir(_path))
 		_path += "/index.html";

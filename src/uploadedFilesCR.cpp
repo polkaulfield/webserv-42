@@ -6,12 +6,13 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:51:45 by arcebria          #+#    #+#             */
-/*   Updated: 2025/07/07 19:59:34 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/07/10 16:19:18 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/uploadedFile.hpp"
 #include "../include/clientRequest.hpp"
+#include <iostream>
 
 void ClientRequest::_parseMultipartPart(std::string const& part) {
 	size_t headerEnd = part.find("\r\n\r\n");

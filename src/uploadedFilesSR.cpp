@@ -76,10 +76,11 @@ bool	ServerResponse::_saveUploadedFile(UploadedFile const& file, std::string con
 void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Config config) {
 	std::vector<UploadedFile> const& files = clientRequest.getUploadedFiles();
 	//std::string	const& uploadDir = config.getUploadDir(); // aun no esta implementado
-	std::string const& uploadDir = "./uploads";
+	std::string const& uploadDir = "/upload";
 
 	//SI ESTAS VERIFIACIONES SE COMPRUEBAN EN CONFIG HABRA QUE QUITARLAS DE AQUI ENTIENDO SUPONGO
 	//verificar si el directorio existe
+	std::cout << "ENTRA SIQUIERA AQUI???" << std::endl;
 	if (uploadDir.empty()) {
 		_response = _buildErrorResponse(500, "Upload directory not configured");
 		return;
@@ -89,7 +90,6 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 		_response = _buildErrorResponse(500, "Upload directory not writable");
 		return;
 	}
-	std::cout << "DEBUG: Procesando " << files.size() << " archivos" << std::endl;
 	for (size_t i = 0; i < files.size(); i++) {
 		UploadedFile const& file = files[i];
 

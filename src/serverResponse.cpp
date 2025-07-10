@@ -94,6 +94,7 @@ ServerResponse::ServerResponse(void)
 ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& config)
 {
 	std::string buffer;
+	//la linea de debajo esta solamente para testear una cosa
 	if (clientRequest.getMethod() == "GET")
 	{
 		if (isCGI(clientRequest.getPath())) {
@@ -113,6 +114,7 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 	}
 	else if (clientRequest.getMethod() == "POST")
 	{
+		std::cout << "ENTRA SIQUIERA AQUI???" << std::endl;
 		if (clientRequest.isMultipart() && !clientRequest.getUploadedFiles().empty())
 			_handleFileUpload(clientRequest, config);
 		else

@@ -35,8 +35,8 @@ class ClientRequest
 		void _parseMultipartPart(std::string const& part);
 //------------------------------------------------------------
 
-		std::string _getBody(std::string request);
-        
+		std::string _getBody(std::string const& request);
+
         public:
         ClientRequest();
         ClientRequest(char *request, const Config& config);
