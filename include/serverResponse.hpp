@@ -32,4 +32,6 @@ class ServerResponse
 	std::string _buildSuccessResponse();
 	std::string _buildErrorResponse(int code, std::string const& message);
 
+	void	_handleDeleteMethod(ClientRequest const& request, Config const& config);
+
 };

@@ -115,9 +115,11 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 	}
 	else if (clientRequest.getMethod() == "POST")
 	{
-		std::cout << "ENTRA SIQUIERA AQUI???" << std::endl;
-		if (clientRequest.isMultipart() && !clientRequest.getUploadedFiles().empty())
+        std::cout << "ENTRA SIQUIERA AQUI???" << std::endl;
+        if(isUpload) {
+            if (clientRequest.isMultipart() && !clientRequest.getUploadedFiles().empty())
 			_handleFileUpload(clientRequest, config);
+        }
 		else
 			_response = _buildErrorResponse(400, "Bad Request");
 	}
