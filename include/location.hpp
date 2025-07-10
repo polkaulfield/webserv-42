@@ -40,6 +40,7 @@ public:
 	bool		getDirectoryListing(void) const;
 	std::string getUploadDir(void) const;
 	int			getErrorsParser(void);
+	bool		getIsUpload(void) const;
 //  METHODS  //
 	int	searchLocationConfig(std::string option);
 	bool hasMethod(std::string method);

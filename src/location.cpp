@@ -64,6 +64,8 @@ std::string Location::getUploadDir(void) const {return _uploadDir;}
 
 int	Location::getErrorsParser(void) {return _error_parser;}
 
+bool	Location::getIsUpload(void) const {return (!_uploadDir.empty()) ? true : false;}
+
 //  SETTERS  //
 void	Location::setDirectory(std::string directory) {_directory = directory;}
 

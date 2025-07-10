@@ -179,7 +179,7 @@ void	Config::printConfig(void) const{ //debug fuction
 			std::cout << "Autoindex: true" << std::endl;
 		if (iter->getDirectoryListing())
 			std::cout << "Directory Listing: true" << std::endl;
-		if (!iter->getUploadDir().empty())
+		if (iter->getIsUpload())
 			std::cout << "Upload Dir: " << iter->getUploadDir() << std::endl;
 	}
 }
