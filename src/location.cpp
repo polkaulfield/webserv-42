@@ -3,20 +3,26 @@
 #include <iostream>
 //  CONSTRUCTORS & DESTRUCTOR //
  Location::Location(void) {
-	_GET = false;
+ 	_GET = false;
 	_POST = false;
 	_DELETE = false;
 	_autoindex = false;
+	_directory_listing = false;
+	_error_parser = false;
+	_error_parser = 0;
 	//std::cout << "default is created (location)" << std::endl;
 }
 Location::Location(std::string directory) {
+	_error_parser = 0;
 	int start = directory.find(" ");
 	_directory = directory.substr(start + 1);
+	_error_parser += checkChars(_directory, " \\,'");
 	_GET = false;
 	_POST = false;
 	_DELETE = false;
 	_autoindex = false;
 	_directory_listing = false;
+	_error_parser = false;
 	//std::cout << _directory << ": is created" << std::endl;
 }
 
@@ -29,6 +35,7 @@ Location &Location::operator = (const Location &src) {
 		_redirect = src._redirect;
 		_autoindex = src._autoindex;
 		_directory_listing = src._directory_listing;
+		_error_parser = src._error_parser;
 	}
 	return *this;
 }
@@ -53,6 +60,12 @@ bool	Location::getAutoindex(void) const {return _autoindex;}
 
 bool	Location::getDirectoryListing(void) const {return _directory_listing;}
 
+std::string Location::getUploadDir(void) const {return _uploadDir;}
+
+int	Location::getErrorsParser(void) {return _error_parser;}
+
+bool	Location::getIsUpload(void) const {return (!_uploadDir.empty()) ? true : false;}
+
 //  SETTERS  //
 void	Location::setDirectory(std::string directory) {_directory = directory;}
 
@@ -61,6 +74,7 @@ void Location::setAllowMethods(std::string option) {
 	int start = option.find(" ");
 	int end = ++start + 1;
 
+	_error_parser += checkChars(option, "\\,'/");
 	if (option.length() <= 15)
 		std::cout << "error in allow methods" <<std::endl;
 	while(end > 0 && (size_t)end < option.length()) {
@@ -79,11 +93,18 @@ void Location::setAllowMethods(std::string option) {
 	}
 }
 
-void	Location::setRedirect(std::string redirect) {_redirect = redirect;}
+void	Location::setRedirect(std::string redirect) {
+	_redirect = redirect;
+	_error_parser += checkChars(redirect, "\\,'");
+}
 
 void	Location::setAutoindex(std::string autoindex) {
 	if (autoindex == "on")
 		_autoindex = true;
+	else if ("off") // value inicialized false
+		;
+	else
+		_error_parser += 1;
 }
 
 void	Location::setDirectoryListing(std::string directory_listing) {
@@ -91,6 +112,15 @@ void	Location::setDirectoryListing(std::string directory_listing) {
 		_directory_listing = true;
 		_GET = true;
 	}
+	else if ("off") // value inicialized false
+		;
+	else
+		_error_parser += 1;
+}
+
+void	Location::setUploadDir(std::string uploadDir) {
+	_uploadDir = uploadDir;
+	_error_parser += checkChars(_uploadDir, " \\,'");
 }
 
 //  METHODS
@@ -105,13 +135,13 @@ int Location::searchLocationConfig(std::string option) {
 		setAutoindex(_takeParams(option, &error));
 	else if (option.compare(0, 18, "directory_listing ") == 0)
 		setDirectoryListing(_takeParams(option, &error));
+	else if (option.compare(0, 10, "upload_to ") == 0)
+		setUploadDir(_takeParams(option, &error));
 	else {
 		std::cout << GREEN << "Error not found: " << option << RESET << std::endl;
 		return 1;
 	}
-	if (error)
-		return 1;
-	return 0;
+	return (error) ? 1 : 0;
 }
 
 std::string	Location::_takeParams(std::string option, int *error) {
@@ -134,4 +164,9 @@ bool Location::hasMethod(std::string method)
     if (_DELETE && method == "DELETE")
         return true;
     return false;
+}
+
+//  CHECKERS  //
+bool	Location::checkAllowMethods(void) {
+	return (!_GET && !_POST && !_DELETE) ? true : false;
 }
