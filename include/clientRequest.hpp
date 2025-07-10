@@ -31,6 +31,8 @@ class ClientRequest
     void setHttpVer(const std::string& httpVer);
     void setReturnCode(const std::string& returnCode);
     void setContentType(const std::string& contentType);
+    void setIsFileUpload(const bool val);
+
 
     std::string getMethod() const;
     std::string getPath() const;
@@ -43,6 +45,7 @@ class ClientRequest
     std::string getAccept() const;
     std::string getAcceptLanguage() const;
     std::string getConnection() const;
+    bool        getIsFileUpload(const bool val);
 
 };
 #endif

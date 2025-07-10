@@ -18,6 +18,7 @@ class Server
     int _serverSocket;
     std::string _endpoint;
     std::list<Location> _locationList;
+    bool                _isFileUpload;
     Config& _config;
 
     static void    _sigintHandle(int signum);
@@ -37,6 +38,7 @@ class Server
     void addClientSocket(int clientSocket);
     void delClientSocket(int clientSocket);
     bool hasClientSocket(int clientSocket);
+    bool isUploading() const;
     void closeAllSockets(void);
     int getServerSocket();
     const Config& getConfig(void) const;

@@ -91,8 +91,9 @@ ServerResponse::ServerResponse(void)
 	_response = "";
 }
 
-ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& config)
+ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& config, bool isUpload)
 {
+    std::cout << "Creating server response" << std::endl;
 	std::string buffer;
 	if (clientRequest.getMethod() == "GET")
 	{
@@ -113,7 +114,9 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 	}
 	else if (clientRequest.getMethod() == "POST")
 	{
-
+        if(isUpload)
+            std::cout << "HERE WE CALL UPLOAD HANDLER" << std::endl;
+        _response = buildNotFoundResponse();
 	}
 }
 
