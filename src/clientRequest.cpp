@@ -76,9 +76,8 @@ ClientRequest::ClientRequest(void)
     _contentType = "text/html";
 }
 
-ClientRequest::ClientRequest(char *req, const Config& config)
+ClientRequest::ClientRequest(std::string request, const Config& config)
 {
-    std::string request = req;
     std::stringstream ss(request);
     std::string field;
     ss >> field;
