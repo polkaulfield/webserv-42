@@ -1,4 +1,5 @@
 #include "../include/config.hpp"
+#include "../include/utils.hpp"
 #include <sstream>
 #include <iostream>
 
@@ -12,6 +13,7 @@ Config::Config(void) {
 	_error_page = "404.html";
 	_client_max_body_size = 1000000;
 	_cgi = false;
+	_error_parser = false;
 }
 
 Config::Config(const Config &src) {
@@ -30,6 +32,8 @@ Config &Config::operator = (const Config &src) {
 		_cgi_path = src._cgi_path;
 		_cgi_ext = src._cgi_ext;
 		_locationList = src._locationList;
+		_client_max_body_size = src._client_max_body_size;
+		_error_parser = src._error_parser;
 	}
 	return *this;
 }
@@ -47,7 +51,7 @@ std::string Config::getHost(void) const {return _host;}
 
 std::string Config::getRoot(void) const {return _root;}
 
-std::string Config::getIndex(void) {return _index;}
+std::string Config::getIndex(void) const {return _index;}
 
 std::string Config::getErrorPage(void) {return _error_page;}
 
@@ -55,27 +59,41 @@ int			Config::getClientMaxBodySize(void) {return _client_max_body_size;}
 
 std::list<Location>	&Config::getLocationList(void) {return _locationList;}
 
+int	Config::getErrorsParser(void) {return _error_parser;}
+
 //  SETTERS  //
 void	Config::setServerName(std::string server_name) {_server_name = server_name;}
 
 //istringstream converts the std::string to numbers
 void	Config::setPort(std::string port) {
+	_error_parser += checkDigits(port);
 	std::istringstream value(port);
 	value >> _port;
 }
 
-void	Config::setHost(std::string host) {_host = host;}
+void	Config::setHost(std::string host) {
+	_host = host;
+	_error_parser += checkChars(host, " .,/\\");
+}
 
-void	Config::setRoot(std::string root) {_root = root;}
+void	Config::setRoot(std::string root) {
+	_root = root;
+	_error_parser += checkChars(root, " \\,'");
+}
 
-void	Config::setIndex(std::string index) {_index = index;}
+void	Config::setIndex(std::string index) {
+	_index = index;
+	_error_parser += checkChars(index, " \\,'");
+}
 
 void	Config::setErrorPage(std::string error_page) {_error_page = error_page;}
 
 //istringstream converts the std::string to numbers
 void	Config::setClientMaxBodySize(std::string client_max_body_size) {
-	std::istringstream value(client_max_body_size);
-	value >> _client_max_body_size;
+	_error_parser += checkDigits(client_max_body_size);
+	std::cout << client_max_body_size << std::endl;
+	std::istringstream(client_max_body_size) >> _client_max_body_size;
+	std::cout << _client_max_body_size << std::endl;
 }
 
 void	Config::setCgiPath(std::string cgi_path) {_cgi = true; _cgi_path = cgi_path;}
@@ -116,6 +134,8 @@ int	Config::searchConfig(std::string option) {
 	else if (option.compare(0, 8, "cgi_ext ") == 0)
 		setCgiExt(_takeParams(option, &error));
 	else if (option.compare(0, 9, "location ") == 0) {
+		if (!_locationList.empty())
+			_error_parser += _locationList.back().getErrorsParser(); // merge the errors from last location with config
 		_locationList.push_back(Location(option));
 	}
 	else {
@@ -127,7 +147,7 @@ int	Config::searchConfig(std::string option) {
 	return 0;
 }
 
-void	Config::printConfig(void) const{
+void	Config::printConfig(void) const{ //debug fuction
 	std::cout << "server name: " << _server_name << std::endl;
 	std::cout << "port listen: " << _port << std::endl;
 	std::cout << "host: " << _host << std::endl;
@@ -159,6 +179,8 @@ void	Config::printConfig(void) const{
 			std::cout << "Autoindex: true" << std::endl;
 		if (iter->getDirectoryListing())
 			std::cout << "Directory Listing: true" << std::endl;
+		if (iter->getIsUpload())
+			std::cout << "Upload Dir: " << iter->getUploadDir() << std::endl;
 	}
 }
 //  CHECKERS  //
@@ -221,17 +243,32 @@ int	Config::_checkCgiExt(void) {
 //roots is a tmp string for take the _root string and append the directory of current location
 int Config::checkLocations(void) {
 	std::string roots;
+	int errors = 0;
 	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
 		if (iter->getDirectory() != "/" && iter->getDirectory() != "/redirect") {
 			roots.append(_root + iter->getDirectory());
 			if (access(roots.data(), F_OK)) {
 				std::cout << GREEN << "\tError in Location: " << iter->getDirectory() << " is not accesible" << RESET << std::endl;
-				return 1;
+				errors += 1;
+			}
+			if (iter->getIsUpload()) {
+				roots = _root + iter->getUploadDir();
+				if (!access(roots.data(), F_OK)) {
+					iter->setUploadDir(roots);
+				}
+				else {
+					std::cerr << GREEN << "\tError in Location: upload_to " << iter->getUploadDir() << " is not accesible" << RESET << std::endl;
+					errors += 1;
+				}
+			}
+			if (iter->checkAllowMethods()) {
+				std::cerr << GREEN << "\tError in Location " << iter->getDirectory() << ": Need a method" << RESET << std::endl;
+				errors += 1;
 			}
 			roots.clear();
 		}
 	}
-	return 0;
+	return errors;
 }
 
 int	Config::checkConfig(void) {

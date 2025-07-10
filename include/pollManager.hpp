@@ -15,6 +15,8 @@ class PollManager
     int _initEpollWithServers(std::list<Server>& serverList);
     Server& _getServerByEventFd(int socket);
     Server& _getServerByClientSocket(int socket);
+    static PollManager* _instance;
+    static void _sigintHandle(int signum);
   public:
     PollManager();
     PollManager(std::list<Server> &serverList);

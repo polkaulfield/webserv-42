@@ -1,6 +1,5 @@
 #include <string>
 #include <unistd.h>
-#include "../include/config.hpp"
 #include "../include/clientRequest.hpp"
 
 struct	UploadedFile;
@@ -15,12 +14,10 @@ class ServerResponse
 		std::string _makeFileBuffer(std::string path);
 		std::string _getExtension(std::string htmlPath);
 
-	public:
-		ServerResponse();
-		ServerResponse(ClientRequest& clientRequest, const Config& config);
-		//ServerResponse(const ServerResponse& serverResponse);
-		~ServerResponse();
-		//ServerResponse &operator=(const ServerResponse& serverResponse);
+  public:
+    ServerResponse();
+    ServerResponse(ClientRequest& clientRequest, const Config& config, bool isUpload);
+    ~ServerResponse();
 
 		std::string getResponse(void);
 		static std::string buildNotFoundResponse(void);
