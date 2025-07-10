@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 	std::list<Config> configList = (argc == 2) ? takeConfig(argv[1]) : takeConfig("configs/default.conf");
     if (configList.empty())
     	return 1;
-    configList.front().printConfig();
+    //configList.front().printConfig();
     std::list<Server> serverList;
     for (std::list<Config>::iterator config = configList.begin(); config != configList.end(); ++config) {
         serverList.push_back(Server(*config));

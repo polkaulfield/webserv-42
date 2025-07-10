@@ -86,7 +86,7 @@ void Location::setAllowMethods(std::string option) {
 			else if (option.compare(start, end - start, "DELETE") == 0)
 				_DELETE = true;
 			else
-				std::cout << GREEN << option.substr(start, end - start) << RESET << std::endl;
+				_error_parser += 1;
 			start = end + 1;
 		}
 		end++;
@@ -168,5 +168,27 @@ bool Location::hasMethod(std::string method)
 
 //  CHECKERS  //
 bool	Location::checkAllowMethods(void) {
-	return (!_GET && !_POST && !_DELETE) ? true : false;
+	if (!(!_GET && !_POST && !_DELETE))
+		return false;
+	std::cerr << GREEN << "\tError in Location " << _directory << ": Need a method" << RESET << std::endl;
+	return true;
+}
+
+bool	Location::checkDirectory(std::string root) {
+	std::string tmp = root + _directory;
+	if (!access(tmp.data(), F_OK))
+		return false;
+	std::cout << GREEN << "\tError in Location: " << _directory << " is not accesible" << RESET << std::endl;
+	return true;
+}
+
+bool	Location::checkUploadDir(std::string root) {
+	std::string tmp = _uploadDir;
+	_uploadDir = root + _uploadDir;
+	if (!access(_uploadDir.data(), F_OK)) {
+		_uploadDir = tmp;
+		return false;
+	}
+	std::cerr << GREEN << "\tError in Location: upload_to " << tmp << " is not accesible" << RESET << std::endl;
+	return true;
 }

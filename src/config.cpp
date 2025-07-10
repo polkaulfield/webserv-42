@@ -91,9 +91,7 @@ void	Config::setErrorPage(std::string error_page) {_error_page = error_page;}
 //istringstream converts the std::string to numbers
 void	Config::setClientMaxBodySize(std::string client_max_body_size) {
 	_error_parser += checkDigits(client_max_body_size);
-	std::cout << client_max_body_size << std::endl;
 	std::istringstream(client_max_body_size) >> _client_max_body_size;
-	std::cout << _client_max_body_size << std::endl;
 }
 
 void	Config::setCgiPath(std::string cgi_path) {_cgi = true; _cgi_path = cgi_path;}
@@ -242,37 +240,22 @@ int	Config::_checkCgiExt(void) {
 
 //roots is a tmp string for take the _root string and append the directory of current location
 int Config::checkLocations(void) {
-	std::string roots;
 	int errors = 0;
 	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
-		if (iter->getDirectory() != "/" && iter->getDirectory() != "/redirect") {
-			roots.append(_root + iter->getDirectory());
-			if (access(roots.data(), F_OK)) {
-				std::cout << GREEN << "\tError in Location: " << iter->getDirectory() << " is not accesible" << RESET << std::endl;
-				errors += 1;
-			}
-			if (iter->getIsUpload()) {
-				roots = _root + iter->getUploadDir();
-				if (!access(roots.data(), F_OK)) {
-					iter->setUploadDir(roots);
-				}
-				else {
-					std::cerr << GREEN << "\tError in Location: upload_to " << iter->getUploadDir() << " is not accesible" << RESET << std::endl;
-					errors += 1;
-				}
-			}
-			if (iter->checkAllowMethods()) {
-				std::cerr << GREEN << "\tError in Location " << iter->getDirectory() << ": Need a method" << RESET << std::endl;
-				errors += 1;
-			}
-			roots.clear();
-		}
+		if (iter->getDirectory() == "/redirect")
+			continue ;
+		errors += iter->checkDirectory(_root);
+		if (iter->getIsUpload())
+			errors += iter->checkUploadDir(_root);
+		errors += iter->checkAllowMethods();
 	}
 	return errors;
 }
 
 int	Config::checkConfig(void) {
 	int error = 0;
+	if (_error_parser)
+		error++;
 	error += _checkRoot();
 	error += _checkPort();
 	error += _checkIndex();
