@@ -13,22 +13,14 @@
 #include <cstdlib>
 #include <algorithm>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <list>
+#include <cstdio>
 #define MAX_CLIENTS 50
-
-// This is to close the server socket on ctrl+c
-void    Server::_sigintHandle(int signum)
-{
-	(void)signum;
-	std::cout << "Closing socket!" << std::endl;
-	close(_serverSocket);
-	std::exit(0);
-}
 
 // This creates a socket listening on PORT. From it we create the clientSocket to handle the connections
 int Server::_createServerSocket(int port)
 {
-
 	int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (_serverSocket == -1)
 	{
@@ -48,6 +40,7 @@ int Server::_createServerSocket(int port)
 	if(bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
 	{
 		std::cerr << "Failed to bind socket" << std::endl;
+		perror("bind");
 		close(serverSocket);
 		std::exit(1);
 	}
@@ -93,6 +86,7 @@ const Server& Server::operator=(const Server& server)
 
 bool Server::_checkLocation(const ClientRequest& clientRequest)
 {
+    _isFileUpload = false;
 	//-----------------------------------------------------------------------------------------------------------------------------
 	//std::cout << "path: " << clientRequest.getPath() << std::endl;
 	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter)
@@ -104,9 +98,29 @@ bool Server::_checkLocation(const ClientRequest& clientRequest)
 		std::cout << iter->hasMethod(clientRequest.getMethod()) << std::endl;
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 		if (iter->hasMethod(clientRequest.getMethod()) && startsWith(clientRequest.getPath(), _config.getRoot() + iter->getDirectory()))
-			return true;
+		{
+		    // Workaround to tell the server if we are uploading
+		    if (iter->getIsUpload())
+			{
+				_isFileUpload = true;
+				std::cout << "We are uploading files!" << std::endl;
+				return true;
+			}
+			if (access(clientRequest.getPath().c_str(), F_OK) != -1)
+				return true;
+		}
 	}
 	return false;
+}
+
+void Server::closeAllSockets(void)
+{
+    for (std::list<int>::iterator clientSocket = _clientSocketList.begin(); clientSocket != _clientSocketList.end(); ++clientSocket)
+    {
+        std::cout << "Closing client socket!" << std::endl;
+        close(*clientSocket);
+    }
+    close(_serverSocket);
 }
 
 Server::~Server(void)
@@ -147,7 +161,7 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
 	if (_checkLocation(clientRequest) != 0)
 	{
 		std::cout << "Ok" << std::endl;
-		serverResponse = ServerResponse(clientRequest, _config);
+		serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
 		send(clientSocket, serverResponse.getResponse().data(), serverResponse.getResponse().length(), 0);
 	}
 	else
@@ -161,6 +175,11 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
 const Config& Server::getConfig(void) const
 {
 	return _config;
+}
+
+bool Server::isUploading() const
+{
+    return _isFileUpload;
 }
 
 void Server::printConfig(void) {_config.printConfig();}

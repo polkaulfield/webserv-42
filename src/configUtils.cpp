@@ -6,10 +6,11 @@
 #include <map>
 #include "../include/config.hpp"
 
-void exitConfig(std::list<Config> &configList, std::ifstream &configFd, std::string error) {
+void exitConfig(std::list<Config> &configList, std::ifstream *configFd, std::string error) {
 	if (!error.empty())
 		std::cout << GREEN << error << RESET << std::endl;
-	configFd.close();
+	if (configFd)
+		(*configFd).close();
 	configList.clear();
 	std::exit(1);
 }
@@ -21,6 +22,7 @@ int checkConfigList(std::list<Config> &configList) {
 
 	for (std::list<Config>::iterator iter = configList.begin(); iter != configList.end(); ++iter) {
 		std::cout << GREEN << "Checking Config: " << ++count << RESET << std::endl;
+		std::cerr << GREEN << "\tErrors Found while parsing: " << iter->getErrorsParser() << RESET << std::endl;
 		error += iter->checkConfig();
 		for (std::list<Config>::iterator subiter = iter; subiter != configList.end(); ++subiter) {
 			if (iter == subiter) {
@@ -41,19 +43,41 @@ int checkConfigList(std::list<Config> &configList) {
 	return error;
 }
 
+bool checkDigits(std::string src) {
+	if (src.empty())
+		return false;
+	for (size_t i = 0; i < src.length(); i++) {
+		if (!isdigit(src[i]))
+			return true;
+	}
+	return false;
+}
 
+bool	checkChars(std::string src, std::string not_valid_chars) {
+	int			pos = 0;
+	if (src.empty())
+		return false;
+	for (size_t i = 0; i < not_valid_chars.length(); i++) {
+		pos = src.find(not_valid_chars[i]);
+		if (pos != -1)
+			return true;
+	}
+	return false;
+}
 
 std::list<Config>	takeConfig(const char *configFile) {
-	std::ifstream	configFd;
-	std::string 	line;
-	std::string		tmp;
-	int				brackets = 0;
+	std::ifstream		configFd;
+	std::string 		line;
+	std::string			tmp;
+	int					brackets = 0;
 	std::list<Config>	configList;
 
+	if (access(configFile, F_OK))
+		exitConfig(configList, NULL, "Error: File not found");
 	configFd.open(configFile, std::ifstream::in);
 	while(std::getline(configFd, line)) {
 		tmp.clear();
-		for (size_t i = 0; i < line.length(); i++) { // this for remove tabs and space and put inside of tmp
+		for (size_t i = 0; i < line.length(); i++) { // this for remove tabs and space and put inside of tmp from config file
 			if ((tmp.empty()) && (line[i] == ' ' || line[i] == '\t'))
 				continue ;
 			if (line[i] == '#')
@@ -65,26 +89,22 @@ std::list<Config>	takeConfig(const char *configFile) {
 		else if (tmp == "server" && tmp.length() == 6)// append a new Config in the configList
 			configList.push_back(Config());
 		else if (configList.empty()) //if not server found
-			exitConfig(configList, configFd, "Error: not found server {}");
-		else if (brackets == 2 && configList.back().getLocationList().empty()) { //if found a new identation of brackets and not found a Location{}
-			exitConfig(configList, configFd, "Error: brackets found without a location");
-		}
-		else if ((tmp[0] == '{' || tmp[0] == '}') && tmp.length() == 1) { // handle brackets indentation
-			if (tmp[0] == '{')
-				brackets++;
-			else
-				brackets--;
-		}
+			exitConfig(configList, &configFd, "Error: not found server {}");
+		else if (brackets == 2 && configList.back().getLocationList().empty()) //if found a new identation of brackets and not found a Location{}
+			exitConfig(configList, &configFd, "Error: brackets found without a location");
+		else if ((tmp[0] == '{' || tmp[0] == '}') && tmp.length() == 1)
+			(tmp == "{") ? brackets++ : brackets--;// handle brackets indentation
 		else {
 			if (brackets == 0 || brackets >= 3) // wrong indentation lvl
-				exitConfig(configList, configFd, "Error: brackets");
+				exitConfig(configList, &configFd, "Error: brackets");
 			else if (brackets == 1 && configList.back().searchConfig(tmp)) // indentation lvl 1
-				exitConfig(configList, configFd, "");
+				exitConfig(configList, &configFd, "");
 			else if (brackets == 2 && configList.back().getLocationList().back().searchLocationConfig(tmp))// indentation lvl 2
-				exitConfig(configList, configFd, "");
+				exitConfig(configList, &configFd, "");
 		}
 	}
-	//configList.front().printConfig();
+	if (configList.empty())
+		exitConfig(configList, &configFd, "Error: File is empty");
 	if (checkConfigList(configList))
 		;//exitConfig(configList, configFd, "");
 	configFd.close();

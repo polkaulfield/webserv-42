@@ -91,8 +91,9 @@ ServerResponse::ServerResponse(void)
 	_response = "";
 }
 
-ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& config)
+ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& config, bool isUpload)
 {
+    std::cout << "Creating server response" << std::endl;
 	std::string buffer;
 	//la linea de debajo esta solamente para testear una cosa
 	if (clientRequest.getMethod() == "GET")

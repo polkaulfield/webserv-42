@@ -7,6 +7,9 @@
 #include <cstdlib>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <signal.h>
+
+PollManager* PollManager::_instance = NULL;
 
 Server& PollManager::_getServerByEventFd(int socket)
 {
@@ -68,8 +71,24 @@ PollManager::~PollManager(void)
 
 }
 
+void    PollManager::_sigintHandle(int sigint)
+{
+    (void)sigint;
+    std::cout << "CTRL+C detected! Closing all fds!" << std::endl;
+    if (_instance != NULL)
+    {
+        for (std::list<Server>::iterator server = _instance->_serverList.begin(); server != _instance->_serverList.end(); ++server)
+        {
+            server->closeAllSockets();
+        }
+    }
+    std::exit(0);
+}
+
 void PollManager::start(void)
 {
+    _instance = this;
+    signal(SIGINT, _sigintHandle);
     struct epoll_event event, events[MAX_EVENTS];
     // Create all the epoll needed stuff.
     int epollFd = _initEpollWithServers(_serverList);
@@ -105,7 +124,7 @@ void PollManager::start(void)
                             perror("accept");
                             continue;
                         }
-                        std::cout << "Got a new connection!" << std::endl;
+                        std::cout << "Got a new cozennection!" << std::endl;
                         event.events = EPOLLIN;
                         event.data.fd = clientSocket;
                         if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientSocket, &event) == -1) {

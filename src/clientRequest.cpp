@@ -77,46 +77,45 @@ ClientRequest::ClientRequest(void)
 
 ClientRequest::ClientRequest(char *req, const Config& config)
 {
-	std::string request = req;
-
-	std::stringstream ss(request);
-	std::string field;
-	ss >> field;
-	_method = field;
-	ss >> field;
-	_path = field;
-	ss >> field;
-	_httpVer = field;
-	_data = _getBody(request);
+    std::string request = req;
+    std::stringstream ss(request);
+    std::string field;
+    ss >> field;
+    _method = field;
+    std::cout << _method << std::endl;
+    ss >> field;
+    _path = field;
+    ss >> field;
+    _httpVer = field;
+    _data = _getBody(request);
 
 //-----------------------------------------------------
 	//PARTE DE UPLOAD FILES
 	_isMultipart = false;
 	_boundary = "";
 	_uploadedFiles.clear();
-	_parseContentType(req);
+	_parseContentType(request);
 //-----------------------------------------------------
 
-	// Process path req
-	_path = config.getRoot() + _path;
-	// Append index.html if its a subdir or root dir
-	if (isDir(_path))
-		_path += "/index.html";
-	if (_path == "")
-		_path = "index.html";
-	// If there is a query string split into _path and _queryString
-	_queryString = "";
-	size_t qPos = _path.find("?");
-	if (qPos != std::string::npos)
-	{
-		_queryString = _path.substr(qPos + 1);
-		_path = _path.substr(0, qPos);
-	}
-	std::cout << "_queryString: " << _queryString << std::endl;
-	// URLS have spaced encoded with %20. We replace them with normal spaces
-	_path = searchAndReplace(_path, "%20"," ");
-	if (access(_path.c_str(), F_OK) == -1)
-		_path = "";
+    _path = config.getRoot() + _path;
+
+    // Append index.html if its a subdir or root dir
+    if (isDir(_path))
+        _path += "/" + config.getIndex();
+    if (_path == "")
+        _path = config.getIndex();
+    // If there is a query string split into _path and _queryString
+    _queryString = "";
+    size_t qPos = _path.find("?");
+    if (qPos != std::string::npos)
+    {
+        _queryString = _path.substr(qPos + 1);
+        _path = _path.substr(0, qPos);
+    }
+    std::cout << "_queryString: " << _queryString << std::endl;
+    // URLS have spaced encoded with %20. We replace them with normal spaces
+    _path = searchAndReplace(_path, "%20"," ");
+
 }
 
 ClientRequest::~ClientRequest(void)
