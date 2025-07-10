@@ -116,7 +116,7 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 	else if (clientRequest.getMethod() == "POST")
 	{
         if(isUpload)
-            std::cout << "HERE WE CALL UPLOAD HANDLER" << std::endl;
+			_handleFileUpload(clientRequest, config);
         _response = buildNotFoundResponse();
 	}
 }

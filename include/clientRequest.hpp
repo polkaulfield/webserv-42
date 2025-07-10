@@ -27,7 +27,7 @@ class ClientRequest
 		std::string _boundary;
 		std::vector<UploadedFile> _uploadedFiles;
 		bool _isMultipart;
-    std::string _getBody(std::string request);
+		std::string _getBody(std::string const& request);
   public:
     ClientRequest();
     ClientRequest(char *request, const Config& config);
@@ -61,31 +61,7 @@ class ClientRequest
     std::string getConnection() const;
     bool        getIsFileUpload(const bool val);
 
-		std::string _getBody(std::string const& request);
-
-        public:
-        ClientRequest();
-        ClientRequest(char *request, const Config& config);
-        //ClientRequest(const ClientRequest& clientRequest);
-        ~ClientRequest();
-        //ClientRequest &operator=(const ClientRequest& clientRequest);
-        void setMethod(const std::string& method);
-        void setPath(const std::string& path);
-        void setHttpVer(const std::string& httpVer);
-        void setReturnCode(const std::string& returnCode);
-        void setContentType(const std::string& contentType);
-
-		std::string getMethod() const;
-		std::string getPath() const;
-		std::string getHttpVer() const;
-		std::string getReturnCode() const;
-		std::string getContentType() const;
-		std::string getData() const;
-		std::string getQuery() const;
-		std::string getUserAgent() const;
-		std::string getAccept() const;
-		std::string getAcceptLanguage() const;
-		std::string getConnection() const;
+	//std::string _getBody(std::string const& request);
 
 //--------------------------------------------------------------------
 		//uploadFile
