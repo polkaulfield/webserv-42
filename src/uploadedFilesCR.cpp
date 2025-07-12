@@ -6,7 +6,7 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:51:45 by arcebria          #+#    #+#             */
-/*   Updated: 2025/07/10 16:19:18 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/07/12 19:29:49 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,26 +59,42 @@ void ClientRequest::_parseMultipartPart(std::string const& part) {
 	_uploadedFiles.push_back(file);
 }
 
-bool ClientRequest::_parseMultipartBody(std::string const& _data) {
-	if (_data.empty() || _boundary.empty())
+bool ClientRequest::_parseMultipartBody(std::string const& data) {
+	if (data.empty() || _boundary.empty())
 		return false;
 
 	std::string delimiter = "--" + _boundary;
-	size_t pos = 0;
-	while (_data.find(delimiter) != std::string::npos) {
-		pos += delimiter.length();
+	std::string endDelimiter = "--" + _boundary + "--";
+
+	size_t	pos = 0;
+	size_t	start = data.find(delimiter);
+	if (start == std::string::npos)
+		return false;
+
+	pos = start + delimiter.length();
+
+	while (pos < data.length()) {
 		//saltar el "\r\n" despues de boundary"
-		if (pos + 2 < _data.length() && _data.substr(pos, 2) == "\r\n")
+		if (pos + 2 < data.length() && data.substr(pos, 2) == "\r\n")
 			pos += 2;
-		size_t nextDelimiter = _data.find(delimiter, pos);
+		size_t nextDelimiter = data.find(delimiter, pos);
 		if (nextDelimiter == std::string::npos)
 			break;
 
-		std::string part = _data.substr(pos, nextDelimiter - pos);
-		_parseMultipartPart(part);
-		pos = nextDelimiter;
+		std::string part = data.substr(pos, nextDelimiter - pos);
+
+		if (part.length() >= 2 && part.substr(part.length() - 2) == "/r/n")
+			part = part.substr(0, part.length() - 2);
+
+		if (!part.empty())
+			_parseMultipartPart(part);
+
+		pos = nextDelimiter + delimiter.length();
+
+		if (pos + 2 < data.length() && data.substr(pos, 2) == "--")
+			break;
 	}
-	return true;
+	return !_uploadedFiles.empty();
 }
 
 std::string	ClientRequest::_extractBoundary(std::string const& _contentType) {

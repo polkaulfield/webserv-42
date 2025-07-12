@@ -59,10 +59,12 @@ std::string	extractConnection(std::string petition) {
 std::string ClientRequest::_getBody(std::string const& request)
 {
 	size_t pos1 = request.find("\r\n\r\n");
+
 	if (pos1 == std::string::npos)
 		return "";
 
 	std::string body = request.substr(pos1 + 4);
+
 	return body;
 }
 
@@ -95,6 +97,7 @@ ClientRequest::ClientRequest(char *req, const Config& config)
 	_boundary = "";
 	_uploadedFiles.clear();
 	_parseContentType(request);
+
 //-----------------------------------------------------
 
     _path = config.getRoot() + _path;

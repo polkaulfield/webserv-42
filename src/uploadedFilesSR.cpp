@@ -55,6 +55,7 @@ bool	ServerResponse::_validateUploadedFile(UploadedFile const& file, Config conf
 bool	ServerResponse::_saveUploadedFile(UploadedFile const& file, std::string const& uploadDir) {
 	std::string fullPath = uploadDir;
 
+
 	if (!fullPath.empty() && fullPath[fullPath.length() - 1] != '/')
 		fullPath += "/";
 	fullPath += file._filename;
@@ -75,12 +76,26 @@ bool	ServerResponse::_saveUploadedFile(UploadedFile const& file, std::string con
 
 void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Config config) {
 	std::vector<UploadedFile> const& files = clientRequest.getUploadedFiles();
-	//std::string	const& uploadDir = config.getUploadDir(); // aun no esta implementado
-	std::string const& uploadDir = "/upload";
+
+	std::string locationPath = clientRequest.getPath();
+	if (locationPath.find(config.getRoot()) == 0)
+		locationPath = locationPath.substr(config.getRoot().length());
+
+	size_t pos = locationPath.find('/', 1);
+	if (pos != std::string::npos)
+		locationPath = locationPath.substr(0, pos);
+
+	Location* location = config.searchLocation(locationPath);
+	if (!location || !location->getIsUpload()) {
+		_response = _buildErrorResponse(500, "Upload not configured for this location");
+		return;
+	}
+
+	std::string const& uploadDir = location->getUploadDir();
+	std::cout << uploadDir << std::endl;
 
 	//SI ESTAS VERIFIACIONES SE COMPRUEBAN EN CONFIG HABRA QUE QUITARLAS DE AQUI ENTIENDO SUPONGO
 	//verificar si el directorio existe
-	std::cout << "ENTRA SIQUIERA AQUI???" << std::endl;
 	if (uploadDir.empty()) {
 		_response = _buildErrorResponse(500, "Upload directory not configured");
 		return;
@@ -92,7 +107,6 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 	}
 	for (size_t i = 0; i < files.size(); i++) {
 		UploadedFile const& file = files[i];
-
 		//si filename esta vacio pasamos al siguiente
 		if (file._filename.empty())
 			continue;
@@ -102,6 +116,7 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 			_response = _buildErrorResponse(400, "Invalid file: " + file._filename);
 			return;
 		}
+
 
 		if(!_saveUploadedFile(file, uploadDir)) {
 			_response = _buildErrorResponse(500, "Failed to save file: " + file._filename);
