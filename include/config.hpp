@@ -52,10 +52,13 @@ public:
 	std::string			getHost(void) const;
 	std::string			getRoot(void) const;
 	std::string			getIndex(void) const;
-	std::string 		getErrorPage(void);
-	int					getClientMaxBodySize(void);
+	std::string 		getErrorPage(void) const;
+	int					getClientMaxBodySize(void) const;
+	bool				getIsCgi(void) const;
+	std::string			getCgiExt(void) const;
 	std::list<Location>	&getLocationList(void);
 	int					getErrorsParser(void);
+
 	//  SETTERS  //
 	void	setServerName(std::string _server_Name);
 	void	setPort(std::string port);

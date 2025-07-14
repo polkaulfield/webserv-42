@@ -53,11 +53,15 @@ std::string Config::getRoot(void) const {return _root;}
 
 std::string Config::getIndex(void) const {return _index;}
 
-std::string Config::getErrorPage(void) {return _error_page;}
+std::string Config::getErrorPage(void) const {return _error_page;}
 
-int			Config::getClientMaxBodySize(void) {return _client_max_body_size;}
+int			Config::getClientMaxBodySize(void) const {return _client_max_body_size;}
 
 std::list<Location>	&Config::getLocationList(void) {return _locationList;}
+
+bool		Config::getIsCgi(void) const {return _cgi;}
+
+std::string	Config::getCgiExt(void) const {return _cgi_ext;}
 
 int	Config::getErrorsParser(void) {return _error_parser;}
 
