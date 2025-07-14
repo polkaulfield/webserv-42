@@ -6,7 +6,7 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:51:45 by arcebria          #+#    #+#             */
-/*   Updated: 2025/07/12 19:29:49 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/07/14 20:49:48 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ bool ClientRequest::_parseMultipartBody(std::string const& data) {
 
 		std::string part = data.substr(pos, nextDelimiter - pos);
 
-		if (part.length() >= 2 && part.substr(part.length() - 2) == "/r/n")
+		if (part.length() >= 2 && part.substr(part.length() - 2) == "\r\n")
 			part = part.substr(0, part.length() - 2);
 
 		if (!part.empty())
