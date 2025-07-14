@@ -45,6 +45,9 @@ public:
 	int	searchLocationConfig(std::string option);
 	bool hasMethod(std::string method);
 //  CHECKERS  //
-bool	checkAllowMethods(void);
+	bool	checkAllowMethods(void);
+	bool	checkDirectory(std::string root);
+	bool	checkUploadDir(std::string root);
+	bool	checkRedirect(std::string root);
 };
 #endif

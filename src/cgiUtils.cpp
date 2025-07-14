@@ -22,8 +22,12 @@ std::string getExtension(std::string htmlPath) {
 	return htmlPath.substr(pos);
 }
 
-bool	isCGI(std::string htmlPath) {
+bool	isCGI(std::string htmlPath, const Config &config) {
 	std::string	extension = getExtension(htmlPath);
+	if (!config.getIsCgi())
+		return false;
+	if (extension != config.getCgiExt())
+		return false;
 	return	(extension == ".py" || extension == ".php" || extension == ".sh" ||
 			 extension == ".pl" || extension == ".cgi" || extension == ".bin");
 }

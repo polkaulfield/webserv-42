@@ -3,7 +3,6 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-#include <map>
 #include "../include/config.hpp"
 
 void exitConfig(std::list<Config> &configList, std::ifstream *configFd, std::string error) {
@@ -21,8 +20,12 @@ int checkConfigList(std::list<Config> &configList) {
 	int count = 0;
 
 	for (std::list<Config>::iterator iter = configList.begin(); iter != configList.end(); ++iter) {
-		std::cout << GREEN << "Checking Config: " << ++count << RESET << std::endl;
-		std::cerr << GREEN << "\tErrors Found while parsing: " << iter->getErrorsParser() << RESET << std::endl;
+		std::cerr << GREEN << "Checking Config: " << ++count << RESET << std::endl;
+		std::cerr << GREEN << "\tErrors Found while parsing: ";
+		if (iter->getErrorsParser())
+			std::cerr << iter->getErrorsParser() << RESET << std::endl;
+		else
+			std::cerr << "OK" << RESET << std::endl;
 		error += iter->checkConfig();
 		for (std::list<Config>::iterator subiter = iter; subiter != configList.end(); ++subiter) {
 			if (iter == subiter) {
@@ -108,6 +111,6 @@ std::list<Config>	takeConfig(const char *configFile) {
 	if (checkConfigList(configList))
 		;//exitConfig(configList, configFd, "");
 	configFd.close();
-	configList.front().printConfig();
+	//configList.front().printConfig();
 	return configList;
 }

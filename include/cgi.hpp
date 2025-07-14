@@ -24,7 +24,7 @@ class Cgi
 };
 
 std::string getExtension(std::string htmlPath);
-bool	isCGI(std::string htmlPath);
+bool	isCGI(std::string htmlPath, const Config &config);
 std::string	determineInterpreter(std::string htmlPath);
 std::string extractMethod(std::string petition);
 std::string	extractQuery(std::string petition);
