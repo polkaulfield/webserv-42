@@ -2,7 +2,7 @@
 #include "../include/serverResponse.hpp"
 #include <iostream>
 
-std::string	ServerResponse::_buildSuccessResponse() {
+std::string	ServerResponse::_buildUploadSuccessResponse() {
 	std::string body = "<h1>Files uploaded succesfully!</h1>";
 	std::string response = "HTTP/1.1 201 Created\r\n";
 
@@ -123,5 +123,5 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 			return;
 		}
 	}
-	_response = _buildSuccessResponse();
+	_response = _buildUploadSuccessResponse();
 }

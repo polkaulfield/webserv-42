@@ -16,6 +16,7 @@ $(INCLUDES_DIR)/config.hpp \
 $(INCLUDES_DIR)/pollManager.hpp
 SRCS := $(SRC_DIR)/webserv.cpp \
 $(SRC_DIR)/utils.cpp \
+$(SRC_DIR)/deleteMethod.cpp \
 $(SRC_DIR)/uploadedFilesCR.cpp \
 $(SRC_DIR)/uploadedFilesSR.cpp \
 $(SRC_DIR)/clientRequest.cpp \

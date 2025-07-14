@@ -29,9 +29,14 @@ class ServerResponse
 	bool	_validateUploadedFile(UploadedFile const& file, Config config);
 	bool	_isAllowedType(std::string const& filename, std::string const& contentType);
 	bool	_saveUploadedFile(UploadedFile const& file, std::string const& uploadDir);
-	std::string _buildSuccessResponse();
+	std::string _buildUploadSuccessResponse();
 	std::string _buildErrorResponse(int code, std::string const& message);
 
-	void	_handleDeleteMethod(ClientRequest const& request, Config const& config);
+//DELETE METHODS
+
+	void	_handleDeleteRequest(ClientRequest const& request, Config const& config);
+	bool	_isDeleteAllowed(std::string const& method, std::string const& path, Config config);
+	bool	_deleteFiles(std::string const& path);
+	std::string _buildSuccessDeleteResponse();
 
 };

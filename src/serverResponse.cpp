@@ -122,6 +122,8 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 		else
 			_response = _buildErrorResponse(400, "Bad Request");
 	}
+	else if (clientRequest.getMethod() == "DELETE")
+		_handleDeleteRequest(clientRequest, config);
 }
 
 ServerResponse::~ServerResponse(void)
