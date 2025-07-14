@@ -6,7 +6,7 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:51:45 by arcebria          #+#    #+#             */
-/*   Updated: 2025/07/14 20:49:48 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/07/14 22:26:15 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "../include/clientRequest.hpp"
 #include <iostream>
 
-void ClientRequest::_parseMultipartPart(std::string const& part) {
+void ClientRequest::_parseMultipartPart(std::string const &part)
+{
 	size_t headerEnd = part.find("\r\n\r\n");
 	if (headerEnd == std::string::npos)
 		return;
@@ -24,7 +25,8 @@ void ClientRequest::_parseMultipartPart(std::string const& part) {
 	UploadedFile file;
 
 	size_t nameStart = headers.find("name=\"");
-	if (nameStart != std::string::npos) {
+	if (nameStart != std::string::npos)
+	{
 		nameStart += 6;
 		size_t nameEnd = headers.find("\"", nameStart);
 		if (nameEnd != std::string::npos)
@@ -32,7 +34,8 @@ void ClientRequest::_parseMultipartPart(std::string const& part) {
 	}
 
 	size_t filenameStart = headers.find("filename=\"");
-	if (filenameStart != std::string::npos) {
+	if (filenameStart != std::string::npos)
+	{
 		filenameStart += 10;
 		size_t filenameEnd = headers.find("\"", filenameStart);
 		if (filenameEnd != std::string::npos)
@@ -40,7 +43,8 @@ void ClientRequest::_parseMultipartPart(std::string const& part) {
 	}
 
 	size_t cTypeStart = headers.find("Content-Type:");
-	if (cTypeStart != std::string::npos) {
+	if (cTypeStart != std::string::npos)
+	{
 		cTypeStart += 13;
 		size_t cTypeEnd = headers.find("\r\n", cTypeStart);
 		if (cTypeEnd == std::string::npos)
@@ -50,8 +54,8 @@ void ClientRequest::_parseMultipartPart(std::string const& part) {
 	}
 
 	file._content.clear();
-	//content se extrae asi por si hay datos binarios y no se corte con algun \0
-	//los archivos binarios puedes contener muchos bytes 0x00 lo que cortaria la extraccion de su contenido
+	// content se extrae asi por si hay datos binarios y no se corte con algun \0
+	// los archivos binarios puedes contener muchos bytes 0x00 lo que cortaria la extraccion de su contenido
 	for (size_t i = 0; i < content.length(); i++)
 		file._content.push_back(content[i]);
 	file._size = content.length();
@@ -59,22 +63,24 @@ void ClientRequest::_parseMultipartPart(std::string const& part) {
 	_uploadedFiles.push_back(file);
 }
 
-bool ClientRequest::_parseMultipartBody(std::string const& data) {
+bool ClientRequest::_parseMultipartBody(std::string const &data)
+{
 	if (data.empty() || _boundary.empty())
 		return false;
 
 	std::string delimiter = "--" + _boundary;
 	std::string endDelimiter = "--" + _boundary + "--";
 
-	size_t	pos = 0;
-	size_t	start = data.find(delimiter);
+	size_t pos = 0;
+	size_t start = data.find(delimiter);
 	if (start == std::string::npos)
 		return false;
 
 	pos = start + delimiter.length();
 
-	while (pos < data.length()) {
-		//saltar el "\r\n" despues de boundary"
+	while (pos < data.length())
+	{
+		// saltar el "\r\n" despues de boundary"
 		if (pos + 2 < data.length() && data.substr(pos, 2) == "\r\n")
 			pos += 2;
 		size_t nextDelimiter = data.find(delimiter, pos);
@@ -97,8 +103,9 @@ bool ClientRequest::_parseMultipartBody(std::string const& data) {
 	return !_uploadedFiles.empty();
 }
 
-std::string	ClientRequest::_extractBoundary(std::string const& _contentType) {
-	size_t	pos = _contentType.find("boundary=");
+std::string ClientRequest::_extractBoundary(std::string const &_contentType)
+{
+	size_t pos = _contentType.find("boundary=");
 	if (pos == std::string::npos)
 		return "";
 	size_t end = _contentType.find(";", pos);
@@ -108,7 +115,8 @@ std::string	ClientRequest::_extractBoundary(std::string const& _contentType) {
 	return _contentType.substr(start, end - start);
 }
 
-std::string ClientRequest::_trimLeft(std::string _contentType) {
+std::string ClientRequest::_trimLeft(std::string _contentType)
+{
 	size_t i = 0;
 
 	while (i < _contentType.length() && (_contentType[i] == ' ' || _contentType[i] == '\t'))
@@ -118,23 +126,25 @@ std::string ClientRequest::_trimLeft(std::string _contentType) {
 	return _contentType.substr(i);
 }
 
-
-void ClientRequest::_parseContentType(std::string const& request) {
-	size_t	ctPos = request.find("Content-Type:");
+void ClientRequest::_parseContentType(std::string const &request)
+{
+	size_t ctPos = request.find("Content-Type:");
 	if (ctPos == std::string::npos)
 		return;
-	size_t	end = request.find("\r\n", ctPos);
+	size_t end = request.find("\r\n", ctPos);
 	if (end == std::string::npos)
 		return;
-	size_t	start = ctPos + 13;
+	size_t start = ctPos + 13;
 	_contentType = _trimLeft(request.substr(start, end - start));
 
-	//detectar si hay multipart
-	if (_contentType.find("multipart/form-data") != std::string::npos) {
+	// detectar si hay multipart
+	if (_contentType.find("multipart/form-data") != std::string::npos)
+	{
 		_isMultipart = true;
 		_boundary = _extractBoundary(_contentType);
 
-		if(_boundary.empty()) {
+		if (_boundary.empty())
+		{
 			_isMultipart = false;
 			return;
 		}
@@ -143,4 +153,3 @@ void ClientRequest::_parseContentType(std::string const& request) {
 			_isMultipart = false;
 	}
 }
-

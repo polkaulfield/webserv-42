@@ -127,6 +127,10 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 		if(isUpload) {
 			if (clientRequest.isMultipart())
 				_handleFileUpload(clientRequest, config);
+			else
+				_response = _buildErrorResponse(400, "Not a multipart request");
+			if (_response.empty())
+				_response = _buildErrorResponse(500, "Upload processing failed");
 		}
 		else
 			_response = _buildErrorResponse(400, "Bad Request");
