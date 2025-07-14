@@ -3,22 +3,19 @@
 # include <string>
 # include <unistd.h>
 # include "config.hpp"
+# include <map>
 
 class ClientRequest
 {
   private:
+    std::map<std::string, std::string> _headerMap;
     std::string _method;
     std::string _path;
     std::string _httpVer;
     std::string _queryString;
-    std::string _returnCode;
-    std::string _contentType;
     std::string _data;
-    std::string _userAgent;
-    std::string _accept;
-    std::string _acceptLanguage;
-    std::string _connection;
 
+    std::map<std::string, std::string>  _createHeaderMap(std::string request);
     std::string _getBody(std::string request);
   public:
     ClientRequest();
@@ -37,6 +34,8 @@ class ClientRequest
     std::string getMethod() const;
     std::string getPath() const;
     std::string getHttpVer() const;
+    std::map<std::string, std::string> getHeaderMap() const;
+    std::string getHeaderValue(const std::string& key) const;
     std::string getReturnCode() const;
     std::string getContentType() const;
     std::string getData() const;

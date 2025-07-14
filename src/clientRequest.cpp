@@ -8,54 +8,6 @@
 #include <iostream>
 #include <bits/stdc++.h>
 
-//-----------------------------------------------------
-//esto pasarlo a un utils mejor no?
-std::string	extractUserAgent(std::string petition) {
-	size_t	pos = petition.find("User-Agent:");
-	if (pos == std::string::npos)
-		return "";
-	size_t	start = pos + 12;
-	size_t	end = petition.find("\r\n", start);
-	if (end == std::string::npos)
-		return "";
-	return petition.substr(start, end - start);
-}
-
-std::string	extractAccept(std::string petition) {
-	size_t	pos = petition.find("Accept: ");
-	if (pos == std::string::npos)
-		return "";
-	size_t	start = pos + 8;
-	size_t	end = petition.find("\r\n", start);
-	if (end == std::string::npos)
-		return "";
-	return petition.substr(start, end - start);
-}
-
-std::string	extractAcceptLanguage(std::string petition) {
-	size_t	pos = petition.find("Accept-Language: ");
-	if (pos == std::string::npos)
-		return "";
-	size_t	start = pos + 17;
-	size_t	end = petition.find("\r\n", start);
-	if (end == std::string::npos)
-		return "";
-	return petition.substr(start, end - start);
-}
-
-std::string	extractConnection(std::string petition) {
-	size_t	pos = petition.find("Connection: ");
-	if (pos == std::string::npos)
-		return "";
-	size_t	start = pos + 12;
-	size_t	end = petition.find("\r\n", start);
-	if (end == std::string::npos)
-		return "";
-	return petition.substr(start, end - start);
-}
-
-//-----------------------------------------------------------
-
 std::string ClientRequest::_getBody(std::string request)
 {
     std::string body;
@@ -72,8 +24,28 @@ ClientRequest::ClientRequest(void)
     _method = "GET";
     _path = "/";
     _httpVer = "HTTP/1.1";
-    _returnCode = "200 OK";
-    _contentType = "text/html";
+}
+
+std::map<std::string, std::string> ClientRequest::_createHeaderMap(std::string request)
+{
+    std::stringstream ss(request);
+    std::map<std::string, std::string> map;
+    std::string line, key, value;
+    size_t pos;
+    while (getline(ss, line))
+    {
+        // If we reach the body, quit
+        pos = line.find("\r\n\r\n");
+        if (pos != std::string::npos)
+            break ;
+        pos = line.find(':', 0);
+        if (pos == std::string::npos)
+            continue;
+        key = line.substr(0, pos);
+        value = line.substr(pos + 2);
+        map[key] = value;
+    }
+    return map;
 }
 
 ClientRequest::ClientRequest(std::string request, const Config& config)
@@ -87,14 +59,8 @@ ClientRequest::ClientRequest(std::string request, const Config& config)
     _path = field;
     ss >> field;
     _httpVer = field;
+    _headerMap = _createHeaderMap(request);
     _data = _getBody(request);
-
-    // Debug view params
-    std::cout << "Got this data: " << std::endl << _data << std::endl << "End Data" << std::endl;
-    std::cout << "Got this req: " << std::endl << request << std::endl << "End req" << std::endl;
-
-    // Process path req
-    //_path = _path.substr(1);
     _path = config.getRoot() + _path;
 
     // Append index.html if its a subdir or root dir
@@ -110,7 +76,6 @@ ClientRequest::ClientRequest(std::string request, const Config& config)
         _queryString = _path.substr(qPos + 1);
         _path = _path.substr(0, qPos);
     }
-    std::cout << "_queryString: " << _queryString << std::endl;
     // URLS have spaced encoded with %20. We replace them with normal spaces
     _path = searchAndReplace(_path, "%20"," ");
     if (access(_path.data(), F_OK)) // handle error page
@@ -123,32 +88,27 @@ ClientRequest::~ClientRequest(void)
 }
 
 // Method Getter
-void ClientRequest::setMethod(const std::string& method) { _method = method; }
 std::string ClientRequest::getMethod() const { return _method; }
 
 // Path Getter
-void ClientRequest::setPath(const std::string& path) { _path = path; }
 std::string ClientRequest::getPath() const { return _path; }
 
 // HTTP Version Getter
-void ClientRequest::setHttpVer(const std::string& httpVer) { _httpVer = httpVer; }
 std::string ClientRequest::getHttpVer() const { return _httpVer; }
 
-// Return Code Getter
-void ClientRequest::setReturnCode(const std::string& returnCode) { _returnCode = returnCode; }
-std::string ClientRequest::getReturnCode() const { return _returnCode; }
-
-// Content Type Getter
-void ClientRequest::setContentType(const std::string& contentType) { _contentType = contentType; }
-std::string ClientRequest::getContentType() const { return _contentType; }
-
+// Data getter
 std::string ClientRequest::getData() const { return _data; }
 
 // Query getter
 std::string ClientRequest::getQuery() const { return _queryString; }
 
-// some other getters
-std::string ClientRequest::getUserAgent() const { return _userAgent; }
-std::string ClientRequest::getAccept() const { return _accept; }
-std::string ClientRequest::getAcceptLanguage() const { return _acceptLanguage; }
-std::string ClientRequest::getConnection() const { return _connection; }
+// Header dict getters
+std::map<std::string, std::string> ClientRequest::getHeaderMap() const { return _headerMap; }
+std::string ClientRequest::getHeaderValue(const std::string& key) const {
+    try {
+        return _headerMap.at(key);
+    }
+    catch (...) {
+        return "";
+    }
+}

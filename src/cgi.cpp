@@ -17,7 +17,7 @@ char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& confi
 
 	// Variables basicas
 	envVars.push_back("REQUEST_METHOD=" + clientRequest.getMethod());
-	envVars.push_back("CONTENT_TYPE=" + clientRequest.getContentType());
+	envVars.push_back("CONTENT_TYPE=" + clientRequest.getHeaderValue("Content-Type"));
 	envVars.push_back("SCRIPT_NAME=" + clientRequest.getPath());
 	envVars.push_back("QUERY_STRING=" + clientRequest.getQuery());
 	std::cout << "QUERY ENV" << clientRequest.getQuery() << std::endl;
@@ -39,16 +39,11 @@ char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& confi
 	envVars.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	envVars.push_back("SERVER_PROTOCOL=HTTP/1.1");
 	envVars.push_back("SERVER_SOFTWARE=WebServ/1.0");
-	envVars.push_back("HTTP_USER_AGENT=" + clientRequest.getUserAgent());
-	envVars.push_back("HTTP_ACCEPT=" + clientRequest.getAccept());
-	envVars.push_back("HTTP_ACCEPT_LANGUAGE=" + clientRequest.getAcceptLanguage());
-	envVars.push_back("HTTP_CONNECTION=" + clientRequest.getConnection());
+	envVars.push_back("HTTP_USER_AGENT=" + clientRequest.getHeaderValue("User-Agent"));
+	envVars.push_back("HTTP_ACCEPT=" + clientRequest.getHeaderValue("Accept"));
+	envVars.push_back("HTTP_ACCEPT_LANGUAGE=" + clientRequest.getHeaderValue("Accept-Language"));
+	envVars.push_back("HTTP_CONNECTION=" + clientRequest.getHeaderValue("Connection"));
 	envVars.push_back("PATH_INFO=" + clientRequest.getPath());
-
-	//variables opcionales que se podrian implementar. Hacen falta??
-	//envVars.push_back("PATH_INFO=");
-	//envVars.push_back("REMOTE_ADDR=127.0.0.1");
-
 	return vectorToArray(envVars);
 }
 

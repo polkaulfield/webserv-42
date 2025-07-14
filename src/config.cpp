@@ -1,5 +1,4 @@
 #include "../include/config.hpp"
-#include "../include/utils.hpp"
 #include <sstream>
 #include <iostream>
 
