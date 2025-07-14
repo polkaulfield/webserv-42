@@ -78,6 +78,8 @@ ClientRequest::ClientRequest(std::string request, const Config& config)
     }
     // URLS have spaced encoded with %20. We replace them with normal spaces
     _path = searchAndReplace(_path, "%20"," ");
+    if (access(_path.data(), F_OK)) // handle error page
+    	_path = config.getRoot() + "/" + config.getErrorPage();
 }
 
 ClientRequest::~ClientRequest(void)

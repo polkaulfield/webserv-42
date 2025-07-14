@@ -97,7 +97,7 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 	std::string buffer;
 	if (clientRequest.getMethod() == "GET")
 	{
-		if (isCGI(clientRequest.getPath())) {
+		if (isCGI(clientRequest.getPath(), config)) {
 			Cgi				cgiHandler;
 			buffer = cgiHandler.execScript(clientRequest, config);
 			_response = _buildOkResponse(buffer, clientRequest.getPath());
