@@ -3,7 +3,6 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-#include <map>
 #include "../include/config.hpp"
 
 void exitConfig(std::list<Config> &configList, std::ifstream *configFd, std::string error) {
@@ -108,6 +107,6 @@ std::list<Config>	takeConfig(const char *configFile) {
 	if (checkConfigList(configList))
 		;//exitConfig(configList, configFd, "");
 	configFd.close();
-	configList.front().printConfig();
+//	configList.front().printConfig();
 	return configList;
 }

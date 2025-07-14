@@ -124,7 +124,7 @@ void PollManager::start(void)
                             perror("accept");
                             continue;
                         }
-                        std::cout << "Got a new cozennection!" << std::endl;
+                        std::cout << "Got a new connection!" << std::endl;
                         event.events = EPOLLIN;
                         event.data.fd = clientSocket;
                         if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientSocket, &event) == -1) {
