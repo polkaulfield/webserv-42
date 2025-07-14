@@ -55,6 +55,14 @@ Content-Length: " + intToString(buffer.length()) +
 	return response.data();
 }
 
+std::string ServerResponse::_buildCgiResponse(std::string &buffer)
+{
+	std::string response = "HTTP/1.1 200 OK\n\
+Content-Length: " + intToString(buffer.length()) + "\n" + buffer;
+    std::cout << "RESPONSE: " << std::endl << response.data() << std::endl;
+	return response.data();
+}
+
 // Here we return the classic 404 not found
 std::string ServerResponse::buildNotFoundResponse(void)
 {
@@ -98,9 +106,10 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 	if (clientRequest.getMethod() == "GET")
 	{
 		if (isCGI(clientRequest.getPath(), config)) {
+		    std::cout << "cgi detected!" << std::endl;
 			Cgi				cgiHandler;
 			buffer = cgiHandler.execScript(clientRequest, config);
-			_response = _buildOkResponse(buffer, clientRequest.getPath());
+			_response = _buildCgiResponse(buffer);
 		}
 		else if (!clientRequest.getPath().empty())
 		{
