@@ -8,26 +8,6 @@
 #include <iostream>
 #include <bits/stdc++.h>
 
-// std::string ClientRequest::_getBody(std::string request)
-// {
-// 	std::cout << "Full request:\n" << request << std::endl;
-
-// 	size_t pos1 = request.find("\r\n\r\n");
-
-// 	if (pos1 == std::string::npos) {
-// 		std::cout << "Delimiter not found!" << std::endl;
-// 		return "";
-// 	}
-
-// 	std::cout << "Header end position: " << pos1 << std::endl;
-
-// 	std::string body = request.substr(pos1 + 4);
-
-// 	std::cout << "Body:\n" << body << std::endl;
-
-// 	return body;
-// }
-
 std::string ClientRequest::_getBody(std::string request)
 {
 	size_t pos1 = request.find("\r\n\r\n");
