@@ -92,13 +92,17 @@ bool Server::_checkLocation(const ClientRequest& clientRequest)
 	{
 		std::cout << "Checking locations"<< std::endl;
 
-		std::cout << startsWith( clientRequest.getPath(), _config.getRoot() + iter->getDirectory()) << std::endl;
-		std::cout << iter->hasMethod(clientRequest.getMethod()) << std::endl;
-
+		//std::cout << startsWith( clientRequest.getPath(), _config.getRoot() + iter->getDirectory())  << " " << _config.getRoot() + iter->getDirectory() << std::endl;
+		//std::cout << iter->hasMethod(clientRequest.getMethod())  << " " << clientRequest.getMethod()<< std::endl;
+		//std::cout << clientRequest.getPath() << "-" << _config.getRoot() + iter->getDirectory() << std::endl;
 		if (iter->hasMethod(clientRequest.getMethod()) && startsWith(clientRequest.getPath(), _config.getRoot() + iter->getDirectory()))
 		{
 		    // Workaround to tell the server if we are uploading
-		    if (iter->getIsUpload())
+			//std::cout << "_--_" << clientRequest.getPath() << std::endl;
+			if (clientRequest.getMethod() == "DELETE") {
+				return true;
+			}
+		    if (iter->getIsUpload() && clientRequest.getMethod() == "POST")
 			{
 				_isFileUpload = true;
 				std::cout << "We are uploading files!" << std::endl;
@@ -159,6 +163,11 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
 	if (_checkLocation(clientRequest) != 0)
 	{
 		std::cout << "Ok" << std::endl;
+		serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+		send(clientSocket, serverResponse.getResponse().data(), serverResponse.getResponse().length(), 0);
+	}
+	else if (clientRequest.getMethod() == "GET") {
+		clientRequest.setPath(_config.getRoot() + "/" + _config.getErrorPage());
 		serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
 		send(clientSocket, serverResponse.getResponse().data(), serverResponse.getResponse().length(), 0);
 	}
