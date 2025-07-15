@@ -144,7 +144,6 @@ void PollManager::start(void)
 						// Read from the socket
 						std::string fullRequest;
 						char buffer[4096];
-						int	totalBytesRead = 0;
 						int	expectedBodyLength = -1;
 						bool	headersComplete = false;
 
@@ -162,10 +161,9 @@ void PollManager::start(void)
 								}
 								break;
 							}
-							buffer[b_read] = '\0';
-							fullRequest += buffer;
-							totalBytesRead += b_read;
-
+							//buffer[b_read] = '\0';
+							//fullRequest += buffer;
+							fullRequest.append(buffer, b_read);
 
 							// Verificar si los headers están completos
 							if (!headersComplete) {
@@ -202,7 +200,7 @@ void PollManager::start(void)
 							// We got some good data from the browser
 							// Null terminate the buffer so it doesnt get out of hand
 							// Create the request we are gonna send back
-							ClientRequest clientRequest = ClientRequest(const_cast<char*>(fullRequest.c_str()), server.getConfig());
+							ClientRequest clientRequest = ClientRequest(fullRequest, server.getConfig());
 							server.sendResponse(clientRequest, clientSocket);
 						}
 						// Remove the client socket from server and epoll

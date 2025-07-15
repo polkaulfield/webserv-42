@@ -69,8 +69,8 @@ std::string ServerResponse::buildNotFoundResponse(void)
 	std::string response = "HTTP/1.1 404 Not Found\r\n\
 Content-Type: text/html\r\n\
 Content-Length: 0\r\n\
-Connection: Closed";
-	return response.data();
+Connection: Closed\r\n\r\n";
+	return response;
 }
 
 // Some cpp magic to load a file to an array of chars
@@ -92,8 +92,6 @@ std::string ServerResponse::_getExtension(std::string htmlPath) {
 	return htmlPath.substr(pos);
 }
 
-// Constructor
-
 ServerResponse::ServerResponse(void)
 {
 	_response = "";
@@ -103,7 +101,7 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 {
 	std::cout << "Creating server response" << std::endl;
 	std::string buffer;
-	//la linea de debajo esta solamente para testear una cosa
+
 	if (clientRequest.getMethod() == "GET")
 	{
 		if (isCGI(clientRequest.getPath(), config)) {

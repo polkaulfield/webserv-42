@@ -77,12 +77,6 @@ bool	ServerResponse::_saveUploadedFile(UploadedFile const& file, std::string con
 void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Config config) {
 	std::vector<UploadedFile> const& files = clientRequest.getUploadedFiles();
 
-	std::cout << "=== UPLOAD DEBUG ===" << std::endl;
-    std::cout << "Files count: " << files.size() << std::endl;
-    std::cout << "Is multipart: " << (clientRequest.isMultipart() ? "YES" : "NO") << std::endl;
-    std::cout << "Boundary: [" << clientRequest.getBoundary() << "]" << std::endl;
-    std::cout << "===================" << std::endl;
-
 	std::string locationPath = clientRequest.getPath();
 	if (locationPath.find(config.getRoot()) == 0)
 		locationPath = locationPath.substr(config.getRoot().length());
@@ -123,15 +117,11 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 			return;
 		}
 
-
 		if(!_saveUploadedFile(file, uploadDir)) {
 			_response = _buildErrorResponse(500, "Failed to save file: " + file._filename);
 			return;
 		}
 	}
-
-	std::cout << "Response set: " << (!_response.empty() ? "YES" : "NO") << std::endl;
-    std::cout << "Response length: " << _response.length() << std::endl;
 
 	_response = _buildUploadSuccessResponse();
 }

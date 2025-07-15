@@ -42,47 +42,47 @@ std::string ClientRequest::_getBody(std::string request)
 
 ClientRequest::ClientRequest(void)
 {
-    _method = "GET";
-    _path = "/";
-    _httpVer = "HTTP/1.1";
+	_method = "GET";
+	_path = "/";
+	_httpVer = "HTTP/1.1";
 }
 
 std::map<std::string, std::string> ClientRequest::_createHeaderMap(std::string request)
 {
-    std::stringstream ss(request);
-    std::map<std::string, std::string> map;
-    std::string line, key, value;
-    size_t pos;
-    while (getline(ss, line))
-    {
-        // If we reach the body, quit
-        pos = line.find("\r\n\r\n");
-        if (pos != std::string::npos)
-            break ;
-        pos = line.find(':', 0);
-        if (pos == std::string::npos)
-            continue;
-        key = line.substr(0, pos);
-        value = line.substr(pos + 2);
-        map[key] = value;
-    }
-    return map;
+	std::stringstream ss(request);
+	std::map<std::string, std::string> map;
+	std::string line, key, value;
+	size_t pos;
+	while (getline(ss, line))
+	{
+		// If we reach the body, quit
+		pos = line.find("\r\n\r\n");
+		if (pos != std::string::npos)
+			break ;
+		pos = line.find(':', 0);
+		if (pos == std::string::npos)
+			continue;
+		key = line.substr(0, pos);
+		value = line.substr(pos + 2);
+		map[key] = value;
+	}
+	return map;
 }
 
 ClientRequest::ClientRequest(std::string request, const Config& config)
 {
-    std::stringstream ss(request);
-    std::string field;
-    ss >> field;
-    _method = field;
-    std::cout << _method << std::endl;
-    ss >> field;
-    _path = field;
-    ss >> field;
-    _httpVer = field;
-    _headerMap = _createHeaderMap(request);
+	std::stringstream ss(request);
+	std::string field;
+	ss >> field;
+	_method = field;
+	std::cout << _method << std::endl;
+	ss >> field;
+	_path = field;
+	ss >> field;
+	_httpVer = field;
+	_headerMap = _createHeaderMap(request);
 
-    _data = _getBody(request);
+	_data = _getBody(request);
 
 //-----------------------------------------------------
 	//PARTE DE UPLOAD FILES
@@ -93,25 +93,25 @@ ClientRequest::ClientRequest(std::string request, const Config& config)
 
 //-----------------------------------------------------
 
-    _path = config.getRoot() + _path;
+	_path = config.getRoot() + _path;
 
-    // Append index.html if its a subdir or root dir
-    if (isDir(_path))
-        _path += "/" + config.getIndex();
-    if (_path == "")
-        _path = config.getIndex();
-    // If there is a query string split into _path and _queryString
-    _queryString = "";
-    size_t qPos = _path.find("?");
-    if (qPos != std::string::npos)
-    {
-        _queryString = _path.substr(qPos + 1);
-        _path = _path.substr(0, qPos);
-    }
-    // URLS have spaced encoded with %20. We replace them with normal spaces
-    _path = searchAndReplace(_path, "%20"," ");
-    if (access(_path.data(), F_OK)) // handle error page
-    	_path = config.getRoot() + "/" + config.getErrorPage();
+	// Append index.html if its a subdir or root dir
+	if (isDir(_path) && _method == "GET") // esta linea jodia las POST requests
+		_path += "/" + config.getIndex();
+	if (_path == "")
+		_path = config.getIndex();
+	// If there is a query string split into _path and _queryString
+	_queryString = "";
+	size_t qPos = _path.find("?");
+	if (qPos != std::string::npos)
+	{
+		_queryString = _path.substr(qPos + 1);
+		_path = _path.substr(0, qPos);
+	}
+	// URLS have spaced encoded with %20. We replace them with normal spaces
+	_path = searchAndReplace(_path, "%20"," ");
+	if (access(_path.data(), F_OK)) // handle error page
+		_path = config.getRoot() + "/" + config.getErrorPage();
 }
 
 ClientRequest::~ClientRequest(void)
@@ -137,12 +137,12 @@ std::string ClientRequest::getQuery() const { return _queryString; }
 // Header dict getters
 std::map<std::string, std::string> ClientRequest::getHeaderMap() const { return _headerMap; }
 std::string ClientRequest::getHeaderValue(const std::string& key) const {
-    try {
-        return _headerMap.at(key);
-    }
-    catch (...) {
-        return "";
-    }
+	try {
+		return _headerMap.at(key);
+	}
+	catch (...) {
+		return "";
+	}
 }
 
 
