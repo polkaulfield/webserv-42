@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test DELETE Method</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #c82333;
+        }
+        .create-btn {
+            background-color: #28a745;
+        }
+        .create-btn:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            min-height: 20px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        input[type="text"] {
+            width: 200px;
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ Test DELETE Method</h1>
+
+        <!-- Test 1: Crear archivo para test -->
+        <div class="test-section">
+            <h2>1. Crear Archivo de Test</h2>
+            <p>Primero crea un archivo para poder eliminarlo después:</p>
+            <input type="text" id="filename" placeholder="nombre_archivo.txt" value="test_delete.txt">
+            <button class="create-btn" onclick="createTestFile()">Crear Archivo</button>
+            <div id="create-result" class="result"></div>
+        </div>
+
+        <!-- Test 2: DELETE básico -->
+        <div class="test-section">
+            <h2>2. Test DELETE Básico</h2>
+            <p>Eliminar archivo en /upload:</p>
+            <input type="text" id="delete-path" placeholder="/upload/archivo.txt" value="/upload/test_delete.txt">
+            <button onclick="deleteFile()">🗑️ DELETE Archivo</button>
+            <div id="delete-result" class="result"></div>
+        </div>
+
+        <!-- Test 3: DELETE archivo inexistente -->
+        <div class="test-section">
+            <h2>3. Test DELETE - Archivo Inexistente</h2>
+            <p>Intentar eliminar archivo que no existe (debe devolver 404):</p>
+            <button onclick="deleteNonExistent()">🗑️ DELETE Inexistente</button>
+            <div id="notfound-result" class="result"></div>
+        </div>
+
+        <!-- Test 4: DELETE en location no permitida -->
+        <div class="test-section">
+            <h2>4. Test DELETE - No Permitido</h2>
+            <p>Intentar DELETE en location sin permisos (debe devolver 405):</p>
+            <button onclick="deleteNotAllowed()">🗑️ DELETE No Permitido</button>
+            <div id="notallowed-result" class="result"></div>
+        </div>
+
+        <!-- Test 5: Path traversal attack -->
+        <div class="test-section">
+            <h2>5. Test Seguridad - Path Traversal</h2>
+            <p>Intentar path traversal (debe devolver 403):</p>
+            <button onclick="deletePathTraversal()">🗑️ DELETE Path Traversal</button>
+            <div id="traversal-result" class="result"></div>
+        </div>
+
+        <!-- Test 6: DELETE personalizado -->
+        <div class="test-section">
+            <h2>6. Test DELETE Personalizado</h2>
+            <p>Eliminar archivo con path personalizado:</p>
+            <input type="text" id="custom-path" placeholder="/upload/mi_archivo.txt">
+            <button onclick="deleteCustom()">🗑️ DELETE Personalizado</button>
+            <div id="custom-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Función para crear archivo de test
+        async function createTestFile() {
+            const filename = document.getElementById('filename').value;
+            const resultDiv = document.getElementById('create-result');
+
+            try {
+                const formData = new FormData();
+                const blob = new Blob(['Contenido de prueba para DELETE\nEste archivo será eliminado.'],
+                                    { type: 'text/plain' });
+                formData.append('file', blob, filename);
+
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ Archivo creado: ${filename}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Error al crear archivo: ${response.status}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // Función para DELETE básico
+        async function deleteFile() {
+            const path = document.getElementById('delete-path').value;
+            const resultDiv = document.getElementById('delete-result');
+
+            try {
+                const response = await fetch(path, {
+                    method: 'DELETE'
+                });
+
+                const text = await response.text();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ ${response.status}: ${text}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ ${response.status}: ${text}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // Test DELETE archivo inexistente
+        async function deleteNonExistent() {
+            const resultDiv = document.getElementById('notfound-result');
+
+            try {
+                const response = await fetch('/upload/archivo_que_no_existe.txt', {
+                    method: 'DELETE'
+                });
+
+                const text = await response.text();
+
+                if (response.status === 404) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ 404 OK: ${text}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Esperaba 404, recibí ${response.status}: ${text}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // Test DELETE en location no permitida
+        async function deleteNotAllowed() {
+            const resultDiv = document.getElementById('notallowed-result');
+
+            try {
+                const response = await fetch('/bootstrap/carousel/test.txt', {
+                    method: 'DELETE'
+                });
+
+                const text = await response.text();
+
+                if (response.status === 405) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ 405 OK: ${text}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Esperaba 405, recibí ${response.status}: ${text}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // Test path traversal
+        async function deletePathTraversal() {
+            const resultDiv = document.getElementById('traversal-result');
+
+            try {
+                const response = await fetch('/upload/../../../etc/passwd', {
+                    method: 'DELETE'
+                });
+
+                const text = await response.text();
+
+                if (response.status === 403) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ 403 OK: ${text}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Esperaba 403, recibí ${response.status}: ${text}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        // Test DELETE personalizado
+        async function deleteCustom() {
+            const path = document.getElementById('custom-path').value;
+            const resultDiv = document.getElementById('custom-result');
+
+            if (!path) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Por favor, introduce un path';
+                return;
+            }
+
+            try {
+                const response = await fetch(path, {
+                    method: 'DELETE'
+                });
+
+                const text = await response.text();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ ${response.status}: ${text}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ ${response.status}: ${text}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

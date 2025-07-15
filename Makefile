@@ -8,6 +8,7 @@ INCLUDES := $(INCLUDES_DIR)/utils.hpp \
 $(INCLUDES_DIR)/webserv.hpp \
 $(INCLUDES_DIR)/clientRequest.hpp \
 $(INCLUDES_DIR)/cgi.hpp \
+$(INCLUDES_DIR)/uploadedFiles.hpp \
 $(INCLUDES_DIR)/serverResponse.hpp \
 $(INCLUDES_DIR)/server.hpp \
 $(INCLUDES_DIR)/location.hpp \
@@ -15,6 +16,9 @@ $(INCLUDES_DIR)/config.hpp \
 $(INCLUDES_DIR)/pollManager.hpp
 SRCS := $(SRC_DIR)/webserv.cpp \
 $(SRC_DIR)/utils.cpp \
+$(SRC_DIR)/deleteMethod.cpp \
+$(SRC_DIR)/uploadedFilesCR.cpp \
+$(SRC_DIR)/uploadedFilesSR.cpp \
 $(SRC_DIR)/clientRequest.cpp \
 $(SRC_DIR)/cgi.cpp \
 $(SRC_DIR)/cgiUtils.cpp \

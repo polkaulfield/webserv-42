@@ -25,15 +25,19 @@ char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& confi
 	config.printConfig();
 	std::cout << "=========================================" << std::endl;
 	//utilizamos ostringstream para convertir int en string
-	std::string	postData = clientRequest.getData();
-	std::ostringstream	dataLength;
-	dataLength << postData.length();
-	envVars.push_back("CONTENT_LENGTH=" + dataLength.str());
+	// std::string	postData = clientRequest.getData();
+	// std::ostringstream	dataLength;
+	// dataLength << postData.length();
+	// envVars.push_back("CONTENT_LENGTH=" + dataLength.str());
 
-	std::ostringstream	portNumber;
-	portNumber << config.getPort();
+	//lo mismo que la parte comentada pero utilizando la funcion de utils, no borro lo de arriba por si acaso
+	envVars.push_back("CONTENT_LENGHT=" + intToString(clientRequest.getData().length()));
+
+	// std::ostringstream	portNumber;
+	// portNumber << config.getPort();
 	envVars.push_back("SERVER_NAME=" + config.getServerName());
-	envVars.push_back("SERVER_PORT=" + portNumber.str());
+	//envVars.push_back("SERVER_PORT=" + portNumber.str());
+	envVars.push_back("SERVER_PORT=" + intToString(config.getPort()));
 	envVars.push_back("DOCUMENT_ROOT=" + config.getRoot());
 	envVars.push_back("HTTP_HOST=" + config.getHost());
 	envVars.push_back("GATEWAY_INTERFACE=CGI/1.1");
@@ -48,20 +52,14 @@ char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& confi
 }
 
 std::string	getCGIOutput(char **args, char **env, std::string postData) {
-	//int	pipeFd[2];
 	(void) postData;
 	int	outputFd[2];
 
-//	pipe(pipeFd);
 	pipe(outputFd);
 
 	pid_t	pid = fork();
 
 	if (pid == 0) {
-		//close(pipeFd[1]);
-		//dup2(pipeFd[0], STDIN_FILENO);
-		//close(pipeFd[0]);
-
 		close(outputFd[0]);
 		dup2(outputFd[1], STDOUT_FILENO);
 		close(outputFd[1]);
@@ -71,10 +69,6 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 		std::exit(1);
 	}
 	else if (pid > 0) {
-		//close(pipeFd[0]);
-		//if (!postData.empty())
-		//	write(pipeFd[1], postData.c_str(), postData.length());
-		//close(pipeFd[1]);
 		close(outputFd[1]);
 		std::string	output;
 		char	buffer[1024];
@@ -92,8 +86,6 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 		return output;
 	}
 	else {
-		//close(pipeFd[0]);
-	//	close(pipeFd[1]);
 		close(outputFd[0]);
 		close(outputFd[1]);
 		return "";
