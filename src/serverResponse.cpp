@@ -69,8 +69,8 @@ std::string ServerResponse::buildNotFoundResponse(void)
 	std::string response = "HTTP/1.1 404 Not Found\r\n\
 Content-Type: text/html\r\n\
 Content-Length: 0\r\n\
-Connection: Closed";
-	return response.data();
+Connection: Closed\r\n\r\n";
+	return response;
 }
 
 // Some cpp magic to load a file to an array of chars
@@ -92,8 +92,6 @@ std::string ServerResponse::_getExtension(std::string htmlPath) {
 	return htmlPath.substr(pos);
 }
 
-// Constructor
-
 ServerResponse::ServerResponse(void)
 {
 	_response = "";
@@ -101,8 +99,9 @@ ServerResponse::ServerResponse(void)
 
 ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& config, bool isUpload)
 {
-    std::cout << "Creating server response" << std::endl;
+	std::cout << "Creating server response" << std::endl;
 	std::string buffer;
+
 	if (clientRequest.getMethod() == "GET")
 	{
 		if (isCGI(clientRequest.getPath(), config)) {
@@ -123,10 +122,19 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 	}
 	else if (clientRequest.getMethod() == "POST")
 	{
-        if(isUpload)
-            std::cout << "HERE WE CALL UPLOAD HANDLER" << std::endl;
-        _response = buildNotFoundResponse();
+		if(isUpload) {
+			if (clientRequest.isMultipart())
+				_handleFileUpload(clientRequest, config);
+			else
+				_response = _buildErrorResponse(400, "Not a multipart request");
+			if (_response.empty())
+				_response = _buildErrorResponse(500, "Upload processing failed");
+		}
+		else
+			_response = _buildErrorResponse(400, "Bad Request");
 	}
+	else if (clientRequest.getMethod() == "DELETE")
+		_handleDeleteRequest(clientRequest, config);
 }
 
 ServerResponse::~ServerResponse(void)

@@ -21,7 +21,6 @@
 // This creates a socket listening on PORT. From it we create the clientSocket to handle the connections
 int Server::_createServerSocket(int port)
 {
-
 	int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (_serverSocket == -1)
 	{
@@ -88,16 +87,14 @@ const Server& Server::operator=(const Server& server)
 bool Server::_checkLocation(const ClientRequest& clientRequest)
 {
     _isFileUpload = false;
-	//-----------------------------------------------------------------------------------------------------------------------------
-	//std::cout << "path: " << clientRequest.getPath() << std::endl;
+
 	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter)
 	{
 		std::cout << "Checking locations"<< std::endl;
-		//std::cout << _config.getRoot() + iter->getDirectory() << std::endl;
-		//std::cout << clientRequest.getPath() << std::endl;
+
 		std::cout << startsWith( clientRequest.getPath(), _config.getRoot() + iter->getDirectory()) << std::endl;
 		std::cout << iter->hasMethod(clientRequest.getMethod()) << std::endl;
-//----------------------------------------------------------------------------------------------------------------------------------------------------
+
 		if (iter->hasMethod(clientRequest.getMethod()) && startsWith(clientRequest.getPath(), _config.getRoot() + iter->getDirectory()))
 		{
 		    // Workaround to tell the server if we are uploading
@@ -168,7 +165,7 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket)
 	else
 	{
 		std::cout << "Failed to find valid endpoint" << std::endl;
-		send(clientSocket, ServerResponse().buildNotFoundResponse().data(), 0, 0);
+		send(clientSocket, ServerResponse().buildNotFoundResponse().data(), ServerResponse().buildNotFoundResponse().length(), 0);
 	}
 	close(clientSocket);
 }

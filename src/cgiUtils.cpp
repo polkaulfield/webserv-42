@@ -6,7 +6,7 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 16:10:55 by arcebria          #+#    #+#             */
-/*   Updated: 2025/06/30 21:07:03 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/07/02 21:08:21 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,18 +56,6 @@ std::string	extractQuery(std::string petition) {
 	else
 		return petition.substr(posQuestion + 1, posHTTP - posQuestion - 1);
 }
-
-// std::string	extractHost(std::string petition) {
-// 	size_t	posHost = petition.find("Host: ");
-// 	if (posHost == std::string::npos)
-// 		return "";
-// 	size_t	start = posHost + 6;
-// 	size_t	posNextLine = petition.find("\r\n", start);
-// 	if (posNextLine == std::string::npos)
-// 		return "";
-// 	return petition.substr(start, posNextLine - start);
-
-// }
 
 char**	vectorToArray(std::vector<std::string> envVars) {
 	std::vector<std::string>::size_type	size = envVars.size();
