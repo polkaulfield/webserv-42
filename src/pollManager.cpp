@@ -65,7 +65,7 @@ PollManager::~PollManager(void) {
 
 void    PollManager::_sigintHandle(int sigint) {
 	(void)sigint;
-	std::cout << "CTRL+C detected! Closing all fds!" << std::endl;
+	//std::cout << "CTRL+C detected! Closing all fds!" << std::endl;
 	if (_instance != NULL) {
 		for (std::list<Server>::iterator server = _instance->_serverList.begin(); server != _instance->_serverList.end(); ++server) {
 			server->closeAllSockets();
@@ -80,6 +80,7 @@ std::string PollManager::_recvHeader(int clientSocket) {
     int b_read = 0;
     do {
         b_read = recv(clientSocket, buffer, 1, MSG_DONTWAIT);
+        //std::cout << "bread: " << b_read << std::endl;
         buffer[b_read] = '\0';
         header += buffer;
     } while (b_read > 0 && header.find("\r\n\r\n") == std::string::npos);
@@ -129,7 +130,7 @@ void PollManager::_iterateEpollEvents(int epollFd, struct epoll_event *events, i
                 perror("accept");
                 continue;
             }
-            std::cout << "Got a new connection!" << std::endl;
+            //std::cout << "Got a new connection!" << std::endl;
             event.events = EPOLLIN;
             event.data.fd = clientSocket;
             if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientSocket, &event) == -1) {
@@ -152,12 +153,15 @@ void PollManager::_iterateEpollEvents(int epollFd, struct epoll_event *events, i
             // Read from the socket
             std::string request = header;
             size_t size = 0;
-            size_t b_read = 0;
+            int b_read = 0;
             do {
-                b_read = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+                b_read = recv(clientSocket, buffer, sizeof(buffer) - 1, MSG_DONTWAIT);
+                if(b_read <= 0)
+                    break;
                 request.append(buffer, b_read);
                 size += b_read;
             } while (b_read > 0 && size < bodySize);
+            //std::cout << "REQUEST:" << std::endl << request << std::endl << "end request" << std::endl;
             ClientRequest clientRequest = ClientRequest(request, server.getConfig());
             server.sendResponse(clientRequest, clientSocket);
             // Remove the client socket from server and epoll
