@@ -63,8 +63,14 @@ std::map<std::string, std::string> ClientRequest::_createHeaderMap(std::string r
 		if (pos == std::string::npos)
 			continue;
 		key = line.substr(0, pos);
-		value = line.substr(pos + 2);
+		try {
+			value = line.substr(pos + 2);
+		} catch (std::out_of_range &e) {
+			std::cerr << "Error: " << e.what() << std::endl;
+	  		value = "";
+		}
 		map[key] = value;
+
 	}
 	return map;
 }
