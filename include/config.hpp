@@ -25,7 +25,7 @@ private:
 	std::string			_root;
 	std::string			_index;
 	std::string			_error_page;
-	int					_client_max_body_size;
+	size_t				_client_max_body_size;
 	bool				_cgi;
 	std::string			_cgi_path;
 	std::string			_cgi_ext;
