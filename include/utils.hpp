@@ -5,10 +5,12 @@
 # include <map>
 
 bool endsWith(const std::string& fullString,
-              const std::string& ending);
+			  const std::string& ending);
 bool isDir(std::string path);
 std::string intToString(int n);
 std::string searchAndReplace(std::string str, std::string searchWord, std::string replaceWord);
 void    printDict(std::map<std::string, std::string> dict);
 bool    startsWith(std::string str, std::string prefix);
+void	freeArray(char** array);
+
 #endif

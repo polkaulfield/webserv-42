@@ -1,2 +1,0 @@
-Contenido de prueba para DELETE
-Este archivo será eliminado.
