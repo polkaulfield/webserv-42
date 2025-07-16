@@ -12,7 +12,6 @@
 
 #include "../include/uploadedFile.hpp"
 #include "../include/clientRequest.hpp"
-#include <iostream>
 
 void ClientRequest::_parseMultipartPart(std::string const &part)
 {

@@ -16,6 +16,9 @@ class PollManager
     int _initEpollWithServers(std::list<Server>& serverList);
     Server& _getServerByEventFd(int socket);
     Server& _getServerByClientSocket(int socket);
+    void _cleanEpollSocket(Server& server, int clientSocket, int epollFd);
+    size_t _extractSizeFromHeader(std::string header);
+    std::string _recvHeader(int clientSocket);
     static PollManager* _instance;
     static void _sigintHandle(int signum);
   public:

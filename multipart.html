@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .upload-container {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <h1>File Upload</h1>
+
+    <div class="upload-container">
+        <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="form-group">
+                <label for="file">Choose file to upload:</label>
+                <input type="file" id="file" name="file" required>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Upload File" id="uploadBtn">
+            </div>
+        </form>
+    </div>
+
+    <div id="status" class="status" style="display: none;"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const statusDiv = document.getElementById('status');
+            const uploadBtn = document.getElementById('uploadBtn');
+
+            // Show loading state
+            uploadBtn.disabled = true;
+            uploadBtn.value = 'Uploading...';
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'status';
+            statusDiv.textContent = 'Uploading file...';
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = 'File uploaded successfully!';
+                    document.getElementById('uploadForm').reset();
+                } else {
+                    throw new Error('Upload failed');
+                }
+            })
+            .catch(error => {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = 'Upload failed: ' + error.message;
+            })
+            .finally(() => {
+                uploadBtn.disabled = false;
+                uploadBtn.value = 'Upload File';
+            });
+        });
+    </script>
+</body>
+</html>
