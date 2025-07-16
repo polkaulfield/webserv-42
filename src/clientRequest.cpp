@@ -8,26 +8,6 @@
 #include <iostream>
 #include <bits/stdc++.h>
 
-// std::string ClientRequest::_getBody(std::string request)
-// {
-// 	std::cout << "Full request:\n" << request << std::endl;
-
-// 	size_t pos1 = request.find("\r\n\r\n");
-
-// 	if (pos1 == std::string::npos) {
-// 		std::cout << "Delimiter not found!" << std::endl;
-// 		return "";
-// 	}
-
-// 	std::cout << "Header end position: " << pos1 << std::endl;
-
-// 	std::string body = request.substr(pos1 + 4);
-
-// 	std::cout << "Body:\n" << body << std::endl;
-
-// 	return body;
-// }
-
 std::string ClientRequest::_getBody(std::string request)
 {
 	size_t pos1 = request.find("\r\n\r\n");
@@ -63,14 +43,11 @@ std::map<std::string, std::string> ClientRequest::_createHeaderMap(std::string r
 		if (pos == std::string::npos)
 			continue;
 		key = line.substr(0, pos);
-		try {
+		if (pos + 2 <= line.length())
 			value = line.substr(pos + 2);
-		} catch (std::out_of_range &e) {
-			std::cerr << "Error: " << e.what() << std::endl;
-	  		value = "";
-		}
+		else
+		    value = "";
 		map[key] = value;
-
 	}
 	return map;
 }
@@ -116,14 +93,14 @@ ClientRequest::ClientRequest(std::string request, const Config& config)
 	}
 	// URLS have spaced encoded with %20. We replace them with normal spaces
 	_path = searchAndReplace(_path, "%20"," ");
-	if (access(_path.data(), F_OK)) // handle error page
-		_path = config.getRoot() + "/" + config.getErrorPage();
 }
 
 ClientRequest::~ClientRequest(void)
 {
 
 }
+
+void ClientRequest::setPath(const std::string& path) {_path = path;}
 
 // Method Getter
 std::string ClientRequest::getMethod() const { return _method; }
