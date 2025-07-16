@@ -2,6 +2,7 @@
 #include "../include/utils.hpp"
 #include "../include/cgi.hpp"
 #include "../include/directory.hpp"
+#include <string>
 #include <unistd.h>
 #include <sstream>
 #include <fstream>
@@ -51,8 +52,6 @@ Content-Type: " + _getContentType(path) + "\n\
 Content-Length: " + intToString(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
-	// Debug
-	//std::cout << "Returning response\n" << response << std::endl;
 	return response.data();
 }
 
@@ -63,16 +62,34 @@ Content-Type: text/html \n\
 Content-Length: " + intToString(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
-	// Debug
-	//std::cout << "Returning response\n" << response << std::endl;
 	return response.data();
 }
 
 std::string ServerResponse::_buildCgiResponse(std::string &buffer)
 {
-	std::string response = "HTTP/1.1 200 OK\n\
-Content-Length: " + intToString(buffer.length()) + "\n" + buffer;
-    std::cout << "RESPONSE: " << std::endl << response.data() << std::endl;
+    // Parse cgi header
+    // Check if cgi added Content-Type and
+    size_t cgiHeaderSize = 0;
+    if (buffer.find("Content-Type:") != std::string::npos) {
+        // Check for header separator type 1
+        cgiHeaderSize = buffer.find("\r\n\r\n");
+        if (cgiHeaderSize != std::string::npos)
+            cgiHeaderSize += 5;
+        else
+        {
+            // Check for header separator type 2
+            cgiHeaderSize = buffer.find("\n\n");
+            if (cgiHeaderSize != std::string::npos)
+                cgiHeaderSize += 3;
+            else
+                cgiHeaderSize = 0;
+        }
+    }
+
+	std::string response = "HTTP/1.1 200 OK\r\n\
+Content-Length: " + intToString(buffer.length() - cgiHeaderSize) + "\n" + buffer;
+
+
 	return response.data();
 }
 
@@ -83,7 +100,7 @@ std::string ServerResponse::buildNotFoundResponse(void)
 Content-Type: text/html\r\n\
 Content-Length: 0\r\n\
 Connection: Closed\r\n\r\n";
-	return response;
+	return response.data();
 }
 
 // Some cpp magic to load a file to an array of chars
@@ -112,19 +129,20 @@ ServerResponse::ServerResponse(void)
 
 ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& config, bool isUpload)
 {
-	std::cout << "Creating server response" << std::endl;
+
 	std::string buffer;
 
 	if (clientRequest.getMethod() == "GET")
 	{
 		if (isCGI(clientRequest.getPath(), config)) {
-		    std::cout << "cgi detected!" << std::endl;
+
 			Cgi				cgiHandler;
 			buffer = cgiHandler.execScript(clientRequest, config);
 			_response = _buildCgiResponse(buffer);
+
 		}
 		else if (isDir(clientRequest.getPath()) && config.isPathAutoIndex(clientRequest.getQueryPath())) {
-		    std::cout << "is autoindex! inside serverresponse!" << std::endl;
+
 			Directory directory  = Directory(clientRequest.getPath());
 			_response = _buildDirResponse(directory.getHtml());
 		}
