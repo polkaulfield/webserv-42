@@ -19,6 +19,7 @@ class Server
     std::string _endpoint;
     std::list<Location> _locationList;
     bool                _isFileUpload;
+    bool                _isAutoIndex;
     Config& _config;
 
     static void    _sigintHandle(int signum);

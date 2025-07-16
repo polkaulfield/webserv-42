@@ -13,7 +13,8 @@ $(INCLUDES_DIR)/serverResponse.hpp \
 $(INCLUDES_DIR)/server.hpp \
 $(INCLUDES_DIR)/location.hpp \
 $(INCLUDES_DIR)/config.hpp \
-$(INCLUDES_DIR)/pollManager.hpp
+$(INCLUDES_DIR)/pollManager.hpp \
+$(INCLUDES_DIR)/directory.hpp
 SRCS := $(SRC_DIR)/webserv.cpp \
 $(SRC_DIR)/utils.cpp \
 $(SRC_DIR)/deleteMethod.cpp \
@@ -27,7 +28,8 @@ $(SRC_DIR)/location.cpp \
 $(SRC_DIR)/config.cpp \
 $(SRC_DIR)/configUtils.cpp \
 $(SRC_DIR)/server.cpp \
-$(SRC_DIR)/pollManager.cpp
+$(SRC_DIR)/pollManager.cpp \
+$(SRC_DIR)/directory.cpp
 OBJS := $(SRCS:.cpp=.o)
 DEPS := $(OBJS:.o=.d)
 LDFLAGS :=

@@ -1,6 +1,7 @@
 #include "../include/serverResponse.hpp"
 #include "../include/utils.hpp"
 #include "../include/cgi.hpp"
+#include "../include/directory.hpp"
 #include <unistd.h>
 #include <sstream>
 #include <fstream>
@@ -47,6 +48,18 @@ std::string ServerResponse::_buildOkResponse(std::string &buffer, std::string pa
 {
 	std::string response = "HTTP/1.1 200 OK\n\
 Content-Type: " + _getContentType(path) + "\n\
+Content-Length: " + intToString(buffer.length()) +
+"\r\n\r\n\
+"+ buffer;
+	// Debug
+	//std::cout << "Returning response\n" << response << std::endl;
+	return response.data();
+}
+
+std::string ServerResponse::_buildDirResponse(std::string &buffer)
+{
+	std::string response = "HTTP/1.1 200 OK\n\
+Content-Type: text/html \n\
 Content-Length: " + intToString(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
@@ -109,6 +122,11 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 			Cgi				cgiHandler;
 			buffer = cgiHandler.execScript(clientRequest, config);
 			_response = _buildCgiResponse(buffer);
+		}
+		else if (isDir(clientRequest.getPath()) && config.isPathAutoIndex(clientRequest.getQueryPath())) {
+		    std::cout << "is autoindex! inside serverresponse!" << std::endl;
+			Directory directory  = Directory(clientRequest.getPath());
+			_response = _buildDirResponse(directory.getHtml());
 		}
 		else if (!clientRequest.getPath().empty())
 		{
