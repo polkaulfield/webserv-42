@@ -40,6 +40,7 @@ private:
 	int		_checkClientMaxBodySize(void);
 	int		_checkCgiPath(void);
 	int		_checkCgiExt(void);
+	int		_checkErrorPage(void);
 public:
 //  CONSTRUCTOR  //
 	Config(void);

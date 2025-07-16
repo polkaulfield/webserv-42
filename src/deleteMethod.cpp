@@ -85,12 +85,10 @@ bool	ServerResponse::_isDeleteAllowed(std::string const& method, std::string con
 
 void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config const& config) {
 	std::string	requestPath = request.getPath();
-	std::cout << GREEN << "erwsetsdlkgsd" << RESET << std::endl;
 	if (!_isDeleteAllowed("DELETE", request.getPath(), config)) {
 		_response = _buildErrorResponse(405, "Method Not Allowed");
 		return;
 	}
-	std::cout << GREEN << "erwsetsdlkgsd" << RESET << std::endl;
 	//nos saltamos el canonizar el path de momento si falla puede ser por eso
 	std::string fullPath = requestPath;
 	std::cout << fullPath << std::endl;
