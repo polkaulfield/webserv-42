@@ -88,6 +88,9 @@ bool Server::_checkLocation(const ClientRequest& clientRequest)
 {
     _isFileUpload = false;
 
+    if (clientRequest.getMethod() == "DELETE") {
+		return true;
+	}
 	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter)
 	{
 		std::cout << "Checking locations"<< std::endl;
