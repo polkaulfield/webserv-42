@@ -3,7 +3,8 @@
 #include <iostream>
 //  CONSTRUCTORS & DESTRUCTOR //
  Location::Location(void) {
- 	_GET = false;
+ 	_directory = "/";
+	_GET = true;
 	_POST = false;
 	_DELETE = false;
 	_autoindex = false;
@@ -75,7 +76,7 @@ void Location::setAllowMethods(std::string option) {
 	int end = ++start + 1;
 
 	_error_parser += checkChars(option, "\\,'/");
-	if (option.length() <= 15)
+	if (option.length() <= 15) //15 is the lenght of allow_methods so if space if found
 		std::cout << "error in allow methods" <<std::endl;
 	while(end > 0 && (size_t)end < option.length()) {
 		if (option[end] == ' ' || option[end] == ';') {
@@ -185,6 +186,10 @@ bool	Location::checkDirectory(std::string root) {
 bool	Location::checkUploadDir(std::string root) {
 	std::string tmp = _uploadDir;
 	_uploadDir = root + _uploadDir;
+	if (!_POST) {
+		std::cerr << GREEN << "\tError in Location: upload_to need has POST method" << RESET << std::endl;
+		return true;
+	}
 	if (!access(_uploadDir.data(), F_OK)) {
 		//_uploadDir = tmp;
 		return false;
@@ -202,4 +207,28 @@ bool	Location::checkRedirect(std::string root) {
 		return false;
 	std::cerr << GREEN << "\tError in Location: return " << tmp << " is not accesible" << RESET << std::endl;
 	return true;
+}
+
+bool	Location::checkPost(void) {
+	if (_POST && getIsUpload())
+		return false;
+	std::cerr << GREEN << "\tError in Location: POST method need upload_to" << RESET << std::endl;
+	return true;
+}
+
+int		Location::checkRedirectLocation(std::string root) {
+	int errors = 0;
+	errors += checkRedirect(root);
+	if (errors) {
+		std::cerr << GREEN << "Error in Location: redirect is not accesible" << RESET << std::endl;
+		return errors;
+	}
+	errors += (_GET || _POST || _DELETE) ? 1 : 0;
+	errors += (_autoindex) ? 1 : 0;
+	errors += (_directory_listing) ? 1 : 0;
+	errors += (!_uploadDir.empty()) ? 1 : 0;
+//	errors += (_autoindex) ? 1 : 0;
+	if (errors)
+		std::cerr << GREEN << "Error in Location: only acepted return in Redirect" << RESET << std::endl;
+	return errors;
 }

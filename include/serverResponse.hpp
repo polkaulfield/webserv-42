@@ -1,5 +1,6 @@
 #include <string>
 #include <unistd.h>
+#include <cstdio>
 #include "../include/clientRequest.hpp"
 
 struct	UploadedFile;

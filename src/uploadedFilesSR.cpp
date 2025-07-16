@@ -78,6 +78,12 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 	std::vector<UploadedFile> const& files = clientRequest.getUploadedFiles();
 
 	std::string locationPath = clientRequest.getPath();
+
+	if (!_isDeleteAllowed("POST", locationPath, config)) {
+		_response = _buildErrorResponse(405, "Method Not Allowed");
+		return;
+	}
+
 	if (locationPath.find(config.getRoot()) == 0)
 		locationPath = locationPath.substr(config.getRoot().length());
 

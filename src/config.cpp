@@ -5,14 +5,16 @@
 //  CONSTRUCTOR & DESTRUCTOR //
 Config::Config(void) {
 	//std::cout << "Contructor Config" << std::endl;
+	_server_name = "localhost";
 	_port = 8080;
 	_host = "localhost";
-	_root = "/tmp/www";
+	_root = ".";
 	_index = "index.html";
 	_error_page = "404.html";
 	_client_max_body_size = 1000000;
 	_cgi = false;
 	_error_parser = false;
+	_error_parser = 0;
 }
 
 Config::Config(const Config &src) {
@@ -208,10 +210,11 @@ int Config::_checkIndex(void) {
 }
 
 int	Config::_checkClientMaxBodySize(void) {
-	if (_client_max_body_size > 0 && _client_max_body_size < 1000000)
-		return 0;
-	std::cout << GREEN << "\tError in cliente max body size: " << _client_max_body_size << " is not valid" << RESET << std::endl;
-	return 1;
+	//if (_client_max_body_size > 0 && _client_max_body_size < (size_t)18446744073709551615)
+	//	return 0;
+	//std::cout << GREEN << "\tError in cliente max body size: " << _client_max_body_size << " is not valid" << RESET << std::endl;
+	//return 1;
+	return 0; //need check this function
 }
 
 int Config::_checkCgiPath(void) {
@@ -224,7 +227,7 @@ int Config::_checkCgiPath(void) {
 	std::string cgi_root(_root + _cgi_path + _cgi_ext);
 	if (!access(cgi_root.data(), F_OK))
 		return 0;
-	std::cout << GREEN << "\tError in Cgi Path: " << _cgi_path << " is not accesible" << RESET << std::endl;
+	std::cout << GREEN << "\tError in Cgi Path: " << _cgi_path + _cgi_ext << " is not accesible" << RESET << std::endl;
 	return 1;
 }
 
@@ -241,16 +244,36 @@ int	Config::_checkCgiExt(void) {
 	return 1;
 }
 
+int	Config::_checkErrorPage(void) {
+	if (!access(_error_page.data(), F_OK))
+		return 0;
+	std::cout << GREEN << "\tError in error_page: " << _error_page << " is not accesible" << RESET << std::endl;
+	return 1;
+}
+
 //roots is a tmp string for take the _root string and append the directory of current location
+// if not found location create "/" default with get
 int Config::checkLocations(void) {
 	int errors = 0;
+	if (_locationList.empty()) {
+		_locationList.push_back(Location());
+		return errors;
+	}
 	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
-		if (iter->getDirectory() != "/redirect")
+		if (iter->getDirectory() == "/redirect") {
+			errors += iter->checkRedirectLocation(_root);
+			continue ;
+		}
+		if (!iter->getDirectory().empty())
 			errors += iter->checkDirectory(_root);
 		if (iter->getIsUpload())
 			errors += iter->checkUploadDir(_root);
-		if (!iter->getRedirect().empty())
-			errors += iter->checkRedirect(_root);
+		if (iter->getPost())
+			errors += iter->checkPost();
+		if (!iter->getRedirect().empty()) {
+			std::cerr << GREEN << "\tError in Location: Can't has return" << RESET << std::endl;
+			errors += 1;
+		}
 		errors += iter->checkAllowMethods();
 	}
 	return errors;
@@ -266,6 +289,7 @@ int	Config::checkConfig(void) {
 	error += _checkClientMaxBodySize();
 	error += _checkCgiPath();
 	error += _checkCgiExt();
+	error += _checkErrorPage();
 	error += checkLocations();
 	return error;
 }
