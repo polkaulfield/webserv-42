@@ -3,6 +3,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <cstdlib>
+#include <iostream>
 
 std::string ServerResponse::_buildSuccessDeleteResponse() {
 	// Crear el cuerpo de la respuesta
@@ -43,10 +44,8 @@ bool	ServerResponse::_deleteFiles(std::string const& path) {
 		execve("/bin/rm", args, NULL);
 		std::exit(1);
 	}
-
 	else if (pid > 0) {
 		int	status;
-
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 			return true; // eliminado correctamente
@@ -64,36 +63,37 @@ bool	ServerResponse::_isDeleteAllowed(std::string const& method, std::string con
 	size_t		bestMatchLenght = 0;
 
 	for (std::list<Location>::iterator it = location.begin(); it != location.end(); it++) {
-
-		std::string locationPath = it->getDirectory();
-
+		std::string locationPath = config.getRoot() + it->getDirectory();
+		std::cout << "Location " << locationPath << std::endl;
 		if (path.find(locationPath) == 0) {
 			if (locationPath.length() > bestMatchLenght){
 				bestMatch = &(*it);
 				bestMatchLenght = locationPath.length();
+				std::cout << "Delete Location " << it->getDirectory() << std::endl;
+				if (it->hasMethod(method))
+					break ;
 			}
 		}
 	}
-
-	if (bestMatch) {
+	/*if (bestMatch) {
 		if (bestMatch->hasMethod(method))
 			return true;
 	}
-
-	return false;
+	return false;*/
+	return (bestMatch && bestMatch->hasMethod(method)) ? true : false;
 }
 
 void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config const& config) {
 	std::string	requestPath = request.getPath();
-
+	std::cout << GREEN << "erwsetsdlkgsd" << RESET << std::endl;
 	if (!_isDeleteAllowed("DELETE", request.getPath(), config)) {
 		_response = _buildErrorResponse(405, "Method Not Allowed");
 		return;
 	}
-
+	std::cout << GREEN << "erwsetsdlkgsd" << RESET << std::endl;
 	//nos saltamos el canonizar el path de momento si falla puede ser por eso
-	std::string fullPath = config.getRoot() + requestPath;
-
+	std::string fullPath = requestPath;
+	std::cout << fullPath << std::endl;
 	if (access(fullPath.c_str(), F_OK)) {
 		_response = _buildErrorResponse(404,"File not found");
 		return ;
@@ -114,7 +114,7 @@ void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config c
 		return ;
 	}
 
-	if (!_deleteFiles(fullPath))
+	if (_deleteFiles(fullPath))
 		_response = _buildSuccessDeleteResponse();
 	else
 		_response = _buildErrorResponse(500, "Failed to delete file");
