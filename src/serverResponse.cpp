@@ -57,7 +57,7 @@ Content-Length: " + intToString(buffer.length()) +
 
 std::string ServerResponse::_buildCgiResponse(std::string &buffer)
 {
-	std::string response = "HTTP/1.1 200 OK\n\
+	std::string response = "HTTP/1.1 200 OK\nContent-Type: text/html\n\
 Content-Length: " + intToString(buffer.length()) + "\n" + buffer;
     std::cout << "RESPONSE: " << std::endl << response.data() << std::endl;
 	return response.data();
