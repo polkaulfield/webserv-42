@@ -40,3 +40,22 @@ echo REMOTE_USER = $REMOTE_USER
 echo AUTH_TYPE = $AUTH_TYPE
 echo CONTENT_TYPE = $CONTENT_TYPE
 echo CONTENT_LENGTH = $CONTENT_LENGTH
+
+# Salida estándar de cabeceras HTTP
+echo "Content-Type: text/html"
+echo ""
+
+# Cuerpo HTML de la respuesta
+cat <<EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CGI Bash Test</title>
+</head>
+<body>
+    <h1>¡Hola desde CGI en Bash!</h1>
+    <p>Fecha actual: $(date)</p>
+    <p>Script ejecutado correctamente.</p>
+</body>
+</html>
+EOF
