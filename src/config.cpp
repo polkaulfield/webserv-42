@@ -19,7 +19,7 @@ Config::Config(void) {
 }
 
 Config::Config(const Config &src) {
-	std::cout << "Copy Contructor Config" << std::endl;
+	//std::cout << "Copy Contructor Config" << std::endl;
 	*this = src;
 }
 
@@ -78,28 +78,28 @@ void	Config::setServerName(std::string server_name) {_server_name = server_name;
 void	Config::setPort(std::string port) {
 	bool flag = false;
 	if (port.find(" ") == port.find_last_of(" ") && port.find(" ") != port.length() - 1) {
-		std::cout << "1" << std::endl;
+	//	std::cout << "1" << std::endl;
 		std::istringstream value(port);
 		value >> _port;
 		port = port.substr(port.find(" ") + 1);
 		flag = true;
 	}
 	if (port.find(" ") == (size_t)-1 || (port.find(" ") != (size_t)-1 && port.find(" ") == (size_t)-1)) {
-		std::cout << "2" << std::endl;
+		//std::cout << "2" << std::endl;
 		//_error_parser += checkDigits(port);
 		//if (port.substr(port.find(" ")).find(" ") == (size_t)-1)
 			//port = port.substr(port.find(" "));
 		std::istringstream value(port);
 
 		if (flag) {
-			std::cout << "2.5" << std::endl;
+			//std::cout << "2.5" << std::endl;
 			value >> _double_port;
-			std::cout <<  _double_port << std::endl;
+			//std::cout <<  _double_port << std::endl;
 		} else {
 			value >> _port;
 		}
 	} else {
-		std::cout << "3" << std::endl;
+		//std::cout << "3" << std::endl;
 		_error_parser += 1;
 	}
 	_error_parser += checkChars(port, ".,/\\");
@@ -329,13 +329,23 @@ int	Config::checkConfig(void) {
 
 bool    Config::isPathAutoIndex(const std::string& queryPath) const
 {
+	std::string tmp;
     for (std::list<Location>::const_iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
 		std::cout << "Checking this location: " << iter->getDirectory() << std::endl;
-		if (iter->getAutoindex()) {
-            if (queryPath.find(iter->getDirectory()) == 0)
-            return true;
-  }
-	}
+		tmp = queryPath;
+		while (tmp.find_last_of("/") != (size_t)-1) {
+			if (iter->getDirectory().find(tmp) != (size_t)-1 && iter->getAutoindex())
+				return true;
+
+			std::cout << iter->getDirectory() << "---" << tmp << iter->getAutoindex() << std::endl;
+			tmp = tmp.substr(0, tmp.length() - 1);
+		}
+
+		//if (iter->getAutoindex()) {
+            //if (queryPath.find(iter->getDirectory()) == 0)
+        //    return true;
+    }
+
 	return false;
 }
 
