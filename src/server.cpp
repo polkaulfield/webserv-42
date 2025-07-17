@@ -57,9 +57,7 @@ Server::Server(Config &config) : _config(config) {
   _serverSocket = _createServerSocket(config.getPort());
 }
 
-Server::Server(const Server &src) : _config(src._config) {
-  *this = src;
-}
+Server::Server(const Server &src) : _config(src._config) { *this = src; }
 
 const Server &Server::operator=(const Server &server) {
   if (this != &server) {
@@ -132,6 +130,7 @@ bool Server::hasClientSocket(int clientSocket) {
 
 void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   ServerResponse serverResponse;
+  std::string data;
   std::cout << "Parsing client request" << std::endl;
 
   // If theres no locationlist all paths and methods are valid for now (debug)
@@ -141,14 +140,15 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
     send(clientSocket, serverResponse.getResponse().data(),
          serverResponse.getResponse().length(), 0);
   } else if (clientRequest.getMethod() == "GET") {
-    clientRequest.setPath(_config.getRoot() + "/" + _config.getErrorPage());
-    serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
-    send(clientSocket, serverResponse.getResponse().data(),
-         serverResponse.getResponse().length(), 0);
+      data = ServerResponse().buildErrorResponse(404, "Not Found!");
+      std::cout << "Failed to find valid endpoint" << std::endl;
+      send(clientSocket, data.data(),
+           data.length(), 0);
   } else {
+    data = ServerResponse().buildErrorResponse(404, "Not Found!");
     std::cout << "Failed to find valid endpoint" << std::endl;
-    send(clientSocket, ServerResponse().buildNotFoundResponse().data(),
-         ServerResponse().buildNotFoundResponse().length(), 0);
+    send(clientSocket, data.data(),
+         data.length(), 0);
   }
   close(clientSocket);
 }

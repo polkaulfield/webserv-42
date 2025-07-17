@@ -122,6 +122,22 @@ std::string ServerResponse::_getExtension(std::string htmlPath) {
 	return htmlPath.substr(pos);
 }
 
+std::string	ServerResponse::buildErrorResponse(int code, std::string const& message) {
+	std::string data = "";
+	std::string line;
+    std::ifstream templateFile("./templates/error.html");
+    while (std::getline(templateFile, line))
+        data += line + "\n";
+    data = searchAndReplace(data, "%%ERRORMSG%%", message);
+    data = searchAndReplace(data, "%%ERRORCODE%%", intToString(code));
+	std::string response = "HTTP/1.1 " + intToString(code) + " Error\r\n";
+	response += "Content-Type: text/html\r\n";
+	response += "Content-Length: " + intToString(data.length()) + "\r\n";
+	response += "\r\n";
+	response += data;
+	return response;
+}
+
 ServerResponse::ServerResponse(void)
 {
 	_response = "";
@@ -153,7 +169,7 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 		}
 		else {
 			// If file doesnt exist make a 404 not found
-			_response = buildNotFoundResponse();
+			_response = buildErrorResponse(404, "Not found!");
 		}
 	}
 	else if (clientRequest.getMethod() == "POST")
@@ -161,15 +177,13 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 		if(isUpload) {
 			if (clientRequest.isMultipart())
 				_handleFileUpload(clientRequest, config);
-			else {
-				_response = _buildErrorResponse(400, "Not a multipart request");
-			}
+			else
+				_response = buildErrorResponse(400, "Not a multipart request");
 			if (_response.empty())
-				_response = _buildErrorResponse(500, "Upload processing failed");
+				_response = buildErrorResponse(500, "Upload processing failed");
 		}
-		else {
-			_response = _buildErrorResponse(400, "Bad Request");
-		}
+		else
+			_response = buildErrorResponse(400, "Bad Request");
 	}
 	else if (clientRequest.getMethod() == "DELETE")
 		_handleDeleteRequest(clientRequest, config);
