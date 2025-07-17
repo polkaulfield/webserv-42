@@ -108,9 +108,17 @@ std::list<Config>	takeConfig(const char *configFile) {
 	}
 	if (configList.empty())
 		exitConfig(configList, &configFd, "Error: File is empty");
-	//if (checkConfigList(configList))
-		//exitConfig(configList, configFd, "");
+	if (checkConfigList(configList))
+		;//exitConfig(configList, configFd, "");
 	configFd.close();
 	//configList.front().printConfig();
+	int	dp;
+	dp = configList.front().getDoublePort();
+	if (dp != -1) {
+		std::cout << "hola" << std::endl;
+		configList.push_back(Config(configList.front()));
+		configList.back().setPort(dp);
+	}
+
 	return configList;
 }

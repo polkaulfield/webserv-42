@@ -15,9 +15,11 @@ Config::Config(void) {
 	_cgi = false;
 	_error_parser = false;
 	_error_parser = 0;
+	_double_port = -1;
 }
 
 Config::Config(const Config &src) {
+	std::cout << "Copy Contructor Config" << std::endl;
 	*this = src;
 }
 
@@ -29,11 +31,12 @@ Config &Config::operator = (const Config &src) {
 		_root = src._root;
 		_index = src._index;
 		_error_page = src._error_page;
+		_client_max_body_size = src._client_max_body_size;
 		_cgi = src._cgi;
 		_cgi_path = src._cgi_path;
 		_cgi_ext = src._cgi_ext;
 		_locationList = src._locationList;
-		_client_max_body_size = src._client_max_body_size;
+		_double_port = src._double_port;
 		_error_parser = src._error_parser;
 	}
 	return *this;
@@ -66,14 +69,44 @@ std::string	Config::getCgiExt(void) const {return _cgi_ext;}
 
 int	Config::getErrorsParser(void) {return _error_parser;}
 
+int	Config::getDoublePort(void) {return _double_port;}
+
 //  SETTERS  //
 void	Config::setServerName(std::string server_name) {_server_name = server_name;}
 
 //istringstream converts the std::string to numbers
 void	Config::setPort(std::string port) {
-	_error_parser += checkDigits(port);
-	std::istringstream value(port);
-	value >> _port;
+	bool flag = false;
+	if (port.find(" ") == port.find_last_of(" ") && port.find(" ") != port.length() - 1) {
+		std::cout << "1" << std::endl;
+		std::istringstream value(port);
+		value >> _port;
+		port = port.substr(port.find(" ") + 1);
+		flag = true;
+	}
+	if (port.find(" ") == (size_t)-1 || (port.find(" ") != (size_t)-1 && port.find(" ") == (size_t)-1)) {
+		std::cout << "2" << std::endl;
+		//_error_parser += checkDigits(port);
+		//if (port.substr(port.find(" ")).find(" ") == (size_t)-1)
+			//port = port.substr(port.find(" "));
+		std::istringstream value(port);
+
+		if (flag) {
+			std::cout << "2.5" << std::endl;
+			value >> _double_port;
+			std::cout <<  _double_port << std::endl;
+		} else {
+			value >> _port;
+		}
+	} else {
+		std::cout << "3" << std::endl;
+		_error_parser += 1;
+	}
+	_error_parser += checkChars(port, ".,/\\");
+}
+
+void	Config::setPort(int port) {
+	_port = port;
 }
 
 void	Config::setHost(std::string host) {

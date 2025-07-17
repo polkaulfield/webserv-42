@@ -33,12 +33,12 @@ bool	ServerResponse::_isDeleteAllowed(std::string const& method, std::string con
 
 	for (std::list<Location>::iterator it = location.begin(); it != location.end(); it++) {
 		std::string locationPath = config.getRoot() + it->getDirectory();
-		std::cout << "Location " << locationPath << std::endl;
+		//std::cout << "Location " << locationPath << std::endl;
 		if (path.find(locationPath) == 0) {
 			if (locationPath.length() > bestMatchLenght){
 				bestMatch = &(*it);
 				bestMatchLenght = locationPath.length();
-				std::cout << "Delete Location " << it->getDirectory() << std::endl;
+				//std::cout << "Delete Location " << it->getDirectory() << std::endl;
 				if (it->hasMethod(method))
 					break ;
 			}
