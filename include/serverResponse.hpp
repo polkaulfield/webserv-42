@@ -12,6 +12,7 @@ class ServerResponse
 
     std::string _getContentType(std::string path);
     std::string _buildOkResponse(std::string &buffer, std::string path);
+    std::string _buildDirResponse(std::string &buffer);
     std::string _buildCgiResponse(std::string &buffer);
     std::string _makeFileBuffer(std::string path);
     std::string _getExtension(std::string htmlPath);

@@ -294,6 +294,15 @@ int	Config::checkConfig(void) {
 	return error;
 }
 
+bool    Config::isPathAutoIndex(const std::string& queryPath) const
+{
+    for (std::list<Location>::const_iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
+		std::cout << "Checking this location: " << iter->getDirectory() << std::endl;
+        if (iter->getDirectory() == queryPath && iter->getAutoindex())
+			return true;
+	}
+	return false;
+}
 
 //  LINKED LIST LOCATIONS  //
 
