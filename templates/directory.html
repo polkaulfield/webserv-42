@@ -4,74 +4,92 @@
         <meta charset="UTF-8" />
         <title>Directory Listing</title>
         <style>
-            /* Reset some default */
-            body,
-            ul {
+            html,
+            body {
+                height: 100%;
                 margin: 0;
                 padding: 0;
-            }
-
-            body {
-                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-                background: #f4f6f8;
-                color: #333;
-                line-height: 1.6;
-                padding: 40px 20px;
+                background: #121212;
+                color: #f0f0f0;
+                font-family: "Courier New", Courier, monospace;
                 display: flex;
+                align-items: center;
                 justify-content: center;
             }
 
-            h1 {
+            #app {
                 text-align: center;
-                color: #2c3e50;
-                margin-bottom: 30px;
+                background: #1e1e1e;
+                padding: 40px 60px;
+                border-radius: 12px;
+                box-shadow: 0 0 40px rgba(0, 150, 255, 0.5);
+                max-width: 480px;
+                width: 90%;
+            }
+
+            #app > div:first-child {
+                font-size: 4rem;
                 font-weight: 700;
+                margin-bottom: 20px;
+                color: #00baff;
+                letter-spacing: 6px;
+            }
+
+            .txt {
+                font-size: 1.4rem;
+                line-height: 1.5;
+                position: relative;
+                color: #ccc;
                 letter-spacing: 1.2px;
             }
 
-            ul {
-                list-style: none;
-                width: 100%;
-                max-width: 600px;
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                padding: 20px 30px;
-                box-sizing: border-box;
+            .blink {
+                display: inline-block;
+                color: #00baff;
+                font-weight: 700;
+                animation: blink-animation 1.2s steps(2, start) infinite;
+                margin-left: 3px;
+                user-select: none;
             }
 
-            ul li {
-                padding: 12px 15px;
-                border-bottom: 1px solid #eee;
-                font-size: 16px;
-                transition: background-color 0.3s ease;
-                cursor: default;
+            /* Normal link */
+            a {
+                color: cyan;
             }
 
-            ul li:last-child {
-                border-bottom: none;
+            /* When hovering over the link */
+            a:hover {
+                color: red;
             }
 
-            ul li:hover {
-                background-color: #f0f8ff;
+            /* When the link has been visited */
+            a:visited {
+                color: lightsteelblue;
             }
 
-            /* If links are inside list */
-            ul li a {
-                color: #2980b9;
-                text-decoration: none;
-                display: block;
-                width: 100%;
+            /* When the link is active (being clicked) */
+            a:active {
+                color: green;
             }
 
-            ul li a:hover {
-                text-decoration: underline;
+            @keyframes blink-animation {
+                0%,
+                50% {
+                    opacity: 1;
+                }
+                50.01%,
+                100% {
+                    opacity: 0;
+                }
             }
         </style>
     </head>
     <body>
         <div>
-            <h1>Directory Listing</h1>
+            <h1 class="text">
+                Directory Listing
+                <span class="blink">_</span>
+            </h1>
             <ul>
                 %%DIRLIST%%
             </ul>

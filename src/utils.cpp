@@ -15,6 +15,14 @@ bool isDir(std::string path) {
   return false;
 }
 
+bool isFile(std::string path) {
+  struct stat sb;
+
+  if (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode))
+    return true;
+  return false;
+}
+
 bool endsWith(const std::string &str, const std::string &end) {
   if (end.size() > str.size())
     return false;
