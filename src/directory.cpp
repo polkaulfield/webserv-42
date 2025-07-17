@@ -19,41 +19,23 @@ Directory::Directory(const std::string &path) {
   }
   std::string line;
   std::ifstream templateFile("./templates/directory.html");
-  std::getline(templateFile, line);
-  std::cout << "first line: " << line << std::endl;
-  if (line != "<!-- HEAD") {
-    std::cerr << "Head not found";
-    return;
-  }
-  while (std::getline(templateFile, line) && line != "END HEAD-->") {
+  while (std::getline(templateFile, line))
     _data += line + "\n";
-  }
-  if (std::getline(templateFile, line) && line != "<!-- START BODY TOP") {
-    std::cerr << "Start body not found: " << line << std::endl;
-    return;
-  }
-  while (std::getline(templateFile, line) && line != "END BODY TOP -->") {
-    _data += line + "\n";
-  }
   std::list<std::string> dirList = listDirs(path);
   std::list<std::string> fileList = listFiles(path);
+  std::string dataToReplace = "";
   for (std::list<std::string>::iterator iter = dirList.begin();
        iter != dirList.end(); ++iter) {
-    _data += "<li><a href=\"" + (const std::string)iter->data() + "/\">" +
+    dataToReplace += "<li><a href=\"" + (const std::string)iter->data() + "/\">" +
              iter->data() + "/</a></li>\n";
   }
   for (std::list<std::string>::iterator iter = fileList.begin();
        iter != fileList.end(); ++iter) {
-    _data += "<li><a href=\"" + (const std::string)iter->data() + "\">" +
+    dataToReplace += "<li><a href=\"" + (const std::string)iter->data() + "\">" +
              iter->data() + "/</a></li>\n";
   }
-  if (std::getline(templateFile, line) && line != "<!-- START BODY BOTTOM") {
-    std::cerr << "Head not found";
-    return;
-  }
-  while (std::getline(templateFile, line) && line != "END BODY BOTTOM -->") {
-    _data += line + "\n";
-  }
+  _data = searchAndReplace(_data, "%%DIRLIST%%", dataToReplace);
+  std::cout << "DATA!\n" << _data << std::endl;
 }
 
 std::string &Directory::getHtml() { return _data; };
