@@ -74,6 +74,8 @@ ClientRequest::ClientRequest(std::string request, const Config &config) {
   _path = config.getRoot() + _queryPath;
   // Append index.html if its a subdir or root dir
   if (isDir(_path) && _method == "GET") {
+    if (_path[_path.length() - 1] != '/')
+        _path += '/';
     std::string indexPath = _path + config.getIndex();
     if (access(indexPath.c_str(), R_OK) == 0)
       _path += "/" + config.getIndex();
