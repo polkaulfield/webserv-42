@@ -20,7 +20,7 @@ char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& confi
 	envVars.push_back("SCRIPT_NAME=" + clientRequest.getPath());
 	envVars.push_back("QUERY_STRING=" + clientRequest.getQuery());
 	config.printConfig();
-	envVars.push_back("CONTENT_LENGHT=" + intToString(clientRequest.getData().length()));
+	envVars.push_back("CONTENT_LENGTH=" + intToString(clientRequest.getData().length()));
 	envVars.push_back("SERVER_NAME=" + config.getServerName());
 	//envVars.push_back("SERVER_PORT=" + portNumber.str());
 	envVars.push_back("SERVER_PORT=" + intToString(config.getPort()));
@@ -38,15 +38,20 @@ char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& confi
 }
 
 std::string	getCGIOutput(char **args, char **env, std::string postData) {
-	(void) postData;
-	int	outputFd[2];
+
+	int	outputFd[2], inputFd[2];
 
 	pipe(outputFd);
+	pipe(inputFd);
 	pid_t	pid = fork();
 	if (pid == 0) {
 		close(outputFd[0]);
 		dup2(outputFd[1], STDOUT_FILENO);
 		close(outputFd[1]);
+
+		close(inputFd[1]);
+		dup2(inputFd[0], STDIN_FILENO);
+		close(inputFd[0]);
 
 		execve(args[0], args, env);
 		perror("execve failed");
@@ -55,6 +60,12 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 	}
 	else if (pid > 0) {
 		close(outputFd[1]);
+
+		close(inputFd[0]);
+		if (!postData.empty())
+			write(inputFd[1], postData.data(), postData.length());
+		close(inputFd[1]);
+
 		std::string	output;
 		char	buffer[1024];
 		ssize_t	bytesRead;
@@ -72,6 +83,10 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 	else {
 		close(outputFd[0]);
 		close(outputFd[1]);
+		close(inputFd[0]);
+		close(inputFd[1]);
+		freeArray(env);
+
 		return "";
 	}
 }
