@@ -12,6 +12,7 @@ class ServerResponse
 
     std::string _getContentType(std::string path);
     std::string _buildOkResponse(std::string &buffer, std::string path);
+    std::string _buildDirResponse(std::string &buffer);
     std::string _buildCgiResponse(std::string &buffer);
     std::string _makeFileBuffer(std::string path);
     std::string _getExtension(std::string htmlPath);
@@ -32,7 +33,6 @@ class ServerResponse
 	bool	_isAllowedType(std::string const& filename, std::string const& contentType);
 	bool	_saveUploadedFile(UploadedFile const& file, std::string const& uploadDir);
 	std::string _buildUploadSuccessResponse();
-	std::string _buildErrorResponse(int code, std::string const& message);
 
 //DELETE METHODS
 
@@ -41,4 +41,5 @@ class ServerResponse
 	bool	_deleteFiles(std::string const& path);
 	std::string _buildSuccessDeleteResponse();
 
+	std::string buildErrorResponse(int code, std::string const& message);
 };

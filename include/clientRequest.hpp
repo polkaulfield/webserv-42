@@ -14,6 +14,7 @@ class ClientRequest
 		std::map<std::string, std::string> _headerMap;
 		std::string _method;
 		std::string _path;
+		std::string _queryPath;
 		std::string _httpVer;
 		std::string _queryString;
 		std::string _data;
@@ -43,6 +44,7 @@ class ClientRequest
 
 		std::string getMethod() const;
 		std::string getPath() const;
+		std::string getQueryPath() const;
 		std::string getHttpVer() const;
 		std::map<std::string, std::string> getHeaderMap() const;
 		std::string getHeaderValue(const std::string& key) const;

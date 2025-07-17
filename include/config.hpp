@@ -56,6 +56,7 @@ public:
 	std::string 		getErrorPage(void) const;
 	int					getClientMaxBodySize(void) const;
 	bool				getIsCgi(void) const;
+	bool				getDirListing(void) const;
 	std::string			getCgiExt(void) const;
 	std::list<Location>	&getLocationList(void);
 	int					getErrorsParser(void);
@@ -75,6 +76,7 @@ public:
 	int		searchLocationConfig(std::string option);
 	void	printConfig(void) const;
 //  CHECKERS  //
+    bool    isPathAutoIndex(const std::string& path) const;
 	int		checkConfig(void);
 	int		checkLocations(void);
 

@@ -1,6 +1,8 @@
 #include "../include/serverResponse.hpp"
 #include "../include/utils.hpp"
 #include "../include/cgi.hpp"
+#include "../include/directory.hpp"
+#include <string>
 #include <unistd.h>
 #include <sstream>
 #include <fstream>
@@ -50,16 +52,44 @@ Content-Type: " + _getContentType(path) + "\n\
 Content-Length: " + intToString(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
-	// Debug
-	//std::cout << "Returning response\n" << response << std::endl;
+	return response.data();
+}
+
+std::string ServerResponse::_buildDirResponse(std::string &buffer)
+{
+	std::string response = "HTTP/1.1 200 OK\n\
+Content-Type: text/html \n\
+Content-Length: " + intToString(buffer.length()) +
+"\r\n\r\n\
+"+ buffer;
 	return response.data();
 }
 
 std::string ServerResponse::_buildCgiResponse(std::string &buffer)
 {
-	std::string response = "HTTP/1.1 200 OK\nContent-Type: text/html\n\
-Content-Length: " + intToString(buffer.length()) + "\n" + buffer;
-    std::cout << "RESPONSE: " << std::endl << response.data() << std::endl;
+    // Parse cgi header
+    // Check if cgi added Content-Type and
+    size_t cgiHeaderSize = 0;
+    if (buffer.find("Content-Type:") != std::string::npos) {
+        // Check for header separator type 1
+        cgiHeaderSize = buffer.find("\r\n\r\n");
+        if (cgiHeaderSize != std::string::npos)
+            cgiHeaderSize += 5;
+        else
+        {
+            // Check for header separator type 2
+            cgiHeaderSize = buffer.find("\n\n");
+            if (cgiHeaderSize != std::string::npos)
+                cgiHeaderSize += 3;
+            else
+                cgiHeaderSize = 0;
+        }
+    }
+
+	std::string response = "HTTP/1.1 200 OK\r\n\
+Content-Length: " + intToString(buffer.length() - cgiHeaderSize) + "\n" + buffer;
+
+
 	return response.data();
 }
 
@@ -70,7 +100,7 @@ std::string ServerResponse::buildNotFoundResponse(void)
 Content-Type: text/html\r\n\
 Content-Length: 0\r\n\
 Connection: Closed\r\n\r\n";
-	return response;
+	return response.data();
 }
 
 // Some cpp magic to load a file to an array of chars
@@ -92,6 +122,22 @@ std::string ServerResponse::_getExtension(std::string htmlPath) {
 	return htmlPath.substr(pos);
 }
 
+std::string	ServerResponse::buildErrorResponse(int code, std::string const& message) {
+	std::string data = "";
+	std::string line;
+    std::ifstream templateFile("./templates/error.html");
+    while (std::getline(templateFile, line))
+        data += line + "\n";
+    data = searchAndReplace(data, "%%ERRORMSG%%", message);
+    data = searchAndReplace(data, "%%ERRORCODE%%", intToString(code));
+	std::string response = "HTTP/1.1 " + intToString(code) + " Error\r\n";
+	response += "Content-Type: text/html\r\n";
+	response += "Content-Length: " + intToString(data.length()) + "\r\n";
+	response += "\r\n";
+	response += data;
+	return response;
+}
+
 ServerResponse::ServerResponse(void)
 {
 	_response = "";
@@ -99,16 +145,22 @@ ServerResponse::ServerResponse(void)
 
 ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& config, bool isUpload)
 {
-	std::cout << "Creating server response" << std::endl;
+
 	std::string buffer;
 
 	if (clientRequest.getMethod() == "GET")
 	{
 		if (isCGI(clientRequest.getPath(), config)) {
-		    std::cout << "cgi detected!" << std::endl;
+
 			Cgi				cgiHandler;
 			buffer = cgiHandler.execScript(clientRequest, config);
 			_response = _buildCgiResponse(buffer);
+
+		}
+		else if (isDir(clientRequest.getPath()) && config.isPathAutoIndex(clientRequest.getQueryPath())) {
+
+			Directory directory  = Directory(clientRequest.getPath());
+			_response = _buildDirResponse(directory.getHtml());
 		}
 		else if (!clientRequest.getPath().empty())
 		{
@@ -117,7 +169,7 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 		}
 		else {
 			// If file doesnt exist make a 404 not found
-			_response = buildNotFoundResponse();
+			_response = buildErrorResponse(404, "Not found!");
 		}
 	}
 	else if (clientRequest.getMethod() == "POST")
@@ -125,15 +177,13 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 		if(isUpload) {
 			if (clientRequest.isMultipart())
 				_handleFileUpload(clientRequest, config);
-			else {
-				_response = _buildErrorResponse(400, "Not a multipart request");
-			}
+			else
+				_response = buildErrorResponse(400, "Not a multipart request");
 			if (_response.empty())
-				_response = _buildErrorResponse(500, "Upload processing failed");
+				_response = buildErrorResponse(500, "Upload processing failed");
 		}
-		else {
-			_response = _buildErrorResponse(400, "Bad Request");
-		}
+		else
+			_response = buildErrorResponse(400, "Bad Request");
 	}
 	else if (clientRequest.getMethod() == "DELETE")
 		_handleDeleteRequest(clientRequest, config);

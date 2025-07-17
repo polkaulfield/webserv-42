@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Directory Listing</title>
+        <style>
+            /* Reset some default */
+            body,
+            ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background: #f4f6f8;
+                color: #333;
+                line-height: 1.6;
+                padding: 40px 20px;
+                display: flex;
+                justify-content: center;
+            }
+
+            h1 {
+                text-align: center;
+                color: #2c3e50;
+                margin-bottom: 30px;
+                font-weight: 700;
+                letter-spacing: 1.2px;
+            }
+
+            ul {
+                list-style: none;
+                width: 100%;
+                max-width: 600px;
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                padding: 20px 30px;
+                box-sizing: border-box;
+            }
+
+            ul li {
+                padding: 12px 15px;
+                border-bottom: 1px solid #eee;
+                font-size: 16px;
+                transition: background-color 0.3s ease;
+                cursor: default;
+            }
+
+            ul li:last-child {
+                border-bottom: none;
+            }
+
+            ul li:hover {
+                background-color: #f0f8ff;
+            }
+
+            /* If links are inside list */
+            ul li a {
+                color: #2980b9;
+                text-decoration: none;
+                display: block;
+                width: 100%;
+            }
+
+            ul li a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h1>Directory Listing</h1>
+            <ul>
+                %%DIRLIST%%
+            </ul>
+        </div>
+    </body>
+</html>
