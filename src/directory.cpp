@@ -32,10 +32,9 @@ Directory::Directory(const std::string &path) {
   for (std::list<std::string>::iterator iter = fileList.begin();
        iter != fileList.end(); ++iter) {
     dataToReplace += "<li><a href=\"" + (const std::string)iter->data() + "\">" +
-             iter->data() + "/</a></li>\n";
+             iter->data() + "</a></li>\n";
   }
   _data = searchAndReplace(_data, "%%DIRLIST%%", dataToReplace);
-  std::cout << "DATA!\n" << _data << std::endl;
 }
 
 std::string &Directory::getHtml() { return _data; };

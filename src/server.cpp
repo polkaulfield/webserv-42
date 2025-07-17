@@ -140,15 +140,13 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
     send(clientSocket, serverResponse.getResponse().data(),
          serverResponse.getResponse().length(), 0);
   } else if (clientRequest.getMethod() == "GET") {
-      data = ServerResponse().buildErrorResponse(404, "Not Found!");
-      std::cout << "Failed to find valid endpoint" << std::endl;
-      send(clientSocket, data.data(),
-           data.length(), 0);
+    data = ServerResponse().buildErrorResponse(404, "Not Found!");
+    std::cout << "Failed to find valid endpoint" << std::endl;
+    send(clientSocket, data.data(), data.length(), 0);
   } else {
     data = ServerResponse().buildErrorResponse(404, "Not Found!");
     std::cout << "Failed to find valid endpoint" << std::endl;
-    send(clientSocket, data.data(),
-         data.length(), 0);
+    send(clientSocket, data.data(), data.length(), 0);
   }
   close(clientSocket);
 }

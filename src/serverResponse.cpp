@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sstream>
 #include <fstream>
+#include "../include/utils.hpp"
 
 // Private methods
 
@@ -148,6 +149,7 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 
 	std::string buffer;
 
+	std::cout << "path inside serverresponse: " << clientRequest.getPath() << std::endl;
 	if (clientRequest.getMethod() == "GET")
 	{
 		if (isCGI(clientRequest.getPath(), config)) {
@@ -162,7 +164,7 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 			Directory directory  = Directory(clientRequest.getPath());
 			_response = _buildDirResponse(directory.getHtml());
 		}
-		else if (!clientRequest.getPath().empty())
+		else if (isFile(clientRequest.getPath()))
 		{
 			buffer = _makeFileBuffer(clientRequest.getPath());
 			_response = _buildOkResponse(buffer, clientRequest.getPath());
