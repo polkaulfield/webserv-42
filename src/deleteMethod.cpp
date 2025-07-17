@@ -85,22 +85,20 @@ bool	ServerResponse::_isDeleteAllowed(std::string const& method, std::string con
 
 void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config const& config) {
 	std::string	requestPath = request.getPath();
-	std::cout << GREEN << "erwsetsdlkgsd" << RESET << std::endl;
 	if (!_isDeleteAllowed("DELETE", request.getPath(), config)) {
-		_response = _buildErrorResponse(405, "Method Not Allowed");
+		_response = buildErrorResponse(405, "Method Not Allowed");
 		return;
 	}
-	std::cout << GREEN << "erwsetsdlkgsd" << RESET << std::endl;
 	//nos saltamos el canonizar el path de momento si falla puede ser por eso
 	std::string fullPath = requestPath;
 	std::cout << fullPath << std::endl;
 	if (access(fullPath.c_str(), F_OK)) {
-		_response = _buildErrorResponse(404,"File not found");
+		_response = buildErrorResponse(404,"File not found");
 		return ;
 	}
 
 	if (access(fullPath.c_str(), W_OK)) {
-		_response = _buildErrorResponse(403, "Permission denied");
+		_response = buildErrorResponse(403, "Permission denied");
 		return ;
 	}
 
@@ -110,12 +108,12 @@ void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config c
 	//luego consultamos si es un archivo regular, si no lo es construimos un mensaje de error
 	struct stat fileStat;
 	if (stat(fullPath.c_str(), &fileStat) == 0 && !S_ISREG(fileStat.st_mode)) {
-		_response = _buildErrorResponse(403, "Cannot delete directories");
+		_response = buildErrorResponse(403, "Cannot delete directories");
 		return ;
 	}
 
 	if (_deleteFiles(fullPath))
 		_response = _buildSuccessDeleteResponse();
 	else
-		_response = _buildErrorResponse(500, "Failed to delete file");
+		_response = buildErrorResponse(500, "Failed to delete file");
 }

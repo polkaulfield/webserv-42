@@ -32,7 +32,6 @@ class ServerResponse
 	bool	_isAllowedType(std::string const& filename, std::string const& contentType);
 	bool	_saveUploadedFile(UploadedFile const& file, std::string const& uploadDir);
 	std::string _buildUploadSuccessResponse();
-	std::string _buildErrorResponse(int code, std::string const& message);
 
 //DELETE METHODS
 
@@ -41,4 +40,5 @@ class ServerResponse
 	bool	_deleteFiles(std::string const& path);
 	std::string _buildSuccessDeleteResponse();
 
+	std::string buildErrorResponse(int code, std::string const& message);
 };
