@@ -116,7 +116,7 @@ std::list<Config>	takeConfig(const char *configFile) {
 	int	dp;
 	dp = configList.front().getDoublePort();
 	if (dp != -1) {
-		std::cout << "hola" << std::endl;
+	//	std::cout << "hola" << std::endl;
 		configList.push_back(Config(configList.front()));
 		configList.back().setPort(dp);
 	}
