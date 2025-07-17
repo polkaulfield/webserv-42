@@ -7,7 +7,7 @@
 # include <vector>
 
 bool endsWith(const std::string& fullString,
-              const std::string& ending);
+			  const std::string& ending);
 bool isDir(std::string path);
 bool isFile(std::string path);
 std::string intToString(int n);
@@ -16,4 +16,6 @@ void    printDict(std::map<std::string, std::string> dict);
 std::list<std::string> listDirs(const std::string& dir);
 std::list<std::string> listFiles(const std::string &dir);
 bool    startsWith(std::string str, std::string prefix);
+void	freeArray(char** array);
+
 #endif

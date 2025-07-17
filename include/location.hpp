@@ -49,5 +49,7 @@ public:
 	bool	checkDirectory(std::string root);
 	bool	checkUploadDir(std::string root);
 	bool	checkRedirect(std::string root);
+	bool	checkPost(void);
+	int		checkRedirectLocation(std::string root);
 };
 #endif

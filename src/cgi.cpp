@@ -50,6 +50,7 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 
 		execve(args[0], args, env);
 		perror("execve failed");
+		freeArray(env);
 		std::exit(1);
 	}
 	else if (pid > 0) {
@@ -64,6 +65,8 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 		}
 		close(outputFd[0]);
 		waitpid(pid, NULL, 0);
+
+		freeArray(env);
 		return output;
 	}
 	else {

@@ -5,17 +5,21 @@
 //  CONSTRUCTOR & DESTRUCTOR //
 Config::Config(void) {
 	//std::cout << "Contructor Config" << std::endl;
+	_server_name = "localhost";
 	_port = 8080;
 	_host = "localhost";
-	_root = "/tmp/www";
+	_root = ".";
 	_index = "index.html";
 	_error_page = "404.html";
 	_client_max_body_size = 1000000;
 	_cgi = false;
 	_error_parser = false;
+	_error_parser = 0;
+	_double_port = -1;
 }
 
 Config::Config(const Config &src) {
+	std::cout << "Copy Contructor Config" << std::endl;
 	*this = src;
 }
 
@@ -27,11 +31,12 @@ Config &Config::operator = (const Config &src) {
 		_root = src._root;
 		_index = src._index;
 		_error_page = src._error_page;
+		_client_max_body_size = src._client_max_body_size;
 		_cgi = src._cgi;
 		_cgi_path = src._cgi_path;
 		_cgi_ext = src._cgi_ext;
 		_locationList = src._locationList;
-		_client_max_body_size = src._client_max_body_size;
+		_double_port = src._double_port;
 		_error_parser = src._error_parser;
 	}
 	return *this;
@@ -64,14 +69,44 @@ std::string	Config::getCgiExt(void) const {return _cgi_ext;}
 
 int	Config::getErrorsParser(void) {return _error_parser;}
 
+int	Config::getDoublePort(void) {return _double_port;}
+
 //  SETTERS  //
 void	Config::setServerName(std::string server_name) {_server_name = server_name;}
 
 //istringstream converts the std::string to numbers
 void	Config::setPort(std::string port) {
-	_error_parser += checkDigits(port);
-	std::istringstream value(port);
-	value >> _port;
+	bool flag = false;
+	if (port.find(" ") == port.find_last_of(" ") && port.find(" ") != port.length() - 1) {
+		std::cout << "1" << std::endl;
+		std::istringstream value(port);
+		value >> _port;
+		port = port.substr(port.find(" ") + 1);
+		flag = true;
+	}
+	if (port.find(" ") == (size_t)-1 || (port.find(" ") != (size_t)-1 && port.find(" ") == (size_t)-1)) {
+		std::cout << "2" << std::endl;
+		//_error_parser += checkDigits(port);
+		//if (port.substr(port.find(" ")).find(" ") == (size_t)-1)
+			//port = port.substr(port.find(" "));
+		std::istringstream value(port);
+
+		if (flag) {
+			std::cout << "2.5" << std::endl;
+			value >> _double_port;
+			std::cout <<  _double_port << std::endl;
+		} else {
+			value >> _port;
+		}
+	} else {
+		std::cout << "3" << std::endl;
+		_error_parser += 1;
+	}
+	_error_parser += checkChars(port, ".,/\\");
+}
+
+void	Config::setPort(int port) {
+	_port = port;
 }
 
 void	Config::setHost(std::string host) {
@@ -208,10 +243,11 @@ int Config::_checkIndex(void) {
 }
 
 int	Config::_checkClientMaxBodySize(void) {
-	if (_client_max_body_size > 0 && _client_max_body_size < 1000000)
-		return 0;
-	std::cout << GREEN << "\tError in cliente max body size: " << _client_max_body_size << " is not valid" << RESET << std::endl;
-	return 1;
+	//if (_client_max_body_size > 0 && _client_max_body_size < (size_t)18446744073709551615)
+	//	return 0;
+	//std::cout << GREEN << "\tError in cliente max body size: " << _client_max_body_size << " is not valid" << RESET << std::endl;
+	//return 1;
+	return 0; //need check this function
 }
 
 int Config::_checkCgiPath(void) {
@@ -224,7 +260,7 @@ int Config::_checkCgiPath(void) {
 	std::string cgi_root(_root + _cgi_path + _cgi_ext);
 	if (!access(cgi_root.data(), F_OK))
 		return 0;
-	std::cout << GREEN << "\tError in Cgi Path: " << _cgi_path << " is not accesible" << RESET << std::endl;
+	std::cout << GREEN << "\tError in Cgi Path: " << _cgi_path + _cgi_ext << " is not accesible" << RESET << std::endl;
 	return 1;
 }
 
@@ -241,16 +277,36 @@ int	Config::_checkCgiExt(void) {
 	return 1;
 }
 
+int	Config::_checkErrorPage(void) {
+	if (!access(_error_page.data(), F_OK))
+		return 0;
+	std::cout << GREEN << "\tError in error_page: " << _error_page << " is not accesible" << RESET << std::endl;
+	return 1;
+}
+
 //roots is a tmp string for take the _root string and append the directory of current location
+// if not found location create "/" default with get
 int Config::checkLocations(void) {
 	int errors = 0;
+	if (_locationList.empty()) {
+		_locationList.push_back(Location());
+		return errors;
+	}
 	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); ++iter) {
-		if (iter->getDirectory() != "/redirect")
+		if (iter->getDirectory() == "/redirect") {
+			errors += iter->checkRedirectLocation(_root);
+			continue ;
+		}
+		if (!iter->getDirectory().empty())
 			errors += iter->checkDirectory(_root);
 		if (iter->getIsUpload())
 			errors += iter->checkUploadDir(_root);
-		if (!iter->getRedirect().empty())
-			errors += iter->checkRedirect(_root);
+		if (iter->getPost())
+			errors += iter->checkPost();
+		if (!iter->getRedirect().empty()) {
+			std::cerr << GREEN << "\tError in Location: Can't has return" << RESET << std::endl;
+			errors += 1;
+		}
 		errors += iter->checkAllowMethods();
 	}
 	return errors;
@@ -266,6 +322,7 @@ int	Config::checkConfig(void) {
 	error += _checkClientMaxBodySize();
 	error += _checkCgiPath();
 	error += _checkCgiExt();
+	error += _checkErrorPage();
 	error += checkLocations();
 	return error;
 }

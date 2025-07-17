@@ -30,6 +30,7 @@ private:
 	std::string			_cgi_path;
 	std::string			_cgi_ext;
 	std::list<Location>	_locationList;
+	int					_double_port;
 	int					_error_parser; // this flag is used for detect errors after parser
 //  METHODS  //
 	std::string	_takeParams(std::string option, int *error);
@@ -40,6 +41,7 @@ private:
 	int		_checkClientMaxBodySize(void);
 	int		_checkCgiPath(void);
 	int		_checkCgiExt(void);
+	int		_checkErrorPage(void);
 public:
 //  CONSTRUCTOR  //
 	Config(void);
@@ -58,11 +60,13 @@ public:
 	bool				getDirListing(void) const;
 	std::string			getCgiExt(void) const;
 	std::list<Location>	&getLocationList(void);
+	int					getDoublePort(void);
 	int					getErrorsParser(void);
 
 	//  SETTERS  //
 	void	setServerName(std::string _server_Name);
 	void	setPort(std::string port);
+	void	setPort(int port);
 	void	setHost(std::string host);
 	void	setRoot(std::string root);
 	void	setIndex(std::string index);

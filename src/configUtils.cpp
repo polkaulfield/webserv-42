@@ -50,7 +50,7 @@ bool checkDigits(std::string src) {
 	if (src.empty())
 		return false;
 	for (size_t i = 0; i < src.length(); i++) {
-		if (!isdigit(src[i]))
+		if (!isdigit(src[i]) && src[i] != '+' && src[i] != '-')
 			return true;
 	}
 	return false;
@@ -75,9 +75,9 @@ std::list<Config>	takeConfig(const char *configFile) {
 	int					brackets = 0;
 	std::list<Config>	configList;
 
-	if (access(configFile, F_OK))
-		exitConfig(configList, NULL, "Error: File not found");
 	configFd.open(configFile, std::ifstream::in);
+	if (!configFd.is_open())
+		exitConfig(configList, NULL, "Error: Can't open config file");
 	while(std::getline(configFd, line)) {
 		tmp.clear();
 		for (size_t i = 0; i < line.length(); i++) { // this for remove tabs and space and put inside of tmp from config file
@@ -113,5 +113,13 @@ std::list<Config>	takeConfig(const char *configFile) {
 		//exitConfig(configList, configFd, "");
 	configFd.close();
 	//configList.front().printConfig();
+	int	dp;
+	dp = configList.front().getDoublePort();
+	if (dp != -1) {
+		std::cout << "hola" << std::endl;
+		configList.push_back(Config(configList.front()));
+		configList.back().setPort(dp);
+	}
+
 	return configList;
 }

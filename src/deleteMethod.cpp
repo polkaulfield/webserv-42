@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 
+
 std::string ServerResponse::_buildSuccessDeleteResponse() {
 	// Crear el cuerpo de la respuesta
 	std::string body = "File deleted successfully";
@@ -21,39 +22,7 @@ std::string ServerResponse::_buildSuccessDeleteResponse() {
 }
 
 bool	ServerResponse::_deleteFiles(std::string const& path) {
-
-	char	*pathC = (char *)path.c_str();
-
-	pid_t	pid = fork();
-
-	//aqui dupeamos el fd del dev/null al stderr y stdout para que no aparezcan los mensajes de eliminacion del sistema
-	//y los enviamos a un sitio donde se van a eliminar de inmediato (los mensajes)
-	if (pid == 0) {
-		int	devNull = open("/dev/null", O_WRONLY);
-		dup2(devNull, STDOUT_FILENO);
-		dup2(devNull, STDERR_FILENO);
-		close(devNull);
-
-		char	*args[] = {
-			(char *)"rm",
-			(char* )"-f",
-			pathC,
-			NULL
-		};
-
-		execve("/bin/rm", args, NULL);
-		std::exit(1);
-	}
-	else if (pid > 0) {
-		int	status;
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
-			return true; // eliminado correctamente
-		else
-			return false;
-	}
-	else
-		return false; //fallo de fork
+	return (std::remove(path.data()) == 0) ? true : false;
 }
 
 bool	ServerResponse::_isDeleteAllowed(std::string const& method, std::string const& path, Config config) {
@@ -64,22 +33,17 @@ bool	ServerResponse::_isDeleteAllowed(std::string const& method, std::string con
 
 	for (std::list<Location>::iterator it = location.begin(); it != location.end(); it++) {
 		std::string locationPath = config.getRoot() + it->getDirectory();
-		std::cout << "Location " << locationPath << std::endl;
+		//std::cout << "Location " << locationPath << std::endl;
 		if (path.find(locationPath) == 0) {
 			if (locationPath.length() > bestMatchLenght){
 				bestMatch = &(*it);
 				bestMatchLenght = locationPath.length();
-				std::cout << "Delete Location " << it->getDirectory() << std::endl;
+				//std::cout << "Delete Location " << it->getDirectory() << std::endl;
 				if (it->hasMethod(method))
 					break ;
 			}
 		}
 	}
-	/*if (bestMatch) {
-		if (bestMatch->hasMethod(method))
-			return true;
-	}
-	return false;*/
 	return (bestMatch && bestMatch->hasMethod(method)) ? true : false;
 }
 

@@ -95,3 +95,12 @@ std::list<std::string> listFiles(const std::string &dir) {
   closedir(dirp);
   return dirList;
 }
+
+void	freeArray(char** array) {
+	if (!array)
+		return;
+
+	for (int i = 0; array[i]; i++)
+		delete[] array[i];
+	delete[] array;
+}
