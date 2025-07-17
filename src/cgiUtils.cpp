@@ -14,7 +14,7 @@
 
 std::string getExtension(std::string htmlPath)
 {
-	size_t pos = htmlPath.find(".");
+	size_t pos = htmlPath.find_last_of(".");
 	size_t arg = htmlPath.find("?");
 	if (pos == std::string::npos) // si no encuentra punto devuelve string vaciobuildOk
 		return "";
