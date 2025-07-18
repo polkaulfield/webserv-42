@@ -37,9 +37,12 @@ class ServerResponse
 //DELETE METHODS
 
 	void	_handleDeleteRequest(ClientRequest const& request, Config const& config);
-	bool	_isDeleteAllowed(std::string const& method, std::string const& path, Config config);
+	bool	_containsTraversalPath(std::string const& rawPath);
+	bool	_isMethodAllowed(std::string const& method, std::string const& path, Config config);
 	bool	_deleteFiles(std::string const& path);
 	std::string _buildSuccessDeleteResponse();
 
 	std::string buildErrorResponse(int code, std::string const& message);
+
+	bool _isPathOutsideServerScope(const std::string& queryPath);
 };

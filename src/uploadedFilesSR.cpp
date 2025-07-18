@@ -69,7 +69,7 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 
 	std::string locationPath = clientRequest.getPath();
 
-	if (!_isDeleteAllowed("POST", locationPath, config)) {
+	if (!_isMethodAllowed("POST", locationPath, config)) {
 		_response = buildErrorResponse(405, "Method Not Allowed");
 		return;
 	}
