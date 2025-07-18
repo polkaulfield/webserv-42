@@ -104,3 +104,19 @@ void	freeArray(char** array) {
 		delete[] array[i];
 	delete[] array;
 }
+
+std::string extractDirectory(const std::string& filePath) {
+  size_t lastSlash = filePath.find_last_of('/');
+  if (lastSlash != std::string::npos) {
+      return filePath.substr(0, lastSlash);
+  }
+  return ".";
+}
+
+std::string extractFilename(const std::string& filePath) {
+size_t lastSlash = filePath.find_last_of('/');
+  if (lastSlash != std::string::npos) {
+      return filePath.substr(lastSlash + 1);
+  }
+  return filePath;
+}

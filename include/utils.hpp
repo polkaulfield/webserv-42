@@ -17,5 +17,11 @@ std::list<std::string> listDirs(const std::string& dir);
 std::list<std::string> listFiles(const std::string &dir);
 bool    startsWith(std::string str, std::string prefix);
 void	freeArray(char** array);
+std::string extractDirectory(const std::string& filePath);
+std::string extractFilename(const std::string& fileName);
+char**	vectorToArray(std::vector<std::string> envVars);
+std::string getExtension(std::string htmlPath);
+
+std::string	determineInterpreter(std::string htmlPath);
 
 #endif

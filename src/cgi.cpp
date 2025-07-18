@@ -37,7 +37,7 @@ char** Cgi::_populateEnv(const ClientRequest& clientRequest, const Config& confi
 	return vectorToArray(envVars);
 }
 
-std::string	getCGIOutput(char **args, char **env, std::string postData) {
+std::string	 Cgi::getCGIOutput(char **args, char **env, std::string const& postData, std::string const& path) {
 
 	int	outputFd[2], inputFd[2];
 
@@ -45,6 +45,19 @@ std::string	getCGIOutput(char **args, char **env, std::string postData) {
 	pipe(inputFd);
 	pid_t	pid = fork();
 	if (pid == 0) {
+		std::string scriptDirectory = extractDirectory(path);
+		if (!scriptDirectory.empty()) {
+			if (chdir(scriptDirectory.data()) != 0) {
+				perror("chdir failed");
+				std::exit(1);
+			}
+		}
+
+		std::string scriptName = extractFilename(path);
+		
+		if (args[1])
+			args[1] = (char*)scriptName.data();
+
 		close(outputFd[0]);
 		dup2(outputFd[1], STDOUT_FILENO);
 		close(outputFd[1]);
@@ -103,13 +116,13 @@ std::string	Cgi::execScript(const ClientRequest& clientRequest, const Config& co
 			(char *)path.c_str(),
 			NULL
 		};
-		return getCGIOutput(args, env, postData);
+		return getCGIOutput(args, env, postData, path);
 	}
 	else {
 		char	*args[] = {
 			(char *)path.c_str(),
 			NULL
 		};
-		return getCGIOutput(args, env, postData);
+		return getCGIOutput(args, env, postData, path);
 	}
 }
