@@ -2,6 +2,7 @@
 #include "../include/config.hpp"
 #include "../include/serverResponse.hpp"
 #include "../include/utils.hpp"
+#include "../include/cgi.hpp"
 #include <algorithm>
 #include <arpa/inet.h>
 #include <cstdio>
@@ -82,15 +83,21 @@ bool Server::_checkLocation(const ClientRequest &clientRequest) {
   for (std::list<Location>::iterator iter = _locationList.begin();
        iter != _locationList.end(); ++iter) {
     if (iter->hasMethod(clientRequest.getMethod()) &&
-        startsWith(clientRequest.getPath(),
+        startsWith(clientRequest.getPath(), \
                    _config.getRoot() + iter->getDirectory())) {
-      if (clientRequest.getMethod() == "DELETE") {
-        return true;
-      }
-      if (iter->getIsUpload() && clientRequest.getMethod() == "POST") {
-        _isFileUpload = true;
-        std::cout << "We are uploading files!" << std::endl;
-        return true;
+		if (clientRequest.getMethod() == "DELETE") {
+		return true;
+		}
+		if (clientRequest.getMethod() == "POST") {
+			if (isCGI(clientRequest.getPath(), _config)) {
+			_isFileUpload = true;
+			} else if (iter->getIsUpload()) {
+				_isFileUpload = true;
+			} else {
+				continue;
+			}
+	        std::cout << "We are uploading files!" << std::endl;
+	        return true;
       }
       if (access(clientRequest.getPath().c_str(), F_OK) != -1)
         return true;
@@ -144,7 +151,11 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
     std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   } else {
-    data = ServerResponse().buildErrorResponse(404, "Not Found!");
+  	if (!isCGI(clientRequest.getPath(), _config)) {
+   	  data = ServerResponse().buildErrorResponse(403, "Not valid extension!");
+  	} else {
+      data = ServerResponse().buildErrorResponse(404, "Not Found!");
+   	}
     std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   }

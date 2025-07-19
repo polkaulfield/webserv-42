@@ -56,10 +56,10 @@ bool	ServerResponse::_isMethodAllowed(std::string const& method, std::string con
 bool ServerResponse::_isPathOutsideServerScope(const std::string& queryPath) {
     // 1. Detectar paths de sistema comunes
     const std::string systemPaths[] = {
-        "/etc/", "/usr/", "/home/", "/root/", "/var/", "/tmp/", 
+        "/etc/", "/usr/", "/home/", "/root/", "/var/", "/tmp/",
         "/bin/", "/sbin/", "/boot/", "/dev/", "/proc/", "/sys/"
     };
-    
+
     for (size_t i = 0; i < sizeof(systemPaths)/sizeof(systemPaths[0]); i++) {
         if (queryPath.find(systemPaths[i]) == 0) {
             return true;
@@ -69,7 +69,7 @@ bool ServerResponse::_isPathOutsideServerScope(const std::string& queryPath) {
 }
 
 void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config const& config) {
-	
+
 	std::string queryPath = request.getQueryPath();
 
 	if (_isPathOutsideServerScope(queryPath)) {
@@ -78,7 +78,7 @@ void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config c
     }
 
 	std::string fullPath = request.getPath();
-	
+
 	if (!_isMethodAllowed("DELETE", fullPath, config)) {
 		_response = buildErrorResponse(405, "Method Not Allowed");
 		return;
