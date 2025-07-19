@@ -176,7 +176,14 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 	}
 	else if (clientRequest.getMethod() == "POST")
 	{
-		if(isUpload) {
+		if (isCGI(clientRequest.getPath(), config)) {
+
+			Cgi				cgiHandler;
+			buffer = cgiHandler.execScript(clientRequest, config);
+			_response = _buildCgiResponse(buffer);
+
+		}
+		else if(isUpload) {
 			if (clientRequest.isMultipart())
 				_handleFileUpload(clientRequest, config);
 			else

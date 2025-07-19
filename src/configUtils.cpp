@@ -108,9 +108,9 @@ std::list<Config>	takeConfig(const char *configFile) {
 	}
 	if (configList.empty())
 		exitConfig(configList, &configFd, "Error: File is empty");
-	checkConfigList(configList);
 	//if (checkConfigList(configList))
-		//exitConfig(configList, configFd, "");
+		//;//exitConfig(configList, configFd, "");
+	checkConfigList(configList);
 	configFd.close();
 	//configList.front().printConfig();
 	int	dp;

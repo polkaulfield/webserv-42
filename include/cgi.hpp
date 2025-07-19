@@ -21,16 +21,7 @@ class Cgi
 		Cgi();
 		~Cgi();
 		std::string	execScript(const ClientRequest& clientRequest, const Config& config);
-};
-
-std::string getExtension(std::string htmlPath);
+		std::string	getCGIOutput(char **args, char **env, std::string const& postData, std::string const& path);
+	};
 bool	isCGI(std::string htmlPath, const Config &config);
-std::string	determineInterpreter(std::string htmlPath);
-std::string extractMethod(std::string petition);
-std::string	extractQuery(std::string petition);
-std::string	extractHost(std::string petition);
-std::string extractUserAgent(std::string petition);
-std::string extractAccept(std::string petition);
-std::string extractAcceptLanguage(std::string petition);
-std::string extractConnection(std::string petition);
-char**	vectorToArray(std::vector<std::string> envVars);
+

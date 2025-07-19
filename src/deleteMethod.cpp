@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 
 
 std::string ServerResponse::_buildSuccessDeleteResponse() {
@@ -25,7 +26,11 @@ bool	ServerResponse::_deleteFiles(std::string const& path) {
 	return (std::remove(path.data()) == 0) ? true : false;
 }
 
-bool	ServerResponse::_isDeleteAllowed(std::string const& method, std::string const& path, Config config) {
+bool	ServerResponse::_containsTraversalPath(std::string const& rawPath) {
+	return rawPath.find("..") != std::string::npos;
+}
+
+bool	ServerResponse::_isMethodAllowed(std::string const& method, std::string const& path, Config config) {
 	std::list<Location>& location = config.getLocationList();
 
 	Location*	bestMatch = NULL;
@@ -47,15 +52,38 @@ bool	ServerResponse::_isDeleteAllowed(std::string const& method, std::string con
 	return (bestMatch && bestMatch->hasMethod(method)) ? true : false;
 }
 
+
+bool ServerResponse::_isPathOutsideServerScope(const std::string& queryPath) {
+    // 1. Detectar paths de sistema comunes
+    const std::string systemPaths[] = {
+        "/etc/", "/usr/", "/home/", "/root/", "/var/", "/tmp/", 
+        "/bin/", "/sbin/", "/boot/", "/dev/", "/proc/", "/sys/"
+    };
+    
+    for (size_t i = 0; i < sizeof(systemPaths)/sizeof(systemPaths[0]); i++) {
+        if (queryPath.find(systemPaths[i]) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config const& config) {
-	std::string	requestPath = request.getPath();
-	if (!_isDeleteAllowed("DELETE", request.getPath(), config)) {
+	
+	std::string queryPath = request.getQueryPath();
+
+	if (_isPathOutsideServerScope(queryPath)) {
+        _response = buildErrorResponse(403, "Forbidden: Path outside server scope");
+        return;
+    }
+
+	std::string fullPath = request.getPath();
+	
+	if (!_isMethodAllowed("DELETE", fullPath, config)) {
 		_response = buildErrorResponse(405, "Method Not Allowed");
 		return;
 	}
-	//nos saltamos el canonizar el path de momento si falla puede ser por eso
-	std::string fullPath = requestPath;
-	std::cout << fullPath << std::endl;
+
 	if (access(fullPath.c_str(), F_OK)) {
 		_response = buildErrorResponse(404,"File not found");
 		return ;
