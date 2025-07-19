@@ -86,12 +86,17 @@ std::string ServerResponse::_buildCgiResponse(std::string &buffer)
                 cgiHeaderSize = 0;
         }
     }
-
 	std::string response = "HTTP/1.1 200 OK\r\n\
 Content-Length: " + intToString(buffer.length() - cgiHeaderSize) + "\n" + buffer;
-
-
 	return response.data();
+}
+
+std::string ServerResponse::_buildRedirResponse(const std::string &url) {
+    std::string response = "HTTP/1.1 302 OK\r\n\
+    Location: " + url + "\
+    Content-Type: text/html; charset=UTF-8 \
+    Content-Length: 0";
+    return response.data();
 }
 
 // Here we return the classic 404 not found
@@ -157,7 +162,10 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 			Cgi				cgiHandler;
 			buffer = cgiHandler.execScript(clientRequest, config);
 			_response = _buildCgiResponse(buffer);
+		}
+		else if (config.getRedirectFromPath(clientRequest.getPath()) != "")	{
 
+            _response = _buildRedirResponse(config.getRedirectFromPath(clientRequest.getPath()));
 		}
 		else if (isDir(clientRequest.getPath()) && config.isPathAutoIndex(clientRequest.getQueryPath())) {
 
@@ -170,6 +178,8 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 			_response = _buildOkResponse(buffer, clientRequest.getPath());
 		}
 		else {
+		std::cout << "redir path: " << config.getRedirectFromPath(clientRequest.getPath()) << std::endl;
+		std::cout << "gepath: "<<clientRequest.getPath() <<std::endl;
 			// If file doesnt exist make a 404 not found
 			_response = buildErrorResponse(404, "Not found!");
 		}
