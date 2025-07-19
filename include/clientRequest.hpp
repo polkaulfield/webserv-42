@@ -58,19 +58,16 @@ class ClientRequest
 		std::string getConnection() const;
 		bool        getIsFileUpload(const bool val);
 
-
-//--------------------------------------------------------------------
-		//uploadFile
 		bool isMultipart() const;
 		const std::vector<UploadedFile>& getUploadedFiles() const;
 		const std::string& getBoundary() const;
 
-				void _parseContentType(std::string const& request);
+		std::string	_parseChunkedBody(std::string _data);
+		void _parseContentType(std::string const& request);
 		std::string _trimLeft(std::string contentType);
 		std::string _extractBoundary(std::string const& contentType);
 		bool _parseMultipartBody(std::string const& body);
 		void _parseMultipartPart(std::string const& part);
-//--------------------------------------------------------------------
 };
 
 #endif

@@ -54,7 +54,7 @@ std::string	 Cgi::getCGIOutput(char **args, char **env, std::string const& postD
 		}
 
 		std::string scriptName = extractFilename(path);
-		
+
 		if (args[1])
 			args[1] = (char*)scriptName.data();
 
