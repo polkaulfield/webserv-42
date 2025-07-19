@@ -113,5 +113,13 @@ std::list<Config>	takeConfig(const char *configFile) {
 	checkConfigList(configList);
 	configFd.close();
 	//configList.front().printConfig();
+	int	dp;
+	dp = configList.front().getDoublePort();
+	if (dp != -1) {
+	//	std::cout << "hola" << std::endl;
+		configList.push_back(Config(configList.front()));
+		configList.back().setPort(dp);
+	}
+
 	return configList;
 }
