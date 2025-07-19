@@ -4,17 +4,15 @@ host = "localhost"
 port = 8080
 
 request = (
-    "POST / HTTP/1.1\r\n"
+    "POST /upload HTTP/1.1\r\n"
     "Host: localhost\r\n"
     "Transfer-Encoding: chunked\r\n"
     "Content-Type: text/plain\r\n"
     "\r\n"
-    "6\r\n"
-    "Hello!\r\n"
-    "7\r\n"
-    "World!!\r\n"
-    "3\r\n"
-    "123\r\n"
+    "4\r\n"
+    "Wiki\r\n"
+    "5\r\n"
+    "pedia\r\n"
     "0\r\n"
     "\r\n"
 )

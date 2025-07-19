@@ -78,10 +78,15 @@ ClientRequest::ClientRequest(std::string request, const Config &config) {
 	_httpVer = field;
 	_headerMap = _createHeaderMap(request);
 
-	if (_headerMap.count("Transfer-Encoding") && _headerMap["Transfer-Encoding"] == "chunked")
+	//std::cout << "Data: " << _getBody(request) << std::endl;
+
+	//if (_headerMap.count("Transfer-Encoding") && _headerMap["Transfer-Encoding"] == "chunked") {
+	if (request.find("Transfer-Encoding: chunked") != std::string::npos)
 		_data = _parseChunkedBody(_getBody(request));
 	else
 		_data = _getBody(request);
+
+	//std::cout << "Data: " << _data << std::endl;
 
 	_isMultipart = false;
 	_boundary = "";
