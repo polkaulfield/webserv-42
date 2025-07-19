@@ -186,10 +186,10 @@ bool	Location::checkDirectory(std::string root) {
 bool	Location::checkUploadDir(std::string root) {
 	std::string tmp = _uploadDir;
 	_uploadDir = root + _uploadDir;
-	if (!_POST) {
+	/*if (!_POST) {
 		std::cerr << GREEN << "\tError in Location: upload_to need has POST method" << RESET << std::endl;
 		return true;
-	}
+		}*/
 	if (!access(_uploadDir.data(), F_OK)) {
 		//_uploadDir = tmp;
 		return false;
@@ -210,10 +210,11 @@ bool	Location::checkRedirect(std::string root) {
 }
 
 bool	Location::checkPost(void) {
-	if (_POST && getIsUpload())
+	return false;
+	/*if (_POST && getIsUpload())
 		return false;
 	std::cerr << GREEN << "\tError in Location: POST method need upload_to" << RESET << std::endl;
-	return true;
+	return true;*/
 }
 
 int		Location::checkRedirectLocation(std::string root) {
