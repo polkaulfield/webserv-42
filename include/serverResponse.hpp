@@ -24,7 +24,7 @@ class ServerResponse
     ~ServerResponse();
 
 		std::string getResponse(void);
-		static std::string buildNotFoundResponse(void);
+		static std::string buildErrorResponse(int err, const std::string& msg);
 
 //------------------------------------------------
 //UPLOAD FILES
@@ -42,5 +42,4 @@ class ServerResponse
 	bool	_deleteFiles(std::string const& path);
 	std::string _buildSuccessDeleteResponse();
 
-	std::string buildErrorResponse(int code, std::string const& message);
 };
