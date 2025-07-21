@@ -39,6 +39,11 @@ int checkConfigList(std::list<Config> &configList) {
 			}
 		}
 	}
+	int	dp = configList.front().getDoublePort();
+	if (dp != -1) {
+		configList.push_back(Config(configList.front()));
+		configList.back().setPort(dp);
+	}
 	if (error > 0)
 		std::cout << GREEN << "Found " << error << " errors in the configuration file" <<  RESET << std::endl;
 	else
@@ -113,13 +118,5 @@ std::list<Config>	takeConfig(const char *configFile) {
 	checkConfigList(configList);
 	configFd.close();
 	//configList.front().printConfig();
-	int	dp;
-	dp = configList.front().getDoublePort();
-	if (dp != -1) {
-	//	std::cout << "hola" << std::endl;
-		configList.push_back(Config(configList.front()));
-		configList.back().setPort(dp);
-	}
-
 	return configList;
 }

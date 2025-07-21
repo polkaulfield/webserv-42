@@ -78,30 +78,21 @@ void	Config::setServerName(std::string server_name) {_server_name = server_name;
 void	Config::setPort(std::string port) {
 	bool flag = false;
 	if (port.find(" ") == port.find_last_of(" ") && port.find(" ") != port.length() - 1) {
-	//	std::cout << "1" << std::endl;
 		std::istringstream value(port);
 		value >> _port;
+		if (port.length() <= 4)
+			return ;
 		port = port.substr(port.find(" ") + 1);
 		flag = true;
 	}
 	if (port.find(" ") == (size_t)-1 || (port.find(" ") != (size_t)-1 && port.find(" ") == (size_t)-1)) {
-		//std::cout << "2" << std::endl;
-		//_error_parser += checkDigits(port);
-		//if (port.substr(port.find(" ")).find(" ") == (size_t)-1)
-			//port = port.substr(port.find(" "));
 		std::istringstream value(port);
-
-		if (flag) {
-			//std::cout << "2.5" << std::endl;
+		if (flag)
 			value >> _double_port;
-			//std::cout <<  _double_port << std::endl;
-		} else {
+		else
 			value >> _port;
-		}
-	} else {
-		//std::cout << "3" << std::endl;
+	} else
 		_error_parser += 1;
-	}
 	_error_parser += checkChars(port, ".,/\\");
 }
 
@@ -111,7 +102,7 @@ void	Config::setPort(int port) {
 
 void	Config::setHost(std::string host) {
 	_host = host;
-	_error_parser += checkChars(host, " .,/\\");
+	_error_parser += checkChars(host, " ,/\\");
 }
 
 void	Config::setRoot(std::string root) {
