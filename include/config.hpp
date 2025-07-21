@@ -62,6 +62,7 @@ public:
 	std::list<Location>	&getLocationList(void);
 	int					getDoublePort(void);
 	int					getErrorsParser(void);
+	const std::string getRedirectFromPath(const std::string& queryPath) const;
 
 	//  SETTERS  //
 	void	setServerName(std::string _server_Name);
