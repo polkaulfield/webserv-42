@@ -77,6 +77,7 @@ const Server &Server::operator=(const Server &server) {
 bool Server::_checkLocation(const ClientRequest &clientRequest) {
   _isFileUpload = false;
 
+  std::cout << "Method: " << clientRequest.getMethod() << std::endl;
   if (clientRequest.getMethod() == "DELETE") {
     return true;
   }
@@ -90,7 +91,7 @@ bool Server::_checkLocation(const ClientRequest &clientRequest) {
 		}
 		if (clientRequest.getMethod() == "POST") {
 			if (isCGI(clientRequest.getPath(), _config)) {
-			_isFileUpload = true;
+			  _isFileUpload = false;
 			} else if (iter->getIsUpload()) {
 				_isFileUpload = true;
 			} else {
@@ -141,10 +142,10 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   std::cout << "Parsing client request" << std::endl;
 
   // If theres no locationlist all paths and methods are valid for now (debug)
-  serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
-  send(clientSocket, serverResponse.getResponse().data(),
-       serverResponse.getResponse().length(), 0);
-  /*
+  // serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+  // send(clientSocket, serverResponse.getResponse().data(),
+  //      serverResponse.getResponse().length(), 0);
+
   if (_checkLocation(clientRequest) != 0) {
     std::cout << "Ok" << std::endl;
     serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
@@ -163,7 +164,7 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
     std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   }
-  */
+
   close(clientSocket);
 }
 

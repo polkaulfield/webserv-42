@@ -43,7 +43,7 @@ class ServerResponse
 	bool	_deleteFiles(std::string const& path);
 	std::string _buildSuccessDeleteResponse();
 
-	std::string buildErrorResponse(int code, std::string const& message);
+	//std::string buildErrorResponse(int code, std::string const& message);
 
 	bool _isPathOutsideServerScope(const std::string& queryPath);
 };
