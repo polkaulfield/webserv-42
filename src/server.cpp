@@ -159,7 +159,9 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   } else {
   	if (!isCGI(clientRequest.getPath(), _config)) {
    	  data = ServerResponse().buildErrorResponse(403, "Not valid extension!");
-  	} else {
+   	} else if (!isMethodAllowed("POST", clientRequest.getPath(), _config)) {
+    	data = ServerResponse().buildErrorResponse(403, "Not Allowed!");
+   	} else {
       data = ServerResponse().buildErrorResponse(404, "Not Found!");
    	}
     std::cout << "Failed to find valid endpoint" << std::endl;

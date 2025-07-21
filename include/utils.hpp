@@ -5,6 +5,7 @@
 # include <sys/stat.h>
 # include <map>
 # include <vector>
+# include "config.hpp"
 
 bool endsWith(const std::string& fullString,
 			  const std::string& ending);
@@ -23,5 +24,6 @@ char**	vectorToArray(std::vector<std::string> envVars);
 std::string getExtension(std::string htmlPath);
 
 std::string	determineInterpreter(std::string htmlPath);
+bool	isMethodAllowed(std::string const& method, std::string const& path, Config config);
 
 #endif
