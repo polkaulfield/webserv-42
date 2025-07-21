@@ -77,12 +77,14 @@ const Server &Server::operator=(const Server &server) {
 bool Server::_checkLocation(const ClientRequest &clientRequest) {
   _isFileUpload = false;
 
-  std::cout << "Method: " << clientRequest.getMethod() << std::endl;
+  if (_config.getRedirectFromPath(clientRequest.getQueryPath()) != "")
+  	return true;
   if (clientRequest.getMethod() == "DELETE") {
     return true;
   }
   for (std::list<Location>::iterator iter = _locationList.begin();
        iter != _locationList.end(); ++iter) {
+
     if (iter->hasMethod(clientRequest.getMethod()) &&
         startsWith(clientRequest.getPath(), \
                    _config.getRoot() + iter->getDirectory())) {
@@ -142,10 +144,9 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   std::cout << "Parsing client request" << std::endl;
 
   // If theres no locationlist all paths and methods are valid for now (debug)
-  // serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
-  // send(clientSocket, serverResponse.getResponse().data(),
-  //      serverResponse.getResponse().length(), 0);
-
+  //serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+  //send(clientSocket, serverResponse.getResponse().data(),
+  //     serverResponse.getResponse().length(), 0);
   if (_checkLocation(clientRequest) != 0) {
     std::cout << "Ok" << std::endl;
     serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
@@ -164,7 +165,6 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
     std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   }
-
   close(clientSocket);
 }
 
