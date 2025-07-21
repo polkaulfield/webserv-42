@@ -141,6 +141,10 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   std::cout << "Parsing client request" << std::endl;
 
   // If theres no locationlist all paths and methods are valid for now (debug)
+  serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+  send(clientSocket, serverResponse.getResponse().data(),
+       serverResponse.getResponse().length(), 0);
+  /*
   if (_checkLocation(clientRequest) != 0) {
     std::cout << "Ok" << std::endl;
     serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
@@ -159,6 +163,7 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
     std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   }
+  */
   close(clientSocket);
 }
 

@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <sstream>
 #include <fstream>
-#include "../include/utils.hpp"
 
 // Private methods
 
@@ -86,22 +85,33 @@ std::string ServerResponse::_buildCgiResponse(std::string &buffer)
                 cgiHeaderSize = 0;
         }
     }
-
 	std::string response = "HTTP/1.1 200 OK\r\n\
 Content-Length: " + intToString(buffer.length() - cgiHeaderSize) + "\n" + buffer;
-
-
 	return response.data();
 }
 
-// Here we return the classic 404 not found
-std::string ServerResponse::buildNotFoundResponse(void)
-{
-	std::string response = "HTTP/1.1 404 Not Found\r\n\
-Content-Type: text/html\r\n\
-Content-Length: 0\r\n\
-Connection: Closed\r\n\r\n";
-	return response.data();
+std::string	ServerResponse::buildErrorResponse(int code, std::string const& message) {
+	std::string data = "";
+	std::string line;
+    std::ifstream templateFile("./templates/error.html");
+    while (std::getline(templateFile, line))
+        data += line + "\n";
+    data = searchAndReplace(data, "%%ERRORMSG%%", message);
+    data = searchAndReplace(data, "%%ERRORCODE%%", intToString(code));
+	std::string response = "HTTP/1.1 " + intToString(code) + " Error\r\n";
+	response += "Content-Type: text/html\r\n";
+	response += "Content-Length: " + intToString(data.length()) + "\r\n";
+	response += "\r\n";
+	response += data;
+	return response;
+}
+
+std::string ServerResponse::_buildRedirResponse(const std::string &url) {
+    std::string response = "HTTP/1.1 308 Permanent Redirect\r\n\
+Location: " + url + "\r\n\
+Content-Type: text/html; charset=UTF-8 \r\n\
+Content-Length: 0\r\n";
+    return response.data();
 }
 
 // Some cpp magic to load a file to an array of chars
@@ -123,22 +133,6 @@ std::string ServerResponse::_getExtension(std::string htmlPath) {
 	return htmlPath.substr(pos);
 }
 
-std::string	ServerResponse::buildErrorResponse(int code, std::string const& message) {
-	std::string data = "";
-	std::string line;
-    std::ifstream templateFile("./templates/error.html");
-    while (std::getline(templateFile, line))
-        data += line + "\n";
-    data = searchAndReplace(data, "%%ERRORMSG%%", message);
-    data = searchAndReplace(data, "%%ERRORCODE%%", intToString(code));
-	std::string response = "HTTP/1.1 " + intToString(code) + " Error\r\n";
-	response += "Content-Type: text/html\r\n";
-	response += "Content-Length: " + intToString(data.length()) + "\r\n";
-	response += "\r\n";
-	response += data;
-	return response;
-}
-
 ServerResponse::ServerResponse(void)
 {
 	_response = "";
@@ -149,7 +143,6 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 
 	std::string buffer;
 
-	std::cout << "path inside serverresponse: " << clientRequest.getPath() << std::endl;
 	if (clientRequest.getMethod() == "GET")
 	{
 		if (isCGI(clientRequest.getPath(), config)) {
@@ -157,21 +150,24 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 			Cgi				cgiHandler;
 			buffer = cgiHandler.execScript(clientRequest, config);
 			_response = _buildCgiResponse(buffer);
+		}
+		else if (config.getRedirectFromPath(clientRequest.getQueryPath()) != "")	{
 
+            _response = _buildRedirResponse(config.getRedirectFromPath(clientRequest.getQueryPath()));
 		}
 		else if (isDir(clientRequest.getPath()) && config.isPathAutoIndex(clientRequest.getQueryPath())) {
 
 			Directory directory  = Directory(clientRequest.getPath());
 			_response = _buildDirResponse(directory.getHtml());
 		}
-		else if (isFile(clientRequest.getPath()))
+		else if (!clientRequest.getPath().empty())
 		{
 			buffer = _makeFileBuffer(clientRequest.getPath());
 			_response = _buildOkResponse(buffer, clientRequest.getPath());
 		}
 		else {
 			// If file doesnt exist make a 404 not found
-			_response = buildErrorResponse(404, "Not found!");
+			_response = buildErrorResponse(404, "Not found");
 		}
 	}
 	else if (clientRequest.getMethod() == "POST")

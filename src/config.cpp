@@ -349,6 +349,23 @@ bool    Config::isPathAutoIndex(const std::string& queryPath) const
 	return false;
 }
 
+const std::string    Config::getRedirectFromPath(const std::string& queryPath) const
+{
+    std::string redirUrl = "";
+    for (std::list<Location>::const_iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
+		std::cout << "Checking this location: " << iter->getDirectory() << std::endl;
+		redirUrl = iter->getRedirect();
+		std::cout << "With this queryPath: " << queryPath << " and redir " << redirUrl << std::endl;
+
+        if (iter->getDirectory() == queryPath && redirUrl != "")
+        {
+            std::cout << "FOUND!" << std::endl;
+            return redirUrl;
+        }
+	}
+	return "";
+}
+
 //  LINKED LIST LOCATIONS  //
 
 Location	*Config::searchLocation(std::string option) {

@@ -14,6 +14,7 @@ class ServerResponse
     std::string _buildOkResponse(std::string &buffer, std::string path);
     std::string _buildDirResponse(std::string &buffer);
     std::string _buildCgiResponse(std::string &buffer);
+    std::string _buildRedirResponse(const std::string &url);
     std::string _makeFileBuffer(std::string path);
     std::string _getExtension(std::string htmlPath);
 
@@ -23,7 +24,7 @@ class ServerResponse
     ~ServerResponse();
 
 		std::string getResponse(void);
-		static std::string buildNotFoundResponse(void);
+		static std::string buildErrorResponse(int err, const std::string& msg);
 
 //------------------------------------------------
 //UPLOAD FILES

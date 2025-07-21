@@ -11,6 +11,7 @@
 	_directory_listing = false;
 	_error_parser = false;
 	_error_parser = 0;
+	_redirect = "";
 	//std::cout << "default is created (location)" << std::endl;
 }
 Location::Location(std::string directory) {
