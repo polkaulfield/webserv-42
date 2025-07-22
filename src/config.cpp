@@ -77,6 +77,8 @@ void	Config::setServerName(std::string server_name) {_server_name = server_name;
 //istringstream converts the std::string to numbers
 void	Config::setPort(std::string port) {
 	bool flag = false;
+	if (port.find("-") != (size_t)-1 || (port.length() != 4 && port.length() != 9))
+		_double_port = -2;
 	if (port.find(" ") == port.find_last_of(" ") && port.find(" ") != port.length() - 1) {
 		std::istringstream value(port);
 		value >> _port;
@@ -219,7 +221,7 @@ int	Config::_checkRoot(void) {
 }
 
 int	Config::_checkPort(void) {
-	if (_port > 0 && _port < 10000)
+	if ((_port > 0 && _port < 10000) && _double_port != -2)
 		return 0;
 	std::cout << GREEN << "\tError in port value: " << _port << " is not valid" << RESET << std::endl;
 	return 1;
