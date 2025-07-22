@@ -12,7 +12,6 @@ Location::Location(void) {
   _error_parser = false;
   _error_parser = 0;
   _redirect = "";
-  // std::cout << "default is created (location)" << std::endl;
 }
 Location::Location(std::string directory) {
   _error_parser = 0;
@@ -25,7 +24,6 @@ Location::Location(std::string directory) {
   _autoindex = false;
   _directory_listing = false;
   _error_parser = false;
-  // std::cout << _directory << ": is created" << std::endl;
 }
 
 Location &Location::operator=(const Location &src) {
@@ -43,7 +41,7 @@ Location &Location::operator=(const Location &src) {
 }
 
 Location::~Location(void) {
-  // std::cout << _directory << ": is destroyed" << std::endl;
+	;
 }
 
 //  GETTER  //
@@ -80,9 +78,11 @@ void Location::setAllowMethods(std::string option) {
   int end = ++start + 1;
 
   _error_parser += checkChars(option, "\\,'/");
-  if (option.length() <=
-      15) // 15 is the lenght of allow_methods so if space if found
-    std::cout << "error in allow methods" << std::endl;
+  if (option.length() <= 15) {// 15 is the lenght of allow_methods
+    std::cerr << "error in allow methods" << std::endl;
+    _error_parser += 1;
+    return ;
+  }
   while (end > 0 && (size_t)end < option.length()) {
     if (option[end] == ' ' || option[end] == ';') {
       if (option.compare(start, end - start, "GET") == 0)
@@ -143,7 +143,7 @@ int Location::searchLocationConfig(std::string option) {
   else if (option.compare(0, 10, "upload_to ") == 0)
     setUploadDir(_takeParams(option, &error));
   else {
-    std::cout << GREEN << "Error not found: " << option << RESET << std::endl;
+    std::cerr << GREEN << "Error not found: " << option << RESET << std::endl;
     return 1;
   }
   return (error) ? 1 : 0;
@@ -153,7 +153,7 @@ std::string Location::_takeParams(std::string option, int *error) {
   int start = option.find(" ");
   int end = option.find(";");
   if (end == -1 || start == -1) {
-    std::cout << GREEN << "Error: found at \"" << option << "\"" << RESET
+    std::cerr << GREEN << "Error: found at \"" << option << "\"" << RESET
               << std::endl;
     *error = 1;
     return "Error";
@@ -184,7 +184,7 @@ bool Location::checkDirectory(std::string root) {
   std::string tmp = root + _directory;
   if (!access(tmp.data(), F_OK))
     return false;
-  std::cout << GREEN << "\tError in Location: " << _directory
+  std::cerr << GREEN << "\tError in Location: " << _directory
             << " is not accesible" << RESET << std::endl;
   return true;
 }

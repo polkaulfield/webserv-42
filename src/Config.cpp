@@ -4,7 +4,6 @@
 
 //  CONSTRUCTOR & DESTRUCTOR //
 Config::Config(void) {
-  // std::cout << "Contructor Config" << std::endl;
   _server_name = "localhost";
   _port = 8080;
   _host = "localhost";
@@ -19,7 +18,6 @@ Config::Config(void) {
 }
 
 Config::Config(const Config &src) {
-  // std::cout << "Copy Contructor Config" << std::endl;
   *this = src;
 }
 
@@ -43,7 +41,7 @@ Config &Config::operator=(const Config &src) {
 }
 
 Config::~Config(void) {
-  ; // std::cout << "Destroying Config" << std::endl;
+  ;
 }
 
 //  GETTERS  //
@@ -145,7 +143,7 @@ std::string Config::_takeParams(std::string option, int *error) {
   int start = option.find(" ");
   int end = option.find(";");
   if (end == -1 || start == -1) {
-    std::cout << GREEN << "Error: found at \"" << option << "\"" << RESET
+    std::cerr << GREEN << "Error: found at \"" << option << "\"" << RESET
               << std::endl;
     *error = 1;
     return "Error";
@@ -180,7 +178,7 @@ int Config::searchConfig(std::string option) {
                                                   // location with config
     _locationList.push_back(Location(option));
   } else {
-    std::cout << GREEN << "Error not found: " << option << RESET << std::endl;
+    std::cerr << GREEN << "Error not found: " << option << RESET << std::endl;
     return 1;
   }
   if (error)
@@ -203,7 +201,7 @@ void Config::printConfig(void) const { // debug fuction
   }
   std::cout << std::endl;
   if (_locationList.empty()) {
-    std::cout << GREEN << "Not location found" << RESET << std::endl;
+    std::cerr << GREEN << "Not location found" << RESET << std::endl;
     return;
   }
   for (std::list<Location>::const_iterator iter = _locationList.begin();
@@ -229,7 +227,7 @@ void Config::printConfig(void) const { // debug fuction
 int Config::_checkRoot(void) {
   if (!access(_root.data(), F_OK))
     return 0;
-  std::cout << GREEN << "\tError in root: " << _root << " is not accesible"
+  std::cerr << GREEN << "\tError in root: " << _root << " is not accesible"
             << RESET << std::endl;
   return 1;
 }
@@ -237,7 +235,7 @@ int Config::_checkRoot(void) {
 int Config::_checkPort(void) {
   if ((_port > 0 && _port < 10000) && _double_port != -2)
     return 0;
-  std::cout << GREEN << "\tError in port value: " << _port << " is not valid"
+  std::cerr << GREEN << "\tError in port value: " << _port << " is not valid"
             << RESET << std::endl;
   return 1;
 }
@@ -246,7 +244,7 @@ int Config::_checkIndex(void) {
   std::string index_root(_root + "/" + _index);
   if (!access(index_root.data(), F_OK))
     return 0;
-  std::cout << GREEN << "\tError in index: " << _index << " is not accesible"
+  std::cerr << GREEN << "\tError in index: " << _index << " is not accesible"
             << RESET << std::endl;
   return 1;
 }
@@ -263,13 +261,13 @@ int Config::_checkCgiPath(void) {
   if (!_cgi)
     return 0;
   if (_cgi_path.empty()) {
-    std::cout << GREEN << "\tError: Not found Cgi Path" << RESET << std::endl;
+    std::cerr << GREEN << "\tError: Not found Cgi Path" << RESET << std::endl;
     return 1;
   }
   std::string cgi_root(_root + _cgi_path + _cgi_ext);
   if (!access(cgi_root.data(), F_OK))
     return 0;
-  std::cout << GREEN << "\tError in Cgi Path: " << _cgi_path + _cgi_ext
+  std::cerr << GREEN << "\tError in Cgi Path: " << _cgi_path + _cgi_ext
             << " is not accesible" << RESET << std::endl;
   return 1;
 }
@@ -278,20 +276,20 @@ int Config::_checkCgiExt(void) {
   if (!_cgi)
     return 0;
   if (_cgi_ext.empty()) {
-    std::cout << GREEN << "\tError: Not found Cgi Ext" << RESET << std::endl;
+    std::cerr << GREEN << "\tError: Not found Cgi Ext" << RESET << std::endl;
     return 1;
   }
   if (_cgi_ext[0] == '.')
     return 0;
-  std::cout << GREEN << "\tError in Cgi Ext: " << _cgi_ext << " is wrong"
+  std::cerr << GREEN << "\tError in Cgi Ext: " << _cgi_ext << " is wrong"
             << RESET << std::endl;
   return 1;
 }
 
 int Config::_checkErrorPage(void) {
-  if (!access(_error_page.data(), F_OK))
+  if (!access(std::string(_root + _error_page).data(), F_OK))
     return 0;
-  std::cout << GREEN << "\tError in error_page: " << _error_page
+  std::cerr << GREEN << "\tError in error_page: " << _error_page
             << " is not accesible" << RESET << std::endl;
   return 1;
 }
@@ -360,14 +358,9 @@ Config::getRedirectFromPath(const std::string &queryPath) const {
   std::string redirUrl = "";
   for (std::list<Location>::const_iterator iter = _locationList.begin();
        iter != _locationList.end(); iter++) {
-    std::cout << "Checking this location: " << iter->getDirectory()
-              << std::endl;
     redirUrl = iter->getRedirect();
-    std::cout << "With this queryPath: " << queryPath << " and redir "
-              << redirUrl << std::endl;
 
     if (iter->getDirectory() == queryPath && redirUrl != "") {
-      std::cout << "FOUND!" << std::endl;
       return redirUrl;
     }
   }

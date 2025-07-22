@@ -94,7 +94,7 @@ std::string ServerResponse::buildErrorResponse(int code,
                                                const Config &config) {
   std::string data = "";
   std::string line;
-  std::ifstream templateFile(config.getErrorPage().data());
+  std::ifstream templateFile(std::string(config.getRoot() + config.getErrorPage()).data());
   while (std::getline(templateFile, line))
     data += line + "\n";
   data = searchAndReplace(data, "%%ERRORMSG%%", message);
@@ -121,7 +121,6 @@ std::string ServerResponse::_makeFileBuffer(std::string const &path) {
   std::ifstream input(path.c_str());
   buffer << input.rdbuf();
 
-  std::cout << "string: " << buffer.str().length() << std::endl;
   return buffer.str();
 }
 

@@ -168,6 +168,8 @@ void PollManager::_iterateEpollEvents(int epollFd, struct epoll_event *events,
         request.append(buffer, b_read);
         size += b_read;
       } while (b_read > 0 && size < bodySize);
+      //if (size < bodySize)
+      	//continue;
       // std::cout << "REQUEST:" << std::endl << request << std::endl << "end
       // request" << std::endl;
       ClientRequest clientRequest = ClientRequest(request, server.getConfig());

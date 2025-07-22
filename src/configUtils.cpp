@@ -137,6 +137,6 @@ std::list<Config> takeConfig(const char *configFile) {
   //;//exitConfig(configList, configFd, "");
   checkConfigList(configList);
   configFd.close();
-  // configList.front().printConfig();
+  configList.front().printConfig();
   return configList;
 }
