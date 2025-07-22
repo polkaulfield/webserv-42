@@ -78,15 +78,16 @@ ClientRequest::ClientRequest(std::string request, const Config &config) {
 	_httpVer = field;
 	_headerMap = _createHeaderMap(request);
 
-	//std::cout << "Data: " << _getBody(request) << std::endl;
+	std::string headerHost = getHeaderValue("Host");
+	size_t pos = headerHost.find(":");
+	std::string host = headerHost.substr(0, pos);
+	if (config.getHost() != host)
+		return;
 
-	//if (_headerMap.count("Transfer-Encoding") && _headerMap["Transfer-Encoding"] == "chunked") {
 	if (request.find("Transfer-Encoding: chunked") != std::string::npos)
 		_data = _parseChunkedBody(_getBody(request));
 	else
 		_data = _getBody(request);
-
-	//std::cout << "Data: " << _data << std::endl;
 
 	_isMultipart = false;
 	_boundary = "";
@@ -158,4 +159,5 @@ const std::vector<UploadedFile> &ClientRequest::getUploadedFiles() const {
 }
 
 std::string const &ClientRequest::getBoundary() const { return _boundary; }
+
 
