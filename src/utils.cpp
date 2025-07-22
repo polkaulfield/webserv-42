@@ -9,20 +9,53 @@
 #include <sys/types.h>
 
 bool isDir(std::string path) {
-  struct stat sb;
-
-  if (stat(path.c_str(), &sb) == 0 && sb.st_mode & S_IFDIR)
-    return true;
-  return false;
+    struct stat sb;
+    return (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode));
 }
 
 bool isFile(std::string path) {
-  struct stat sb;
-
-  if (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode))
-    return true;
-  return false;
+    struct stat sb;
+    return (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode));
 }
+
+std::list<std::string> listDirs(const std::string& dir) {
+    std::list<std::string> dirList;
+    DIR* dirp = opendir(dir.c_str());
+    if (!dirp) return dirList;
+
+    struct dirent* dp;
+    while ((dp = readdir(dirp)) != NULL) {
+        std::string name(dp->d_name);
+        if (name == "." || name == "..") continue;
+
+        std::string fullPath = dir + "/" + name;
+        if (isDir(fullPath))
+            dirList.push_back(name); // or push_back(fullPath) if full path is desired
+    }
+
+    closedir(dirp);
+    return dirList;
+}
+
+std::list<std::string> listFiles(const std::string& dir) {
+    std::list<std::string> fileList;
+    DIR* dirp = opendir(dir.c_str());
+    if (!dirp) return fileList;
+
+    struct dirent* dp;
+    while ((dp = readdir(dirp)) != NULL) {
+        std::string name(dp->d_name);
+        if (name == "." || name == "..") continue;
+
+        std::string fullPath = dir + "/" + name;
+        if (isFile(fullPath))
+            fileList.push_back(name); // or fullPath
+    }
+
+    closedir(dirp);
+    return fileList;
+}
+
 
 bool endsWith(const std::string &str, const std::string &end) {
   if (end.size() > str.size())
@@ -71,30 +104,6 @@ bool startsWith(std::string str, std::string prefix) {
     return true;
   }
   return false;
-}
-
-std::list<std::string> listDirs(const std::string &dir) {
-  DIR *dirp = opendir(dir.c_str());
-  std::list<std::string> dirList;
-  struct dirent *dp;
-  while ((dp = readdir(dirp)) != NULL) {
-      if (isDir(dp->d_name))
-        dirList.push_back(dp->d_name);
-  }
-  closedir(dirp);
-  return dirList;
-}
-
-std::list<std::string> listFiles(const std::string &dir) {
-  DIR *dirp = opendir(dir.c_str());
-  std::list<std::string> dirList;
-  struct dirent *dp;
-  while ((dp = readdir(dirp)) != NULL) {
-      if (!isDir(dp->d_name))
-        dirList.push_back(dp->d_name);
-  }
-  closedir(dirp);
-  return dirList;
 }
 
 void	freeArray(char** array) {
