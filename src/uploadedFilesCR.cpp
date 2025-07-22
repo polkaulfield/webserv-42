@@ -6,7 +6,7 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 17:51:45 by arcebria          #+#    #+#             */
-/*   Updated: 2025/07/14 22:26:15 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/07/22 18:18:39 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ std::string ClientRequest::_extractBoundary(std::string const &_contentType)
 	return _contentType.substr(start, end - start);
 }
 
-std::string ClientRequest::_trimLeft(std::string _contentType)
+std::string ClientRequest::_trimLeft(std::string const& _contentType)
 {
 	size_t i = 0;
 

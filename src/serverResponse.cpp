@@ -9,7 +9,7 @@
 
 // Private methods
 
-std::string ServerResponse::_getContentType(std::string path)
+std::string ServerResponse::_getContentType(std::string const& path)
 {
 	if (endsWith(path, ".css"))
 		return "text/css";
@@ -45,7 +45,7 @@ std::string ServerResponse::_getContentType(std::string path)
 		return "application/octet-stream";
 }
 
-std::string ServerResponse::_buildOkResponse(std::string &buffer, std::string path)
+std::string ServerResponse::_buildOkResponse(std::string &buffer, std::string const& path)
 {
 	std::string response = "HTTP/1.1 200 OK\n\
 Content-Type: " + _getContentType(path) + "\n\
@@ -115,7 +115,7 @@ Content-Length: 0\r\n";
 }
 
 // Some cpp magic to load a file to an array of chars
-std::string ServerResponse::_makeFileBuffer(std::string path)
+std::string ServerResponse::_makeFileBuffer(std::string const& path)
 {
 	std::ostringstream buffer;
 	std::ifstream input(path.c_str());
@@ -125,7 +125,7 @@ std::string ServerResponse::_makeFileBuffer(std::string path)
 	return buffer.str();
 }
 
-std::string ServerResponse::_getExtension(std::string htmlPath) {
+std::string ServerResponse::_getExtension(std::string const& htmlPath) {
 	size_t	pos = htmlPath.find(".");
 	size_t  arg = htmlPath.find("?");
 	if (pos == std::string::npos) // si no encuentra punto devuelve string vaciobuildOk
@@ -201,5 +201,4 @@ ServerResponse::~ServerResponse(void)
 
 }
 
-// Method Getter
 std::string ServerResponse::getResponse() { return _response; }

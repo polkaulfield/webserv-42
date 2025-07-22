@@ -6,13 +6,13 @@
 /*   By: arcebria <arcebria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 16:10:55 by arcebria          #+#    #+#             */
-/*   Updated: 2025/07/16 17:36:46 by arcebria         ###   ########.fr       */
+/*   Updated: 2025/07/22 18:26:41 by arcebria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/cgi.hpp"
 
-std::string getExtension(std::string htmlPath) {
+std::string getExtension(std::string const& htmlPath) {
 	size_t	pos = htmlPath.find_last_of(".");
 	size_t  arg = htmlPath.find("?");
 	if (pos == std::string::npos) // si no encuentra punto devuelve string vaciobuildOk
@@ -22,7 +22,7 @@ std::string getExtension(std::string htmlPath) {
 	return htmlPath.substr(pos);
 }
 
-bool isCGI(std::string htmlPath, const Config &config)
+bool isCGI(std::string const& htmlPath, const Config &config)
 {
 	std::string extension = getExtension(htmlPath);
 	if (!config.getIsCgi())
@@ -33,7 +33,7 @@ bool isCGI(std::string htmlPath, const Config &config)
 			extension == ".pl" || extension == ".cgi" || extension == ".bin");
 }
 
-std::string determineInterpreter(std::string htmlPath)
+std::string determineInterpreter(std::string const& htmlPath)
 {
 	std::string extension = getExtension(htmlPath);
 	if (extension == ".py")

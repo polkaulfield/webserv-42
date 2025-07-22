@@ -70,8 +70,8 @@ std::string intToString(int n) {
   return ostream.str();
 }
 
-std::string searchAndReplace(std::string str, std::string searchWord,
-                             std::string replaceWord) {
+std::string searchAndReplace(std::string const& str, std::string const& searchWord,
+                             std::string const& replaceWord) {
   size_t pos1 = 0;
   size_t pos2 = str.find(searchWord);
   std::string newStr = "";
@@ -95,7 +95,7 @@ void printDict(std::map<std::string, std::string> dict) {
   }
 }
 
-bool startsWith(std::string str, std::string prefix) {
+bool startsWith(std::string const& str, std::string const& prefix) {
   int last = str.find_last_of("/");
   if (prefix.length() == 1 && prefix == "/" && last == 0) {
     return true;

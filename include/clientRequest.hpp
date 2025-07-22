@@ -19,22 +19,17 @@ class ClientRequest
 		std::string _queryString;
 		std::string _data;
 
-		//------------------------------------
-		//upload Shit
 		bool _isMultipart;
 		std::string _boundary;
 		std::string _contentType;
 		std::vector<UploadedFile> _uploadedFiles;
-		//-----------------------------------
 
 		std::map<std::string, std::string>  _createHeaderMap(std::string request);
 		std::string _getBody(std::string request);
 	public:
 		ClientRequest();
 		ClientRequest(std::string request, const Config& config);
-		//ClientRequest(const ClientRequest& clientRequest);
 		~ClientRequest();
-		//ClientRequest &operator=(const ClientRequest& clientRequest);
 		void setMethod(const std::string& method);
 		void setPath(const std::string& path);
 		void setHttpVer(const std::string& httpVer);
@@ -62,9 +57,9 @@ class ClientRequest
 		const std::vector<UploadedFile>& getUploadedFiles() const;
 		const std::string& getBoundary() const;
 
-		std::string	_parseChunkedBody(std::string _data);
+		std::string	_parseChunkedBody(std::string const& _data);
 		void _parseContentType(std::string const& request);
-		std::string _trimLeft(std::string contentType);
+		std::string _trimLeft(std::string const& contentType);
 		std::string _extractBoundary(std::string const& contentType);
 		bool _parseMultipartBody(std::string const& body);
 		void _parseMultipartPart(std::string const& part);
