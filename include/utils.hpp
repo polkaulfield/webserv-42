@@ -24,5 +24,5 @@ char**	vectorToArray(std::vector<std::string> envVars);
 std::string getExtension(std::string const& htmlPath);
 std::string	determineInterpreter(std::string const& htmlPath);
 bool	isMethodAllowed(std::string const& method, std::string const& path, Config config);
-
+bool isIpAddress(const std::string ipAddr);
 #endif

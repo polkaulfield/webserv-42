@@ -24,12 +24,12 @@ class ServerResponse
 	ServerResponse(ClientRequest& clientRequest, const Config& config, bool isUpload);
 	~ServerResponse();
 
-	std::string getResponse(void);
-	static std::string buildErrorResponse(int err, const std::string& msg);
+		std::string getResponse(void);
+		static std::string buildErrorResponse(int err, const std::string& msg, const Config& config);
 
 
-	void	_handleFileUpload(ClientRequest const& clientRequest, Config config);
-	bool	_validateUploadedFile(UploadedFile const& file, Config config);
+	void	_handleFileUpload(ClientRequest const& clientRequest, const Config& config);
+	bool	_validateUploadedFile(UploadedFile const& file, const Config& config);
 	bool	_isAllowedType(std::string const& filename, std::string const& contentType);
 	bool	_saveUploadedFile(UploadedFile const& file, std::string const& uploadDir);
 	std::string _buildUploadSuccessResponse();

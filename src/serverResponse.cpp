@@ -52,7 +52,7 @@ Content-Type: " + _getContentType(path) + "\n\
 Content-Length: " + intToString(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
-	return response.data();
+	return response;
 }
 
 std::string ServerResponse::_buildDirResponse(std::string &buffer)
@@ -62,7 +62,7 @@ Content-Type: text/html \n\
 Content-Length: " + intToString(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
-	return response.data();
+	return response;
 }
 
 std::string ServerResponse::_buildCgiResponse(std::string &buffer)
@@ -87,13 +87,13 @@ std::string ServerResponse::_buildCgiResponse(std::string &buffer)
     }
 	std::string response = "HTTP/1.1 200 OK\r\n\
 Content-Length: " + intToString(buffer.length() - cgiHeaderSize) + "\n" + buffer;
-	return response.data();
+	return response;
 }
 
-std::string	ServerResponse::buildErrorResponse(int code, std::string const& message) {
+std::string	ServerResponse::buildErrorResponse(int code, std::string const& message, const Config& config) {
 	std::string data = "";
 	std::string line;
-    std::ifstream templateFile("./templates/error.html");
+    std::ifstream templateFile(config.getErrorPage().data());
     while (std::getline(templateFile, line))
         data += line + "\n";
     data = searchAndReplace(data, "%%ERRORMSG%%", message);
@@ -167,7 +167,7 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 		}
 		else {
 			// If file doesnt exist make a 404 not found
-			_response = buildErrorResponse(404, "Not found");
+			_response = buildErrorResponse(404, "Not found", config);
 		}
 	}
 	else if (clientRequest.getMethod() == "POST")
@@ -183,12 +183,12 @@ ServerResponse::ServerResponse(ClientRequest& clientRequest, const Config& confi
 			if (clientRequest.isMultipart())
 				_handleFileUpload(clientRequest, config);
 			else
-				_response = buildErrorResponse(400, "Not a multipart request");
+				_response = buildErrorResponse(400, "Not a multipart request", config);
 			if (_response.empty())
-				_response = buildErrorResponse(500, "Upload processing failed");
+				_response = buildErrorResponse(500, "Upload processing failed", config);
 		}
 		else
-			_response = buildErrorResponse(400, "Bad Request");
+			_response = buildErrorResponse(400, "Bad Request", config);
 	}
 	else if (clientRequest.getMethod() == "DELETE")
 		_handleDeleteRequest(clientRequest, config);

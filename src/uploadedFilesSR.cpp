@@ -27,7 +27,7 @@ bool	ServerResponse::_isAllowedType(std::string const& filename, std::string con
 	return true;
 }
 
-bool	ServerResponse::_validateUploadedFile(UploadedFile const& file, Config config) {
+bool	ServerResponse::_validateUploadedFile(UploadedFile const& file, const Config& config) {
 	//Verificar tamaño frente client_max_body_size
 	size_t	maxSize = config.getClientMaxBodySize();
 	if (file._size > maxSize)
@@ -64,13 +64,13 @@ bool	ServerResponse::_saveUploadedFile(UploadedFile const& file, std::string con
 	return outFile.good();
 }
 
-void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Config config) {
+void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, const Config& config) {
 	std::vector<UploadedFile> const& files = clientRequest.getUploadedFiles();
 
 	std::string locationPath = clientRequest.getPath();
 
 	if (!isMethodAllowed("POST", locationPath, config)) {
-		_response = buildErrorResponse(405, "Method Not Allowed");
+		_response = buildErrorResponse(405, "Method Not Allowed", config);
 		return;
 	}
 
@@ -81,9 +81,9 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 	if (pos != std::string::npos)
 		locationPath = locationPath.substr(0, pos);
 
-	Location* location = config.searchLocation(locationPath);
+	const Location* location = config.searchLocation(locationPath);
 	if (!location || !location->getIsUpload()) {
-		_response = buildErrorResponse(500, "Upload not configured for this location");
+		_response = buildErrorResponse(500, "Upload not configured for this location", config);
 		return;
 	}
 
@@ -93,12 +93,12 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 	//SI ESTAS VERIFIACIONES SE COMPRUEBAN EN CONFIG HABRA QUE QUITARLAS DE AQUI ENTIENDO SUPONGO
 	//verificar si el directorio existe
 	if (uploadDir.empty()) {
-		_response = buildErrorResponse(500, "Upload directory not configured");
+		_response = buildErrorResponse(500, "Upload directory not configured", config);
 		return;
 	}
 	//verificar si tiene permisos de escritura
 	if (access(uploadDir.c_str(), W_OK) != 0) {
-		_response = buildErrorResponse(500, "Upload directory not writable");
+		_response = buildErrorResponse(500, "Upload directory not writable", config);
 		return;
 	}
 	for (size_t i = 0; i < files.size(); i++) {
@@ -109,12 +109,12 @@ void	ServerResponse::_handleFileUpload(ClientRequest const& clientRequest, Confi
 
 		//validaciones de seguridad
 		if (!_validateUploadedFile(file, config)) {
-			_response = buildErrorResponse(400, "Invalid file: " + file._filename);
+			_response = buildErrorResponse(400, "Invalid file: " + file._filename, config);
 			return;
 		}
 
 		if(!_saveUploadedFile(file, uploadDir)) {
-			_response = buildErrorResponse(500, "Failed to save file: " + file._filename);
+			_response = buildErrorResponse(500, "Failed to save file: " + file._filename, config);
 			return;
 		}
 	}

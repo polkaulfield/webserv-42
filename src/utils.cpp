@@ -1,27 +1,61 @@
 #include "../include/utils.hpp"
 #include <dirent.h>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <sstream>
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
 
-bool isDir(std::string const& path) {
-  struct stat sb;
-
-  if (stat(path.c_str(), &sb) == 0 && sb.st_mode & S_IFDIR)
-    return true;
-  return false;
+bool isDir(std::string path) {
+    struct stat sb;
+    return (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode));
 }
 
-bool isFile(std::string const& path) {
-  struct stat sb;
-
-  if (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode))
-    return true;
-  return false;
+bool isFile(std::string path) {
+    struct stat sb;
+    return (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode));
 }
+
+std::list<std::string> listDirs(const std::string& dir) {
+    std::list<std::string> dirList;
+    DIR* dirp = opendir(dir.c_str());
+    if (!dirp) return dirList;
+
+    struct dirent* dp;
+    while ((dp = readdir(dirp)) != NULL) {
+        std::string name(dp->d_name);
+        if (name == "." || name == "..") continue;
+
+        std::string fullPath = dir + "/" + name;
+        if (isDir(fullPath))
+            dirList.push_back(name); // or push_back(fullPath) if full path is desired
+    }
+
+    closedir(dirp);
+    return dirList;
+}
+
+std::list<std::string> listFiles(const std::string& dir) {
+    std::list<std::string> fileList;
+    DIR* dirp = opendir(dir.c_str());
+    if (!dirp) return fileList;
+
+    struct dirent* dp;
+    while ((dp = readdir(dirp)) != NULL) {
+        std::string name(dp->d_name);
+        if (name == "." || name == "..") continue;
+
+        std::string fullPath = dir + "/" + name;
+        if (isFile(fullPath))
+            fileList.push_back(name); // or fullPath
+    }
+
+    closedir(dirp);
+    return fileList;
+}
+
 
 bool endsWith(const std::string &str, const std::string &end) {
   if (end.size() > str.size())
@@ -72,30 +106,6 @@ bool startsWith(std::string const& str, std::string const& prefix) {
   return false;
 }
 
-std::list<std::string> listDirs(const std::string &dir) {
-  DIR *dirp = opendir(dir.c_str());
-  std::list<std::string> dirList;
-  struct dirent *dp;
-  while ((dp = readdir(dirp)) != NULL) {
-      if (isDir(dp->d_name))
-        dirList.push_back(dp->d_name);
-  }
-  closedir(dirp);
-  return dirList;
-}
-
-std::list<std::string> listFiles(const std::string &dir) {
-  DIR *dirp = opendir(dir.c_str());
-  std::list<std::string> dirList;
-  struct dirent *dp;
-  while ((dp = readdir(dirp)) != NULL) {
-      if (!isDir(dp->d_name))
-        dirList.push_back(dp->d_name);
-  }
-  closedir(dirp);
-  return dirList;
-}
-
 void	freeArray(char** array) {
 	if (!array)
 		return;
@@ -119,4 +129,22 @@ size_t lastSlash = filePath.find_last_of('/');
       return filePath.substr(lastSlash + 1);
   }
   return filePath;
+}
+
+bool isIpAddress(const std::string ipAddr) {
+    std::stringstream ss(ipAddr);
+    std::string chunk;
+    std::list<std::string> chunks;
+    int n;
+    while (getline(ss, chunk, '.'))
+        chunks.push_back(chunk);
+    if (chunks.size() != 4)
+        return false;
+    for (std::list<std::string>::iterator it = chunks.begin(); it != chunks.end(); ++it)
+    {
+        std::istringstream(it->data()) >> n;
+        if (n < 0 || n > 255)
+            return false;
+    }
+    return true;
 }

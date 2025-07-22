@@ -12,6 +12,10 @@ Directory::~Directory() {};
 
 Directory::Directory(const std::string &path) {
   _data = "";
+  std::string suffix = "/";
+
+  if (endsWith(path, suffix))
+    suffix = "";
 
   if (access(path.c_str(), R_OK) != 0) {
     std::cerr << "Directory template not found!" << std::endl;
