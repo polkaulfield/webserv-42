@@ -30,7 +30,7 @@ bool	ServerResponse::_containsTraversalPath(std::string const& rawPath) {
 	return rawPath.find("..") != std::string::npos;
 }
 
-bool	ServerResponse::_isMethodAllowed(std::string const& method, std::string const& path, Config config) {
+bool	isMethodAllowed(std::string const& method, std::string const& path, Config config) {
 	std::list<Location>& location = config.getLocationList();
 
 	Location*	bestMatch = NULL;
@@ -79,7 +79,7 @@ void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config c
 
 	std::string fullPath = request.getPath();
 
-	if (!_isMethodAllowed("DELETE", fullPath, config)) {
+	if (!isMethodAllowed("DELETE", fullPath, config)) {
 		_response = buildErrorResponse(405, "Method Not Allowed");
 		return;
 	}

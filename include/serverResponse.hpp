@@ -5,6 +5,7 @@
 
 struct	UploadedFile;
 
+
 class ServerResponse
 {
 	private:
@@ -39,7 +40,6 @@ class ServerResponse
 
 	void	_handleDeleteRequest(ClientRequest const& request, Config const& config);
 	bool	_containsTraversalPath(std::string const& rawPath);
-	bool	_isMethodAllowed(std::string const& method, std::string const& path, Config config);
 	bool	_deleteFiles(std::string const& path);
 	std::string _buildSuccessDeleteResponse();
 
