@@ -148,7 +148,14 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   	serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
    	send(clientSocket, serverResponse.getResponse().data(),
        serverResponse.getResponse().length(), 0);
-  } else if (_checkLocation(clientRequest) != 0) {
+  /*} else if (_checkLocation(clientRequest) != 0) {
+  if (startsWith(clientRequest.getPath(), \
+             _config.getRoot() + "/redirect")) {
+    std::cout << "redirect" << std::endl;
+  	serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+	send(clientSocket, serverResponse.getResponse().data(),
+	       serverResponse.getResponse().length(), 0);*/
+  }else if (_checkLocation(clientRequest) != 0) {
     std::cout << "Ok" << std::endl;
     serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
     send(clientSocket, serverResponse.getResponse().data(),
