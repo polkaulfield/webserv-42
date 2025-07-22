@@ -359,8 +359,8 @@ const std::string    Config::getRedirectFromPath(const std::string& queryPath) c
 
 //  LINKED LIST LOCATIONS  //
 
-Location	*Config::searchLocation(std::string option) {
-	for (std::list<Location>::iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
+const Location	*Config::searchLocation(std::string option) const {
+	for (std::list<Location>::const_iterator iter = _locationList.begin(); iter != _locationList.end(); iter++) {
 		if (iter->getDirectory() == option || iter->getDirectory() + "/" == option)
 			return &*iter;
 	}

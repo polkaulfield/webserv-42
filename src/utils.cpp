@@ -1,6 +1,7 @@
 #include "../include/utils.hpp"
 #include <dirent.h>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <sstream>
 #include <string>
@@ -119,4 +120,22 @@ size_t lastSlash = filePath.find_last_of('/');
       return filePath.substr(lastSlash + 1);
   }
   return filePath;
+}
+
+bool isIpAddress(const std::string ipAddr) {
+    std::stringstream ss(ipAddr);
+    std::string chunk;
+    std::list<std::string> chunks;
+    int n;
+    while (getline(ss, chunk, '.'))
+        chunks.push_back(chunk);
+    if (chunks.size() != 4)
+        return false;
+    for (std::list<std::string>::iterator it = chunks.begin(); it != chunks.end(); ++it)
+    {
+        std::istringstream(it->data()) >> n;
+        if (n < 0 || n > 255)
+            return false;
+    }
+    return true;
 }

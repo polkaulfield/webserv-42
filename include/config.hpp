@@ -85,7 +85,7 @@ public:
 	int		checkLocations(void);
 
 //  LINEKED LIST LOCATIONS //
-	Location	*searchLocation(std::string option);
+	const Location	*searchLocation(std::string option) const;
 };
 
 #endif

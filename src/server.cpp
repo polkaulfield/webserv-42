@@ -153,16 +153,16 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
     send(clientSocket, serverResponse.getResponse().data(),
          serverResponse.getResponse().length(), 0);
   } else if (clientRequest.getMethod() == "GET") {
-    data = ServerResponse().buildErrorResponse(404, "Not Found!");
+    data = ServerResponse().buildErrorResponse(404, "Not Found!", _config);
     std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   } else {
   	if (!isCGI(clientRequest.getPath(), _config)) {
-   	  data = ServerResponse().buildErrorResponse(403, "Not valid extension!");
+   	  data = ServerResponse().buildErrorResponse(403, "Not valid extension!", _config);
    	} else if (!isMethodAllowed("POST", clientRequest.getPath(), _config)) {
-    	data = ServerResponse().buildErrorResponse(403, "Not Allowed!");
+    	data = ServerResponse().buildErrorResponse(403, "Not Allowed!", _config);
    	} else {
-      data = ServerResponse().buildErrorResponse(404, "Not Found!");
+      data = ServerResponse().buildErrorResponse(404, "Not Found!", _config);
    	}
     std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);

@@ -25,5 +25,5 @@ std::string getExtension(std::string htmlPath);
 
 std::string	determineInterpreter(std::string htmlPath);
 bool	isMethodAllowed(std::string const& method, std::string const& path, Config config);
-
+bool isIpAddress(const std::string ipAddr);
 #endif

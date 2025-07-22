@@ -73,24 +73,24 @@ void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config c
 	std::string queryPath = request.getQueryPath();
 
 	if (_isPathOutsideServerScope(queryPath)) {
-        _response = buildErrorResponse(403, "Forbidden: Path outside server scope");
+        _response = buildErrorResponse(403, "Forbidden: Path outside server scope", config);
         return;
     }
 
 	std::string fullPath = request.getPath();
 
 	if (!isMethodAllowed("DELETE", fullPath, config)) {
-		_response = buildErrorResponse(405, "Method Not Allowed");
+		_response = buildErrorResponse(405, "Method Not Allowed", config);
 		return;
 	}
 
 	if (access(fullPath.c_str(), F_OK)) {
-		_response = buildErrorResponse(404,"File not found");
+		_response = buildErrorResponse(404,"File not found", config);
 		return ;
 	}
 
 	if (access(fullPath.c_str(), W_OK)) {
-		_response = buildErrorResponse(403, "Permission denied");
+		_response = buildErrorResponse(403, "Permission denied", config);
 		return ;
 	}
 
@@ -100,12 +100,12 @@ void	ServerResponse::_handleDeleteRequest(ClientRequest const& request, Config c
 	//luego consultamos si es un archivo regular, si no lo es construimos un mensaje de error
 	struct stat fileStat;
 	if (stat(fullPath.c_str(), &fileStat) == 0 && !S_ISREG(fileStat.st_mode)) {
-		_response = buildErrorResponse(403, "Cannot delete directories");
+		_response = buildErrorResponse(403, "Cannot delete directories", config);
 		return ;
 	}
 
 	if (_deleteFiles(fullPath))
 		_response = _buildSuccessDeleteResponse();
 	else
-		_response = buildErrorResponse(500, "Failed to delete file");
+		_response = buildErrorResponse(500, "Failed to delete file", config);
 }
