@@ -1,6 +1,5 @@
 #!/bin/bash
 
-<<<<<<< Updated upstream
 # Salida estándar de cabeceras HTTP
 echo "Content-Type: text/html"
 echo ""
@@ -60,4 +59,3 @@ echo REMOTE_USER = $REMOTE_USER
 echo AUTH_TYPE = $AUTH_TYPE
 echo CONTENT_TYPE = $CONTENT_TYPE
 echo CONTENT_LENGTH = $CONTENT_LENGTH
->>>>>>> Stashed changes
