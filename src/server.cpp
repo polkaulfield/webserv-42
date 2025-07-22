@@ -144,10 +144,11 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   std::cout << "Parsing client request" << std::endl;
 
   // If theres no locationlist all paths and methods are valid for now (debug)
-  //serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
-  //send(clientSocket, serverResponse.getResponse().data(),
-  //     serverResponse.getResponse().length(), 0);
-  if (_checkLocation(clientRequest) != 0) {
+  if (clientRequest.getPath() == "/redirect" && _config.searchLocation("/redirect")) {
+  	serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+   	send(clientSocket, serverResponse.getResponse().data(),
+       serverResponse.getResponse().length(), 0);
+  } else if (_checkLocation(clientRequest) != 0) {
     std::cout << "Ok" << std::endl;
     serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
     send(clientSocket, serverResponse.getResponse().data(),
