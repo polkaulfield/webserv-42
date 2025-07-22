@@ -8,7 +8,7 @@
 #include <string>
 #include <unistd.h>
 
-std::string ClientRequest::_parseChunkedBody(std::string _data) {
+std::string ClientRequest::_parseChunkedBody(std::string const& _data) {
 
 	std::string parsedBody;
 	size_t pos = 0;

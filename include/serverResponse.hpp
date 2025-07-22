@@ -9,26 +9,24 @@ struct	UploadedFile;
 class ServerResponse
 {
 	private:
-		std::string _response;
+	std::string _response;
 
-    std::string _getContentType(std::string path);
-    std::string _buildOkResponse(std::string &buffer, std::string path);
-    std::string _buildDirResponse(std::string &buffer);
-    std::string _buildCgiResponse(std::string &buffer);
-    std::string _buildRedirResponse(const std::string &url);
-    std::string _makeFileBuffer(std::string path);
-    std::string _getExtension(std::string htmlPath);
+	std::string _getContentType(std::string const& path);
+	std::string _buildOkResponse(std::string &buffer, std::string const& path);
+	std::string _buildDirResponse(std::string &buffer);
+	std::string _buildCgiResponse(std::string &buffer);
+	std::string _buildRedirResponse(const std::string &url);
+	std::string _makeFileBuffer(std::string const& path);
+	std::string _getExtension(std::string const& htmlPath);
 
   public:
-    ServerResponse();
-    ServerResponse(ClientRequest& clientRequest, const Config& config, bool isUpload);
-    ~ServerResponse();
+	ServerResponse();
+	ServerResponse(ClientRequest& clientRequest, const Config& config, bool isUpload);
+	~ServerResponse();
 
-		std::string getResponse(void);
-		static std::string buildErrorResponse(int err, const std::string& msg);
+	std::string getResponse(void);
+	static std::string buildErrorResponse(int err, const std::string& msg);
 
-//------------------------------------------------
-//UPLOAD FILES
 
 	void	_handleFileUpload(ClientRequest const& clientRequest, Config config);
 	bool	_validateUploadedFile(UploadedFile const& file, Config config);
@@ -36,14 +34,11 @@ class ServerResponse
 	bool	_saveUploadedFile(UploadedFile const& file, std::string const& uploadDir);
 	std::string _buildUploadSuccessResponse();
 
-//DELETE METHODS
 
 	void	_handleDeleteRequest(ClientRequest const& request, Config const& config);
 	bool	_containsTraversalPath(std::string const& rawPath);
 	bool	_deleteFiles(std::string const& path);
 	std::string _buildSuccessDeleteResponse();
-
-	//std::string buildErrorResponse(int code, std::string const& message);
 
 	bool _isPathOutsideServerScope(const std::string& queryPath);
 };

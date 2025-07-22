@@ -23,5 +23,5 @@ class Cgi
 		std::string	execScript(const ClientRequest& clientRequest, const Config& config);
 		std::string	getCGIOutput(char **args, char **env, std::string const& postData, std::string const& path);
 	};
-bool	isCGI(std::string htmlPath, const Config &config);
+bool	isCGI(std::string const& htmlPath, const Config &config);
 
