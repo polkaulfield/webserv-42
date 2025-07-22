@@ -120,6 +120,8 @@ std::string ServerResponse::_makeFileBuffer(std::string path)
 	std::ostringstream buffer;
 	std::ifstream input(path.c_str());
 	buffer << input.rdbuf();
+
+	std::cout << "string: " << buffer.str().length() << std::endl;
 	return buffer.str();
 }
 
