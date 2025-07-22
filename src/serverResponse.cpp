@@ -52,7 +52,7 @@ Content-Type: " + _getContentType(path) + "\n\
 Content-Length: " + intToString(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
-	return response.data();
+	return response;
 }
 
 std::string ServerResponse::_buildDirResponse(std::string &buffer)
@@ -62,7 +62,7 @@ Content-Type: text/html \n\
 Content-Length: " + intToString(buffer.length()) +
 "\r\n\r\n\
 "+ buffer;
-	return response.data();
+	return response;
 }
 
 std::string ServerResponse::_buildCgiResponse(std::string &buffer)
@@ -87,7 +87,7 @@ std::string ServerResponse::_buildCgiResponse(std::string &buffer)
     }
 	std::string response = "HTTP/1.1 200 OK\r\n\
 Content-Length: " + intToString(buffer.length() - cgiHeaderSize) + "\n" + buffer;
-	return response.data();
+	return response;
 }
 
 std::string	ServerResponse::buildErrorResponse(int code, std::string const& message, const Config& config) {
