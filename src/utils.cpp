@@ -1,61 +1,63 @@
 #include "../include/utils.hpp"
 #include <dirent.h>
 #include <iostream>
-#include <iterator>
 #include <map>
 #include <sstream>
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
 
-bool isDir(std::string path) {
-    struct stat sb;
-    return (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode));
+bool isDir(const std::string &path) {
+  struct stat sb;
+  return (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode));
 }
 
-bool isFile(std::string path) {
-    struct stat sb;
-    return (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode));
+bool isFile(const std::string &path) {
+  struct stat sb;
+  return (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode));
 }
 
-std::list<std::string> listDirs(const std::string& dir) {
-    std::list<std::string> dirList;
-    DIR* dirp = opendir(dir.c_str());
-    if (!dirp) return dirList;
-
-    struct dirent* dp;
-    while ((dp = readdir(dirp)) != NULL) {
-        std::string name(dp->d_name);
-        if (name == "." || name == "..") continue;
-
-        std::string fullPath = dir + "/" + name;
-        if (isDir(fullPath))
-            dirList.push_back(name); // or push_back(fullPath) if full path is desired
-    }
-
-    closedir(dirp);
+std::list<std::string> listDirs(const std::string &dir) {
+  std::list<std::string> dirList;
+  DIR *dirp = opendir(dir.c_str());
+  if (!dirp)
     return dirList;
+
+  struct dirent *dp;
+  while ((dp = readdir(dirp)) != NULL) {
+    std::string name(dp->d_name);
+    if (name == "." || name == "..")
+      continue;
+
+    std::string fullPath = dir + "/" + name;
+    if (isDir(fullPath))
+      dirList.push_back(name); // or push_back(fullPath) if full path is desired
+  }
+
+  closedir(dirp);
+  return dirList;
 }
 
-std::list<std::string> listFiles(const std::string& dir) {
-    std::list<std::string> fileList;
-    DIR* dirp = opendir(dir.c_str());
-    if (!dirp) return fileList;
-
-    struct dirent* dp;
-    while ((dp = readdir(dirp)) != NULL) {
-        std::string name(dp->d_name);
-        if (name == "." || name == "..") continue;
-
-        std::string fullPath = dir + "/" + name;
-        if (isFile(fullPath))
-            fileList.push_back(name); // or fullPath
-    }
-
-    closedir(dirp);
+std::list<std::string> listFiles(const std::string &dir) {
+  std::list<std::string> fileList;
+  DIR *dirp = opendir(dir.c_str());
+  if (!dirp)
     return fileList;
-}
 
+  struct dirent *dp;
+  while ((dp = readdir(dirp)) != NULL) {
+    std::string name(dp->d_name);
+    if (name == "." || name == "..")
+      continue;
+
+    std::string fullPath = dir + "/" + name;
+    if (isFile(fullPath))
+      fileList.push_back(name); // or fullPath
+  }
+
+  closedir(dirp);
+  return fileList;
+}
 
 bool endsWith(const std::string &str, const std::string &end) {
   if (end.size() > str.size())
@@ -70,8 +72,9 @@ std::string intToString(int n) {
   return ostream.str();
 }
 
-std::string searchAndReplace(std::string const& str, std::string const& searchWord,
-                             std::string const& replaceWord) {
+std::string searchAndReplace(std::string const &str,
+                             std::string const &searchWord,
+                             std::string const &replaceWord) {
   size_t pos1 = 0;
   size_t pos2 = str.find(searchWord);
   std::string newStr = "";
@@ -95,7 +98,7 @@ void printDict(std::map<std::string, std::string> dict) {
   }
 }
 
-bool startsWith(std::string const& str, std::string const& prefix) {
+bool startsWith(std::string const &str, std::string const &prefix) {
   int last = str.find_last_of("/");
   if (prefix.length() == 1 && prefix == "/" && last == 0) {
     return true;
@@ -106,45 +109,45 @@ bool startsWith(std::string const& str, std::string const& prefix) {
   return false;
 }
 
-void	freeArray(char** array) {
-	if (!array)
-		return;
+void freeArray(char **array) {
+  if (!array)
+    return;
 
-	for (int i = 0; array[i]; i++)
-		delete[] array[i];
-	delete[] array;
+  for (int i = 0; array[i]; i++)
+    delete[] array[i];
+  delete[] array;
 }
 
-std::string extractDirectory(const std::string& filePath) {
+std::string extractDirectory(const std::string &filePath) {
   size_t lastSlash = filePath.find_last_of('/');
   if (lastSlash != std::string::npos) {
-      return filePath.substr(0, lastSlash);
+    return filePath.substr(0, lastSlash);
   }
   return ".";
 }
 
-std::string extractFilename(const std::string& filePath) {
-size_t lastSlash = filePath.find_last_of('/');
+std::string extractFilename(const std::string &filePath) {
+  size_t lastSlash = filePath.find_last_of('/');
   if (lastSlash != std::string::npos) {
-      return filePath.substr(lastSlash + 1);
+    return filePath.substr(lastSlash + 1);
   }
   return filePath;
 }
 
 bool isIpAddress(const std::string ipAddr) {
-    std::stringstream ss(ipAddr);
-    std::string chunk;
-    std::list<std::string> chunks;
-    int n;
-    while (getline(ss, chunk, '.'))
-        chunks.push_back(chunk);
-    if (chunks.size() != 4)
-        return false;
-    for (std::list<std::string>::iterator it = chunks.begin(); it != chunks.end(); ++it)
-    {
-        std::istringstream(it->data()) >> n;
-        if (n < 0 || n > 255)
-            return false;
-    }
-    return true;
+  std::stringstream ss(ipAddr);
+  std::string chunk;
+  std::list<std::string> chunks;
+  int n;
+  while (getline(ss, chunk, '.'))
+    chunks.push_back(chunk);
+  if (chunks.size() != 4)
+    return false;
+  for (std::list<std::string>::iterator it = chunks.begin(); it != chunks.end();
+       ++it) {
+    std::istringstream(it->data()) >> n;
+    if (n < 0 || n > 255)
+      return false;
+  }
+  return true;
 }

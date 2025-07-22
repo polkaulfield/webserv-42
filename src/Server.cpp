@@ -1,8 +1,8 @@
-#include "../include/server.hpp"
-#include "../include/config.hpp"
-#include "../include/serverResponse.hpp"
+#include "../include/Server.hpp"
+#include "../include/Cgi.hpp"
+#include "../include/Config.hpp"
+#include "../include/ServerResponse.hpp"
 #include "../include/utils.hpp"
-#include "../include/cgi.hpp"
 #include <algorithm>
 #include <arpa/inet.h>
 #include <cstdio>
@@ -78,7 +78,7 @@ bool Server::_checkLocation(const ClientRequest &clientRequest) {
   _isFileUpload = false;
 
   if (_config.getRedirectFromPath(clientRequest.getQueryPath()) != "")
-  	return true;
+    return true;
   if (clientRequest.getMethod() == "DELETE") {
     return true;
   }
@@ -86,21 +86,21 @@ bool Server::_checkLocation(const ClientRequest &clientRequest) {
        iter != _locationList.end(); ++iter) {
 
     if (iter->hasMethod(clientRequest.getMethod()) &&
-        startsWith(clientRequest.getPath(), \
+        startsWith(clientRequest.getPath(),
                    _config.getRoot() + iter->getDirectory())) {
-		if (clientRequest.getMethod() == "DELETE") {
-		return true;
-		}
-		if (clientRequest.getMethod() == "POST") {
-			if (isCGI(clientRequest.getPath(), _config)) {
-			  _isFileUpload = false;
-			} else if (iter->getIsUpload()) {
-				_isFileUpload = true;
-			} else {
-				continue;
-			}
-	        std::cout << "We are uploading files!" << std::endl;
-	        return true;
+      if (clientRequest.getMethod() == "DELETE") {
+        return true;
+      }
+      if (clientRequest.getMethod() == "POST") {
+        if (isCGI(clientRequest.getPath(), _config)) {
+          _isFileUpload = false;
+        } else if (iter->getIsUpload()) {
+          _isFileUpload = true;
+        } else {
+          continue;
+        }
+        std::cout << "We are uploading files!" << std::endl;
+        return true;
       }
       if (access(clientRequest.getPath().c_str(), F_OK) != -1)
         return true;
@@ -144,18 +144,12 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   std::cout << "Parsing client request" << std::endl;
 
   // If theres no locationlist all paths and methods are valid for now (debug)
-  if (clientRequest.getPath() == "/redirect" && _config.searchLocation("/redirect")) {
-  	serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
-   	send(clientSocket, serverResponse.getResponse().data(),
-       serverResponse.getResponse().length(), 0);
-  /*} else if (_checkLocation(clientRequest) != 0) {
-  if (startsWith(clientRequest.getPath(), \
-             _config.getRoot() + "/redirect")) {
-    std::cout << "redirect" << std::endl;
-  	serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
-	send(clientSocket, serverResponse.getResponse().data(),
-	       serverResponse.getResponse().length(), 0);*/
-  }else if (_checkLocation(clientRequest) != 0) {
+  if (clientRequest.getPath() == "/redirect" &&
+      _config.searchLocation("/redirect")) {
+    serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+    send(clientSocket, serverResponse.getResponse().data(),
+         serverResponse.getResponse().length(), 0);
+  } else if (_checkLocation(clientRequest) != 0) {
     std::cout << "Ok" << std::endl;
     serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
     send(clientSocket, serverResponse.getResponse().data(),
@@ -165,13 +159,14 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
     std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   } else {
-  	if (!isCGI(clientRequest.getPath(), _config)) {
-   	  data = ServerResponse().buildErrorResponse(403, "Not valid extension!", _config);
-   	} else if (!isMethodAllowed("POST", clientRequest.getPath(), _config)) {
-    	data = ServerResponse().buildErrorResponse(403, "Not Allowed!", _config);
-   	} else {
+    if (!isCGI(clientRequest.getPath(), _config)) {
+      data = ServerResponse().buildErrorResponse(403, "Not valid extension!",
+                                                 _config);
+    } else if (!isMethodAllowed("POST", clientRequest.getPath(), _config)) {
+      data = ServerResponse().buildErrorResponse(403, "Not Allowed!", _config);
+    } else {
       data = ServerResponse().buildErrorResponse(404, "Not Found!", _config);
-   	}
+    }
     std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   }

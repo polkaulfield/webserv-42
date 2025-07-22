@@ -1,4 +1,4 @@
-#include "../include/pollManager.hpp"
+#include "../include/PollManager.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <list>

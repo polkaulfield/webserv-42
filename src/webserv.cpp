@@ -5,10 +5,9 @@
 #include <sys/stat.h>
 #include <list>
 #include <iostream>
-#include "../include/serverResponse.hpp"
-#include "../include/server.hpp"
-#include "../include/config.hpp"
-#include "../include/pollManager.hpp"
+#include "../include/Server.hpp"
+#include "../include/Config.hpp"
+#include "../include/PollManager.hpp"
 #include <poll.h>
 #include <cstdlib>
 #include <list>
@@ -22,9 +21,6 @@ int main(int argc, char **argv)
 	std::list<Config> configList = (argc == 2) ? takeConfig(argv[1]) : takeConfig("configs/default.conf");
     if (configList.empty())
     	return 1;
-    //std::cout << configList.size() << std::endl;
-    //configList.front().printConfig();
-    //configList.back().printConfig();
     std::list<Server> serverList;
     for (std::list<Config>::iterator config = configList.begin(); config != configList.end(); ++config) {
         serverList.push_back(Server(*config));
