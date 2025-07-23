@@ -20,11 +20,14 @@ void exitConfig(std::list<Config> &configList, std::ifstream *configFd,
 int checkConfigList(std::list<Config> &configList) {
   int error = 0;
   int count = 0;
-
   for (std::list<Config>::iterator iter = configList.begin();
        iter != configList.end(); ++iter) {
     std::cerr << GREEN << "Checking Config: " << ++count << RESET << std::endl;
     std::cerr << GREEN << "\tErrors Found while parsing: ";
+    if (iter->getDoublePort() != -1) {
+      configList.push_front(Config(*iter));
+      configList.front().setPort(iter->getDoublePort());
+    }
     if (iter->getErrorsParser())
       std::cerr << iter->getErrorsParser() << RESET << std::endl;
     else
@@ -46,11 +49,7 @@ int checkConfigList(std::list<Config> &configList) {
         break;
       }
     }
-  }
-  int dp = configList.front().getDoublePort();
-  if (dp != -1) {
-    configList.push_back(Config(configList.front()));
-    configList.back().setPort(dp);
+
   }
   if (error > 0)
     std::cerr << GREEN << "Found " << error

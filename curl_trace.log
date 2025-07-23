@@ -1,0 +1,31 @@
+== Info:   Trying 127.0.0.1:8080...
+== Info: Connected to localhost (127.0.0.1) port 8080 (#0)
+=> Send header, 190 bytes (0xbe)
+0000: POST /upload HTTP/1.1
+0017: Host: localhost:8080
+002d: Accept: */*
+003a: User-Agent: curl-test
+0051: Content-Length: 199
+0066: Content-Type: multipart/form-data; boundary=--------------------
+00a6: ----fedb166d2e959a95
+00bc: 
+=> Send data, 199 bytes (0xc7)
+0000: --------------------------fedb166d2e959a95
+002c: Content-Disposition: form-data; name="file"; filename="test.txt"
+006e: Content-Type: text/plain
+0088: 
+008a: .[32mOK!.[0m.
+0099: --------------------------fedb166d2e959a95--
+== Info: We are completely uploaded and fine
+== Info: Mark bundle as not supporting multiuse
+<= Recv header, 22 bytes (0x16)
+0000: HTTP/1.1 201 Created
+<= Recv header, 25 bytes (0x19)
+0000: Content-Type: text/html
+<= Recv header, 20 bytes (0x14)
+0000: Content-Length: 36
+<= Recv header, 2 bytes (0x2)
+0000: 
+<= Recv data, 36 bytes (0x24)
+0000: <h1>Files uploaded succesfully!</h1>
+== Info: Connection #0 to host localhost left intact

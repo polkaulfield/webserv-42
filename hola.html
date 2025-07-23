@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>CGI Pretty POST Demo</title>
+	<style>
+		body { font-family: Arial, sans-serif; background: #f0f0f0; }
+		.container { background: #fff; padding: 2em; margin: 2em auto; border-radius: 8px; max-width: 500px; box-shadow: 0 0 10px #ccc; }
+		h1 { color: #4a90e2; }
+		table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+		th, td { border: 1px solid #ddd; padding: 8px; }
+		th { background: #4a90e2; color: #fff; }
+		tr:nth-child(even) { background: #f9f9f9; }
+		.raw { background: #eee; padding: 1em; border-radius: 4px; }
+	</style>
+</head>
+<body>
+<div class="container">
+	<h1>CGI Pretty POST Demo</h1>
+	<h2>Request Info</h2>
+	<ul>
+		<li><strong>Method:</strong> POST</li>
+		<li><strong>Content-Type:</strong> multipart/form-data; boundary=---</li>----------------9b708e9e1ead838c
+		<li><strong>Content-Length:</strong> 271</li>
+	</ul>
+	<h2>Raw POST Data</h2>
+	<div class="raw">--------------------------9b708e9e1ead838c
+Content-Disposition: form-data; name="description"
