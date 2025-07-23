@@ -142,6 +142,8 @@ ServerResponse::ServerResponse(ClientRequest &clientRequest,
 
   std::string buffer;
 
+  //std::cout << clientRequest.getData() << std::endl;
+
   if (clientRequest.getMethod() == "GET") {
     if (isCGI(clientRequest.getPath(), config)) {
 

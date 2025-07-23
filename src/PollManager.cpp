@@ -124,10 +124,8 @@ void PollManager::_iterateEpollEvents(int epollFd, struct epoll_event *events,
 
   for (int i = 0; i < numEvents; ++i) {
     int eventFd = events[i].data.fd;
-    // Check if the eventFd is a socketfd in the server list
     if (_serverSocketList.count(eventFd)) {
       Server &server = _getServerByEventFd(eventFd);
-      // If listener is ready to read, handle new connection
       socklen_t clientAddressLength = sizeof(clientAddress);
       int clientSocket =
           accept(server.getServerSocket(), (struct sockaddr *)&clientAddress,
@@ -137,7 +135,6 @@ void PollManager::_iterateEpollEvents(int epollFd, struct epoll_event *events,
         perror("accept");
         continue;
       }
-      // std::cout << "Got a new connection!" << std::endl;
       event.events = EPOLLIN;
       event.data.fd = clientSocket;
       if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientSocket, &event) == -1) {
@@ -149,32 +146,52 @@ void PollManager::_iterateEpollEvents(int epollFd, struct epoll_event *events,
       server.addClientSocket(clientSocket);
     } else {
       Server &server = _getServerByClientSocket(eventFd);
-      // Then the socket is the client fd
       int clientSocket = eventFd;
       std::string header = _recvHeader(clientSocket);
       if (header == "") {
         _cleanEpollSocket(server, clientSocket, epollFd);
         continue;
       }
+
       size_t bodySize = _extractSizeFromHeader(header);
-      // Read from the socket
       std::string request = header;
-      size_t size = 0;
-      int b_read = 0;
-      do {
-        b_read = recv(clientSocket, buffer, sizeof(buffer) - 1, MSG_DONTWAIT);
-        if (b_read <= 0)
-          break;
-        request.append(buffer, b_read);
-        size += b_read;
-      } while (b_read > 0 && size < bodySize);
-      //if (size < bodySize)
-      	//continue;
-      // std::cout << "REQUEST:" << std::endl << request << std::endl << "end
-      // request" << std::endl;
+
+      // Si hay body que leer, leerlo completamente
+      if (bodySize > 0) {
+        size_t totalReceived = 0;
+
+        while (totalReceived < bodySize) {
+          size_t remainingBytes = bodySize - totalReceived;
+          size_t bytesToRead = (remainingBytes < sizeof(buffer) - 1) ?
+                               remainingBytes : sizeof(buffer) - 1;
+
+          // Usar recv sin MSG_DONTWAIT para lectura bloqueante
+          int b_read = recv(clientSocket, buffer, bytesToRead, 0);
+
+          if (b_read <= 0) {
+            if (b_read == 0) {
+              std::cerr << "Client closed connection before sending complete body" << std::endl;
+            } else {
+              perror("recv error while reading body");
+            }
+            break;
+          }
+
+          request.append(buffer, b_read);
+          totalReceived += b_read;
+        }
+
+        // Solo procesar si recibimos el body completo
+        if (totalReceived < bodySize) {
+          std::cerr << "Incomplete body received: " << totalReceived
+                    << "/" << bodySize << " bytes" << std::endl;
+          _cleanEpollSocket(server, clientSocket, epollFd);
+          continue;
+        }
+      }
+
       ClientRequest clientRequest = ClientRequest(request, server.getConfig());
       server.sendResponse(clientRequest, clientSocket);
-      // Remove the client socket from server and epoll
       _cleanEpollSocket(server, clientSocket, epollFd);
     }
   }
