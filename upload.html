@@ -1,49 +1,131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>File Upload</title>
-</head>
-<body>
-  <h1>Upload a File</h1>
-  
-  <input type="file" id="fileInput" />
-  <button id="uploadBtn">Upload</button>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>File Upload</title>
+        <style>
+            html,
+            body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                background: #121212;
+                color: #f0f0f0;
+                font-family: "Courier New", Courier, monospace;
+                display: flex;
+                flex-direction: column; /* Stack children vertically */
+                align-items: flex-start; /* Optional: align items to the left */
+                gap: 0.5rem; /* Optional: space between elements */
+                align-items: center;
+                justify-content: center;
+            }
 
-  <p id="status"></p>
+            #app {
+                text-align: center;
+                background: #1e1e1e;
+                padding: 40px 60px;
+                border-radius: 12px;
+                box-shadow: 0 0 40px rgba(0, 150, 255, 0.5);
+                max-width: 480px;
+                width: 90%;
+            }
 
-  <script>
-    const fileInput = document.getElementById('fileInput');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const status = document.getElementById('status');
+            #app > div:first-child {
+                font-size: 4rem;
+                font-weight: 700;
+                margin-bottom: 20px;
+                color: #00baff;
+                letter-spacing: 6px;
+            }
 
-    uploadBtn.addEventListener('click', () => {
-      const file = fileInput.files[0];
-      if (!file) {
-        status.textContent = 'Please select a file first.';
-        return;
-      }
+            .txt {
+                font-size: 1.4rem;
+                line-height: 1.5;
+                position: relative;
+                color: #ccc;
+                letter-spacing: 1.2px;
+            }
 
-      const formData = new FormData();
-      formData.append('file', file);
+            .blink {
+                display: inline-block;
+                color: #00baff;
+                font-weight: 700;
+                animation: blink-animation 1.2s steps(2, start) infinite;
+                margin-left: 3px;
+                user-select: none;
+            }
 
-      fetch('/upload', {
-        method: 'POST',
-        body: formData,
-      })
-      .then(response => {
-        if (response.ok) {
-          status.textContent = 'File uploaded successfully!';
-        } else {
-          status.textContent = `Upload failed: ${response.statusText}`;
-        }
-      })
-      .catch(err => {
-        status.textContent = 'Upload error: ' + err.message;
-      });
-    });
-  </script>
-</body>
+            /* Normal link */
+            a {
+                color: cyan;
+            }
+
+            /* When hovering over the link */
+            a:hover {
+                color: red;
+            }
+
+            /* When the link has been visited */
+            a:visited {
+                color: lightsteelblue;
+            }
+
+            /* When the link is active (being clicked) */
+            a:active {
+                color: green;
+            }
+
+            @keyframes blink-animation {
+                0%,
+                50% {
+                    opacity: 1;
+                }
+                50.01%,
+                100% {
+                    opacity: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1 class="text">Upload a File<span class="blink">_</span></h1>
+
+        <div style="align-items: center">
+            <input type="file" id="fileInput" />
+            <button id="uploadBtn">Upload</button>
+        </div>
+        <p id="status"></p>
+        <script>
+            const fileInput = document.getElementById("fileInput");
+            const uploadBtn = document.getElementById("uploadBtn");
+            const status = document.getElementById("status");
+
+            uploadBtn.addEventListener("click", () => {
+                const file = fileInput.files[0];
+                if (!file) {
+                    status.textContent = "Please select a file first.";
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("file", file);
+
+                fetch("/upload", {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then((response) => {
+                        if (response.ok) {
+                            status.textContent = "File uploaded successfully!";
+                        } else {
+                            status.textContent = `Upload failed: ${response.statusText}`;
+                        }
+                    })
+                    .catch((err) => {
+                        status.textContent = "Upload error: " + err.message;
+                    });
+            });
+        </script>
+    </body>
 </html>
-

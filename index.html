@@ -1,98 +1,219 @@
-<!DOCTYPE html>
+<!doctype html>
 <html data-bs-theme="light" lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+        />
+        <title>Home - Webserv42</title>
+        <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap"
+        />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic&amp;display=swap"
+        />
+        <link rel="stylesheet" href="assets/fonts/font-awesome.min.css" />
+        <link rel="stylesheet" href="assets/css/bss-overrides.css" />
+        <link rel="stylesheet" href="assets/css/baguetteBox.min.css" />
+        <link rel="stylesheet" href="assets/css/Team-Horizontal-icons.css" />
+    </head>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Home - Webserv42</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic&amp;display=swap">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/css/bss-overrides.css">
-    <link rel="stylesheet" href="assets/css/baguetteBox.min.css">
-    <link rel="stylesheet" href="assets/css/Team-Horizontal-icons.css">
-</head>
-
-<body id="page-top" data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="57">
-    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
-        <div class="container"><a class="navbar-brand" href="#page-top">Webserv42</a><button data-bs-toggle="collapse" data-bs-target="#navbarResponsive" class="navbar-toggler" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-align-justify"></i></button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/upload.html">UPLOAD</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/configs">AUTOINDEX</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/delete/test_delete.html">DELETE</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/cgi/post_cgi.html">CGI_post</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/cgi.sh">CGI.sh</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/cgi.py">CGI.py</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <header class="text-center text-white d-flex masthead" style="background-image:url('assets/img/header.jpg');">
-        <div class="container my-auto">
-            <div class="row">
-                <div class="col-lg-10 mx-auto">
-                    <h1 class="text-uppercase"><strong>webserv42</strong></h1>
-                    <hr>
+    <body
+        id="page-top"
+        data-bs-spy="scroll"
+        data-bs-target="#mainNav"
+        data-bs-offset="57"
+    >
+        <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand" href="#page-top">Webserv42</a
+                ><button
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarResponsive"
+                    class="navbar-toggler"
+                    type="button"
+                    aria-controls="navbarResponsive"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <i class="fa fa-align-justify"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/upload.html">UPLOAD</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/configs/">AUTOINDEX</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/delete/test_delete.html"
+                                >DELETE</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/cgi/post_cgi.html"
+                                >CGI_post</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/cgi.sh">CGI.sh</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/cgi.py">CGI.py</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div class="col-lg-8 mx-auto">
-                <p class="mb-5 text-faded">This is a web server made in C++ from scratch!</p><a class="btn btn-primary btn-xl" role="button" href="https://github.com/polkaulfield/webserv-42">Go to our github repo!</a>
-            </div>
-        </div>
-    </header>
-    <section id="about" class="bg-primary">
-        <div class="container py-4 py-xl-5">
-            <div class="row mb-5">
-                <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <h2>Developers behind the project</h2>
-                    <p>We are students from 42 Barcelona. This is our team.</p>
+        </nav>
+        <header
+            class="text-center text-white d-flex masthead"
+            style="background-image: url(&quot;assets/img/header.jpg&quot;)"
+        >
+            <div class="container my-auto">
+                <div class="row">
+                    <div class="col-lg-10 mx-auto">
+                        <h1 class="text-uppercase">
+                            <strong>webserv42</strong>
+                        </h1>
+                        <hr />
+                    </div>
+                </div>
+                <div class="col-lg-8 mx-auto">
+                    <p class="fs-2 fw-semibold mb-5 text">
+                        This is a web server made in C++ from scratch!
+                    </p>
+                    <a
+                        class="btn btn-primary btn-xl"
+                        role="button"
+                        href="https://github.com/polkaulfield/webserv-42"
+                        >Go to our github repo!</a
+                    >
                 </div>
             </div>
-            <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
-                <div class="col">
-                    <div class="card border-0 shadow-none">
-                        <div class="card-body d-flex align-items-center p-0"><img class="rounded-circle object-fit-cover flex-shrink-0 me-3" width="130" height="130" src="assets/img/18359265.png">
-                            <div>
-                                <h5 class="fw-bold text-primary mb-0">Pol Hernandez</h5>
-                                <p class="text-muted mb-1">@polkaulfield</p><a href="https://github.com/polkaulfield/"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-github">
-                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8"></path>
-                                    </svg>&nbsp;Github</a>
+        </header>
+        <section id="about" class="bg-primary">
+            <div class="container py-4 py-xl-5">
+                <div class="row mb-5">
+                    <div class="col-md-8 col-xl-6 text-center mx-auto">
+                        <h2 class="fs-2">Developers behind the project</h2>
+                        <p class="fs-5">
+                            We are students from 42 Barcelona. This is our team.
+                        </p>
+                    </div>
+                </div>
+                <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
+                    <div class="col">
+                        <div class="card border-0 shadow-none">
+                            <div
+                                class="card-body d-flex align-items-center p-0"
+                            >
+                                <img
+                                    class="rounded-circle object-fit-cover flex-shrink-0 me-3"
+                                    width="130"
+                                    height="130"
+                                    src="assets/img/18359265.png"
+                                />
+                                <div>
+                                    <h5 class="fw-bold text-primary mb-0">
+                                        Pol Hernandez
+                                    </h5>
+                                    <p class="text-muted mb-1">@polkaulfield</p>
+                                    <a href="https://github.com/polkaulfield/"
+                                        ><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="1em"
+                                            height="1em"
+                                            fill="currentColor"
+                                            viewBox="0 0 16 16"
+                                            class="bi bi-github"
+                                        >
+                                            <path
+                                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8"
+                                            ></path></svg
+                                        >&nbsp;Github</a
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card border-0 shadow-none">
+                            <div
+                                class="card-body d-flex align-items-center p-0"
+                            >
+                                <img
+                                    class="rounded-circle object-fit-cover flex-shrink-0 me-3"
+                                    width="130"
+                                    height="130"
+                                    src="assets/img/Escudo_de_Ibi.svg"
+                                />
+                                <div>
+                                    <h5 class="fw-bold text-primary mb-0">
+                                        Javi Tinaut
+                                    </h5>
+                                    <p class="text-muted mb-1">@xavi-03</p>
+                                    <a href="https://github.com/Xavi-03"
+                                        ><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="1em"
+                                            height="1em"
+                                            fill="currentColor"
+                                            viewBox="0 0 16 16"
+                                            class="bi bi-github"
+                                        >
+                                            <path
+                                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8"
+                                            ></path></svg
+                                        >&nbsp;Github</a
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card border-0 shadow-none">
+                            <div
+                                class="card-body d-flex align-items-center p-0"
+                            >
+                                <img
+                                    class="rounded-circle object-fit-cover flex-shrink-0 me-3"
+                                    width="130"
+                                    height="130"
+                                    src="assets/img/184401472.jpeg"
+                                />
+                                <div>
+                                    <h5 class="fw-bold text-primary mb-0">
+                                        <strong>Arnau Cebrian</strong>
+                                    </h5>
+                                    <p class="text-muted mb-1">@arcebria</p>
+                                    <a href="https://github.com/arcebria"
+                                        ><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="1em"
+                                            height="1em"
+                                            fill="currentColor"
+                                            viewBox="0 0 16 16"
+                                            class="bi bi-github"
+                                        >
+                                            <path
+                                                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8"
+                                            ></path></svg
+                                        >&nbsp;Github</a
+                                    >
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="card border-0 shadow-none">
-                        <div class="card-body d-flex align-items-center p-0"><img class="rounded-circle object-fit-cover flex-shrink-0 me-3" width="130" height="130" src="assets/img/Escudo_de_Ibi.svg">
-                            <div>
-                                <h5 class="fw-bold text-primary mb-0">Javi Tinaut</h5>
-                                <p class="text-muted mb-1">@xavi-03</p><a href="https://github.com/Xavi-03"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-github">
-                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8"></path>
-                                    </svg>&nbsp;Github</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card border-0 shadow-none">
-                        <div class="card-body d-flex align-items-center p-0"><img class="rounded-circle object-fit-cover flex-shrink-0 me-3" width="130" height="130" src="assets/img/184401472.jpeg">
-                            <div>
-                                <h5 class="fw-bold text-primary mb-0"><strong>Arnau Cebrian</strong></h5>
-                                <p class="text-muted mb-1">@arcebria</p><a href="https://github.com/arcebria"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-github">
-                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8"></path>
-                                    </svg>&nbsp;Github</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
-    </section>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/baguetteBox.min.js"></script>
-    <script src="assets/js/creative.js"></script>
-</body>
-
+        </section>
+        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/baguetteBox.min.js"></script>
+        <script src="assets/js/creative.js"></script>
+    </body>
 </html>
