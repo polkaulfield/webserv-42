@@ -121,8 +121,6 @@ void ClientRequest::_parseContentType(std::string const &request) {
   // detectar si hay multipart
   if (_contentType.find("multipart/form-data") != std::string::npos) {
     _isMultipart = true;
-    std::cout << "multi part detected" << std::endl;
-    std::cout << _isMultipart << std::endl;
     _boundary = _extractBoundary(_contentType);
 
     if (_boundary.empty()) {
@@ -131,9 +129,7 @@ void ClientRequest::_parseContentType(std::string const &request) {
     }
 
     if (!_data.empty() && !_parseMultipartBody(_data)) {
-      //std::cout << _data << std::endl;
       _isMultipart = false;
     }
-    std::cout << _isMultipart << std::endl;
   }
 }

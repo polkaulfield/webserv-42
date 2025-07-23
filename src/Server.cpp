@@ -141,7 +141,6 @@ bool Server::hasClientSocket(int clientSocket) {
 void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   ServerResponse serverResponse;
   std::string data;
-  std::cout << "Parsing client request" << std::endl;
 
   // If theres no locationlist all paths and methods are valid for now (debug)
   if (clientRequest.getPath() == "/redirect" &&
@@ -156,7 +155,6 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
          serverResponse.getResponse().length(), 0);
   } else if (clientRequest.getMethod() == "GET") {
     data = ServerResponse().buildErrorResponse(404, "Not Found!", _config);
-    std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   } else {
     if (!isCGI(clientRequest.getPath(), _config)) {
@@ -167,7 +165,6 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
     } else {
       data = ServerResponse().buildErrorResponse(404, "Not Found!", _config);
     }
-    std::cout << "Failed to find valid endpoint" << std::endl;
     send(clientSocket, data.data(), data.length(), 0);
   }
   close(clientSocket);

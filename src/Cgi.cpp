@@ -24,7 +24,7 @@ char **Cgi::_populateEnv(const ClientRequest &clientRequest,
                     clientRequest.getHeaderValue("Content-Type"));
   envVars.push_back("SCRIPT_NAME=" + clientRequest.getPath());
   envVars.push_back("QUERY_STRING=" + clientRequest.getQuery());
-  config.printConfig();
+  //config.printConfig();
   envVars.push_back("CONTENT_LENGTH=" +
                     intToString(clientRequest.getData().length()));
   envVars.push_back("SERVER_NAME=" + config.getServerName());
@@ -72,7 +72,6 @@ std::string Cgi::getCGIOutput(char **args, char **env,
     close(outputFd[0]);
     dup2(outputFd[1], STDOUT_FILENO);
     close(outputFd[1]);
-
     close(inputFd[1]);
     dup2(inputFd[0], STDIN_FILENO);
     close(inputFd[0]);
@@ -83,7 +82,6 @@ std::string Cgi::getCGIOutput(char **args, char **env,
     std::exit(1);
   } else if (pid > 0) {
     close(outputFd[1]);
-
     close(inputFd[0]);
     if (!postData.empty())
       write(inputFd[1], postData.data(), postData.length());
@@ -93,7 +91,7 @@ std::string Cgi::getCGIOutput(char **args, char **env,
     char buffer[1024];
     ssize_t bytesRead;
 
-    while ((bytesRead = read(outputFd[0], buffer, sizeof(buffer) - 1)) > 0) {
+    while ((bytesRead = read(outputFd[0], buffer, sizeof(buffer) - 1)) > 0 ) {
       buffer[bytesRead] = '\0';
       output += buffer;
     }

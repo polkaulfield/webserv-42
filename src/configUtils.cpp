@@ -38,7 +38,7 @@ int checkConfigList(std::list<Config> &configList) {
       }
       if (/*iter->getHost() == subiter->getHost() || */ iter->getPort() ==
           subiter->getPort()) {
-        std::cout
+        std::cerr
             << GREEN
             << "\tError: This Config has the same Host/Port than other server"
             << RESET << std::endl;
@@ -53,10 +53,10 @@ int checkConfigList(std::list<Config> &configList) {
     configList.back().setPort(dp);
   }
   if (error > 0)
-    std::cout << GREEN << "Found " << error
+    std::cerr << GREEN << "Found " << error
               << " errors in the configuration file" << RESET << std::endl;
   else
-    std::cout << GREEN << "OK!" << RESET << std::endl;
+    std::cerr << GREEN << "OK!" << RESET << std::endl;
   return error;
 }
 
@@ -132,11 +132,12 @@ std::list<Config> takeConfig(const char *configFile) {
     }
   }
   if (configList.empty())
-    exitConfig(configList, &configFd, "Error: File is empty");
-  // if (checkConfigList(configList))
-  //;//exitConfig(configList, configFd, "");
-  checkConfigList(configList);
+  	exitConfig(configList, &configFd, "Error: File is empty");
+  if (checkConfigList(configList)) {
+  	exitConfig(configList, &configFd, "");
+  }
+  //checkConfigList(configList);
   configFd.close();
-  configList.front().printConfig();
+  //configList.front().printConfig();
   return configList;
 }

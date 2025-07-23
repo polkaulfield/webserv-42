@@ -88,8 +88,7 @@ ClientRequest::ClientRequest(std::string request, const Config &config) {
   if (request.find("Transfer-Encoding: chunked") != std::string::npos)
     _data = _parseChunkedBody(_getBody(request));
   else
-    _data = _getBody(request);
-
+    _data = _getBody(request).substr(0, config.getClientMaxBodySize());
   _isMultipart = false;
   _boundary = "";
   _uploadedFiles.clear();

@@ -96,7 +96,6 @@ void ServerResponse::_handleFileUpload(ClientRequest const &clientRequest,
   }
 
   std::string const &uploadDir = location->getUploadDir();
-  std::cout << uploadDir << std::endl;
 
   // SI ESTAS VERIFIACIONES SE COMPRUEBAN EN CONFIG HABRA QUE QUITARLAS DE AQUI
   // ENTIENDO SUPONGO verificar si el directorio existe

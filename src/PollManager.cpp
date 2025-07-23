@@ -67,7 +67,6 @@ PollManager::~PollManager(void) {}
 
 void PollManager::_sigintHandle(int sigint) {
   (void)sigint;
-  // std::cout << "CTRL+C detected! Closing all fds!" << std::endl;
   if (_instance != NULL) {
     for (std::list<Server>::iterator server = _instance->_serverList.begin();
          server != _instance->_serverList.end(); ++server) {
@@ -83,7 +82,6 @@ std::string PollManager::_recvHeader(int clientSocket) {
   int b_read = 0;
   do {
     b_read = recv(clientSocket, buffer, 1, MSG_DONTWAIT);
-    // std::cout << "bread: " << b_read << std::endl;
     buffer[b_read] = '\0';
     header += buffer;
   } while (b_read > 0 && header.find("\r\n\r\n") == std::string::npos);
