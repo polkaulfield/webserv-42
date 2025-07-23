@@ -5,7 +5,6 @@ NAME  = webserv
 SRC_DIR := src
 INCLUDES_DIR := include
 INCLUDES := $(INCLUDES_DIR)/utils.hpp \
-$(INCLUDES_DIR)/webserv.hpp \
 $(INCLUDES_DIR)/ClientRequest.hpp \
 $(INCLUDES_DIR)/Cgi.hpp \
 $(INCLUDES_DIR)/ServerResponse.hpp \
@@ -14,8 +13,7 @@ $(INCLUDES_DIR)/Location.hpp \
 $(INCLUDES_DIR)/Config.hpp \
 $(INCLUDES_DIR)/PollManager.hpp \
 $(INCLUDES_DIR)/Directory.hpp \
-$(INCLUDES_DIR)/uploadedFilesSR.hpp \
-$(INCLUDES_DIR)/uploadedFilesCR.hpp
+$(INCLUDES_DIR)/UploadedFile.hpp
 SRCS := $(SRC_DIR)/webserv.cpp \
 $(SRC_DIR)/utils.cpp \
 $(SRC_DIR)/ClientRequest.cpp \
@@ -39,8 +37,8 @@ LDFLAGS :=
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(CXX) $(OBJS) $(LDFLAGS) -o $@
+$(NAME): $(OBJS) $(INCLUDES) Makefile
+	$(CXX) $(OBJS) $(CXXFLAGS) -o $@
 
 %.o: %.cpp $(INCLUDES) Makefile
 	$(CXX) $(CXXFLAGS) -MMD -c $< -o $@

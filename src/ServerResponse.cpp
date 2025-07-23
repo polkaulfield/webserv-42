@@ -165,6 +165,7 @@ ServerResponse::ServerResponse(ClientRequest &clientRequest,
       _response = buildErrorResponse(404, "Not found", config);
     }
   } else if (clientRequest.getMethod() == "POST") {
+  	std::cout << "ServerResponse constructor is POST" << std::endl;
     if (isCGI(clientRequest.getPath(), config)) {
 
       Cgi cgiHandler;
@@ -172,10 +173,15 @@ ServerResponse::ServerResponse(ClientRequest &clientRequest,
       _response = _buildCgiResponse(buffer);
 
     } else if (isUpload) {
-      if (clientRequest.isMultipart())
+      std::cout << "is upload file " << clientRequest.isMultipart() << std::endl;
+      if (clientRequest.isMultipart()) {
+      	std::cout << "before _handleFileUpload and multipart" << std::endl;
         _handleFileUpload(clientRequest, config);
-      else
-        _response = buildErrorResponse(400, "Not a multipart request", config);
+      }
+      else{
+        _response = buildErrorResponse(404, "Not a multipart request", config);
+      }
+      std::cout << "llega a aqui" << std::endl;
       if (_response.empty())
         _response = buildErrorResponse(500, "Upload processing failed", config);
     } else
