@@ -153,29 +153,26 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   ServerResponse serverResponse;
   std::string data;
 
-  std::string cookie = clientRequest.metodoGetParaCookie();
+  std::string cookie = clientRequest.getCookie();
   std::string newSessionId = "";
 
-  if (cookie.empty()) {
+  if (cookie.empty())
     newSessionId = _generateCookieId();
-    std::cout << "New client: " << newSessionId << std::endl;
-  }
-  else
-    std::cout << "Known client: " << cookie << std::endl;
 
   // If theres no locationlist all paths and methods are valid for now (debug)
   if (clientRequest.getPath() == "/redirect" &&
       _config.searchLocation("/redirect")) {
-    serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+    serverResponse = ServerResponse(clientRequest, _config, _isFileUpload, newSessionId);
     if (!newSessionId.empty())
       serverResponse.setSessionID(newSessionId);
     send(clientSocket, serverResponse.getResponse().data(),
          serverResponse.getResponse().length(), 0);
   } else if (_checkLocation(clientRequest) != 0) {
     std::cout << "Ok" << std::endl;
-    serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+    serverResponse = ServerResponse(clientRequest, _config, _isFileUpload, newSessionId);
     if (!newSessionId.empty())
       serverResponse.setSessionID(newSessionId);
+
     send(clientSocket, serverResponse.getResponse().data(),
          serverResponse.getResponse().length(), 0);
   } else if (clientRequest.getMethod() == "GET") {

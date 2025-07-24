@@ -53,6 +53,7 @@ public:
   std::string getAccept() const;
   std::string getAcceptLanguage() const;
   std::string getConnection() const;
+  std::string getCookie() const;
   bool getIsFileUpload(const bool val);
 
   bool isMultipart() const;

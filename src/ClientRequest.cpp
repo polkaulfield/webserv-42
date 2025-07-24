@@ -84,8 +84,15 @@ ClientRequest::ClientRequest(std::string request, const Config &config) {
     _requestCookie = "";
   else {
     std::size_t start = cookie.find("SESSIONID=");
-    std::size_t end = cookie.find(";");
-    _requestCookie = cookie.substr(start + 10, end - start);
+    if (start != std::string::npos) {
+      start += 10;
+      std::size_t end = cookie.find(";", start);
+      if (end == std::string::npos)
+        end = cookie.length();
+    _requestCookie = cookie.substr(start, end - start);
+    }
+    else
+      _requestCookie = "";
   }
 
   std::string headerHost = getHeaderValue("Host");
@@ -146,6 +153,8 @@ std::string ClientRequest::getData() const { return _data; }
 
 // Query getter
 std::string ClientRequest::getQuery() const { return _queryString; }
+
+std::string ClientRequest::getCookie() const { return _requestCookie; }
 
 // Header dict getters
 std::map<std::string, std::string> ClientRequest::getHeaderMap() const {

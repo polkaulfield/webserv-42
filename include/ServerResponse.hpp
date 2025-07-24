@@ -23,7 +23,7 @@ private:
 public:
   ServerResponse();
   ServerResponse(ClientRequest &clientRequest, const Config &config,
-                 bool isUpload);
+                 bool isUpload, std::string const& sessionID);
   ~ServerResponse();
 
   std::string getResponse(void);

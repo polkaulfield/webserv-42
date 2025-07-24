@@ -47,47 +47,54 @@ std::string ServerResponse::_getContentType(std::string const &path) {
 
 std::string ServerResponse::_buildOkResponse(std::string &buffer,
                                              std::string const &path) {
-  std::string response = "HTTP/1.1 200 OK\n\
-Content-Type: " + _getContentType(path) +
-                         "\n\
-Content-Length: " + intToString(buffer.length()) + "\r\n";
+  std::string response = "HTTP/1.1 200 OK\r\n";
+  response += "Content-Type: " + _getContentType(path) + "\r\n";
+  response += "Content-Length: " + intToString(buffer.length()) + "\r\n";
+
   if (!_sessionID.empty())
     response += "Set-Cookie: SESSIONID=" + _sessionID + "; Path=/\r\n";
+
   response += "\r\n" + buffer;
   return response;
 }
 
 std::string ServerResponse::_buildDirResponse(std::string &buffer) {
-  std::string response = "HTTP/1.1 200 OK\n\
-Content-Type: text/html \n\
-Content-Length: " + intToString(buffer.length()) +
-                         "\r\n\r\n\
-" + buffer;
+  std::string response = "HTTP/1.1 200 OK\r\n";
+  response += "Content-Type: text/html \r\n";
+  response += "Content-Length: " + intToString(buffer.length()) + "\r\n";
+
+
+  if (!_sessionID.empty())
+    response += "Set-Cookie: SESSIONID=" + _sessionID + "; Path=/\r\n";
+
+  response += "\r\n" + buffer;
   return response;
 }
 
 std::string ServerResponse::_buildCgiResponse(std::string &buffer) {
-  // Parse cgi header
-  // Check if cgi added Content-Type and
-  size_t cgiHeaderSize = 0;
-  if (buffer.find("Content-Type:") != std::string::npos) {
-    // Check for header separator type 1
-    cgiHeaderSize = buffer.find("\r\n\r\n");
-    if (cgiHeaderSize != std::string::npos)
-      cgiHeaderSize += 5;
-    else {
-      // Check for header separator type 2
-      cgiHeaderSize = buffer.find("\n\n");
-      if (cgiHeaderSize != std::string::npos)
-        cgiHeaderSize += 3;
-      else
-        cgiHeaderSize = 0;
+    if (buffer.find("Content-Type:") != std::string::npos) {
+        std::string response = "HTTP/1.1 200 OK\r\n";
+
+        // CRUCIAL: Añadir Set-Cookie ANTES del buffer CGI
+        if (!_sessionID.empty()) {
+            response += "Set-Cookie: SESSIONID=" + _sessionID + "; Path=/\r\n";
+        }
+
+        response += buffer;
+        return response;
+    } else {
+        std::string response = "HTTP/1.1 200 OK\r\n";
+        response += "Content-Type: text/html\r\n";
+        response += "Content-Length: " + intToString(buffer.length()) + "\r\n";
+
+        // CRUCIAL: Añadir Set-Cookie
+        if (!_sessionID.empty()) {
+            response += "Set-Cookie: SESSIONID=" + _sessionID + "; Path=/\r\n";
+        }
+
+        response += "\r\n" + buffer;
+        return response;
     }
-  }
-  std::string response = "HTTP/1.1 200 OK\r\n\
-Content-Length: " + intToString(buffer.length() - cgiHeaderSize) +
-                         "\n" + buffer;
-  return response;
 }
 
 std::string ServerResponse::buildErrorResponse(int code,
@@ -139,8 +146,9 @@ std::string ServerResponse::_getExtension(std::string const &htmlPath) {
 ServerResponse::ServerResponse(void) { _response = ""; }
 
 ServerResponse::ServerResponse(ClientRequest &clientRequest,
-                               const Config &config, bool isUpload) {
+                               const Config &config, bool isUpload, std::string const& sessionID) {
   std::string buffer;
+  _sessionID = sessionID;
 
   if (clientRequest.getMethod() == "GET") {
     if (isCGI(clientRequest.getPath(), config)) {
