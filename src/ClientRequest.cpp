@@ -79,6 +79,15 @@ ClientRequest::ClientRequest(std::string request, const Config &config) {
   _httpVer = field;
   _headerMap = _createHeaderMap(request);
 
+  std::string cookie = getHeaderValue("Cookie");
+  if (cookie.empty())
+    _requestCookie = "";
+  else {
+    std::size_t start = cookie.find("SESSIONID=");
+    std::size_t end = cookie.find(";");
+    _requestCookie = cookie.substr(start + 10, end - start);
+  }
+
   std::string headerHost = getHeaderValue("Host");
   size_t pos = headerHost.find(":");
   std::string host = headerHost.substr(0, pos);

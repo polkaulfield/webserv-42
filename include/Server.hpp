@@ -23,6 +23,7 @@ private:
   static void _sigintHandle(int signum);
   int _createServerSocket(int port);
   bool _checkLocation(const ClientRequest &clientRequest);
+  std::string _generateCookieId();
 
 public:
   Server();

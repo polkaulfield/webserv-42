@@ -10,6 +10,7 @@ struct UploadedFile;
 class ServerResponse {
 private:
   std::string _response;
+  std::string _sessionID;
 
   std::string _getContentType(std::string const &path);
   std::string _buildOkResponse(std::string &buffer, std::string const &path);
@@ -26,6 +27,7 @@ public:
   ~ServerResponse();
 
   std::string getResponse(void);
+  void  setSessionID(std::string const& sessionID);
   static std::string buildErrorResponse(int err, const std::string &msg,
                                         const Config &config);
 

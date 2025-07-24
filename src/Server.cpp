@@ -16,6 +16,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <wait.h>
+#include <ctime>
+#include <sstream>
 #define MAX_CLIENTS 50
 
 // This creates a socket listening on PORT. From it we create the clientSocket
@@ -138,19 +140,42 @@ bool Server::hasClientSocket(int clientSocket) {
   return false;
 }
 
+std::string Server::_generateCookieId() {
+  static int counter = 0;
+  std::time_t currentTime = std::time(NULL);
+  std::stringstream ss;
+
+  ss << "SESS_" << currentTime << "_" << counter++;
+  return ss.str();
+}
+
 void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   ServerResponse serverResponse;
   std::string data;
+
+  std::string cookie = clientRequest.metodoGetParaCookie();
+  std::string newSessionId = "";
+
+  if (cookie.empty()) {
+    newSessionId = _generateCookieId();
+    std::cout << "New client: " << newSessionId << std::endl;
+  }
+  else
+    std::cout << "Known client: " << cookie << std::endl;
 
   // If theres no locationlist all paths and methods are valid for now (debug)
   if (clientRequest.getPath() == "/redirect" &&
       _config.searchLocation("/redirect")) {
     serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+    if (!newSessionId.empty())
+      serverResponse.setSessionID(newSessionId);
     send(clientSocket, serverResponse.getResponse().data(),
          serverResponse.getResponse().length(), 0);
   } else if (_checkLocation(clientRequest) != 0) {
     std::cout << "Ok" << std::endl;
     serverResponse = ServerResponse(clientRequest, _config, _isFileUpload);
+    if (!newSessionId.empty())
+      serverResponse.setSessionID(newSessionId);
     send(clientSocket, serverResponse.getResponse().data(),
          serverResponse.getResponse().length(), 0);
   } else if (clientRequest.getMethod() == "GET") {

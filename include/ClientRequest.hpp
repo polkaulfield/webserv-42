@@ -17,6 +17,7 @@ private:
   std::string _httpVer;
   std::string _queryString;
   std::string _data;
+  std::string _requestCookie;
 
   bool _isMultipart;
   std::string _boundary;
@@ -25,6 +26,7 @@ private:
 
   std::map<std::string, std::string> _createHeaderMap(std::string request);
   std::string _getBody(std::string request);
+  std::string _extractCookieID(std::map<std::string, std::string> headerMap);
 
 public:
   ClientRequest();

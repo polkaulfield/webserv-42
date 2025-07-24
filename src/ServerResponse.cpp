@@ -50,9 +50,10 @@ std::string ServerResponse::_buildOkResponse(std::string &buffer,
   std::string response = "HTTP/1.1 200 OK\n\
 Content-Type: " + _getContentType(path) +
                          "\n\
-Content-Length: " + intToString(buffer.length()) +
-                         "\r\n\r\n\
-" + buffer;
+Content-Length: " + intToString(buffer.length()) + "\r\n";
+  if (!_sessionID.empty())
+    response += "Set-Cookie: SESSIONID=" + _sessionID + "; Path=/\r\n";
+  response += "\r\n" + buffer;
   return response;
 }
 
@@ -188,3 +189,5 @@ ServerResponse::ServerResponse(ClientRequest &clientRequest,
 ServerResponse::~ServerResponse(void) {}
 
 std::string ServerResponse::getResponse() { return _response; }
+
+void  ServerResponse::setSessionID(std::string const& sessionID) { _sessionID = sessionID; }
