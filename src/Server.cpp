@@ -163,8 +163,7 @@ void Server::sendResponse(ClientRequest &clientRequest, int clientSocket) {
   if (clientRequest.getPath() == "/redirect" &&
       _config.searchLocation("/redirect")) {
     serverResponse = ServerResponse(clientRequest, _config, _isFileUpload, newSessionId);
-    if (!newSessionId.empty())
-      serverResponse.setSessionID(newSessionId);
+
     send(clientSocket, serverResponse.getResponse().data(),
          serverResponse.getResponse().length(), 0);
   } else if (_checkLocation(clientRequest) != 0) {
