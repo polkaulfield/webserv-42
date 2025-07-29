@@ -43,6 +43,7 @@ char **Cgi::_populateEnv(const ClientRequest &clientRequest,
   envVars.push_back("HTTP_CONNECTION=" +
                     clientRequest.getHeaderValue("Connection"));
   envVars.push_back("PATH_INFO=" + clientRequest.getPath());
+  envVars.push_back("HTTP_COOKIE=" + clientRequest.getCookie());
   return vectorToArray(envVars);
 }
 
